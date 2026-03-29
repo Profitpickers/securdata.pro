@@ -1,0 +1,72 @@
+<svg width="600" height="600" viewBox="0 0 600 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Gradienti e Filtri -->
+    <linearGradient id="grad_blue_deep" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1E3A8A;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0F172A;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="grad_cyan_tech" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00D9FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0099CC;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow_white">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+    <filter id="glow_cyan">
+      <feGaussianBlur stdDeviation="4" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Sfondo Blu Scuro -->
+  <rect width="600" height="600" fill="#0F172A" />
+
+  <!-- Rete Neurale AI in Sottoimpressione -->
+  <g opacity="0.15" stroke="#00D9FF" stroke-width="1">
+    <circle cx="300" cy="250" r="3" fill="#00D9FF" />
+    <circle cx="250" cy="200" r="2" fill="#00D9FF" />
+    <circle cx="350" cy="200" r="2" fill="#00D9FF" />
+    <circle cx="220" cy="250" r="2" fill="#00D9FF" />
+    <circle cx="380" cy="250" r="2" fill="#00D9FF" />
+    <circle cx="250" cy="300" r="2" fill="#00D9FF" />
+    <circle cx="350" cy="300" r="2" fill="#00D9FF" />
+    <path d="M300 250 L250 200 M300 250 L350 200 M300 250 L220 250 M300 250 L380 250 M300 250 L250 300 M300 250 L350 300" />
+    <path d="M250 200 L220 250 M350 200 L380 250 M220 250 L250 300 M380 250 L350 300" />
+  </g>
+
+  <!-- Cerchi Esterni Bianchi -->
+  <circle cx="300" cy="300" r="260" stroke="#FFFFFF" stroke-width="6" filter="url(#glow_white)" />
+  <circle cx="300" cy="300" r="250" stroke="#FFFFFF" stroke-width="2" opacity="0.6" />
+
+  <!-- Nuova Forma dello Scudo (da foto) -->
+  <path d="M300 100 C240 100 210 120 210 120 V280 C210 340 300 400 300 400 C300 400 390 340 390 280 V120 C390 120 360 100 300 100 Z" 
+        fill="url(#grad_blue_deep)" stroke="#FFFFFF" stroke-width="8" filter="url(#glow_white)" />
+  <path d="M300 115 C255 115 225 130 225 130 V275 C225 325 300 380 300 380 C300 380 375 325 375 275 V130 C375 130 345 115 300 115 Z" 
+        fill="none" stroke="#00D9FF" stroke-width="2" opacity="0.5" />
+
+  <!-- Lucchetto al Centro -->
+  <g transform="translate(275, 210)" filter="url(#glow_cyan)">
+    <rect x="5" y="18" width="40" height="30" rx="4" fill="none" stroke="#00D9FF" stroke-width="4" />
+    <path d="M12 18 V12 C12 6 18 2 25 2 C32 2 38 6 38 12 V18" fill="none" stroke="#00D9FF" stroke-width="4" stroke-linecap="round" />
+    <circle cx="25" cy="33" r="4" fill="#00D9FF" />
+  </g>
+
+  <!-- Testo SECURDATA con Bordo di Contrasto -->
+  <text x="300" y="485" text-anchor="middle" font-family="Arial Black" font-weight="900" font-size="72" 
+        stroke="#0F172A" stroke-width="8" paint-order="stroke" fill="#FFFFFF" letter-spacing="3" filter="url(#glow_white)">SECURDATA</text>
+  
+  <!-- Testo PRO in Blu -->
+  <g transform="translate(210, 535)">
+    <rect x="0" y="8" width="20" height="15" rx="2" fill="none" stroke="#00D9FF" stroke-width="4" />
+    <path d="M5 8 V4 C5 2 8 1 10 1 C12 1 15 2 15 4 V8" fill="none" stroke="#00D9FF" stroke-width="4" stroke-linecap="round" />
+    <text x="40" y="32" font-family="Arial Black" font-weight="900" font-size="60" fill="#00D9FF" letter-spacing="2" filter="url(#glow_cyan)">PRO</text>
+  </g>
+
+  <!-- Circuiti Bianchi -->
+  <g stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" opacity="0.7">
+    <line x1="140" y1="220" x2="100" y2="220" /><line x1="150" y1="260" x2="95" y2="260" />
+    <line x1="460" y1="220" x2="500" y2="220" /><line x1="450" y1="260" x2="505" y2="260" />
+    <circle cx="95" cy="260" r="5" fill="#FFFFFF" /><circle cx="505" cy="260" r="5" fill="#FFFFFF" />
+  </g>
+</svg>
