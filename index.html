@@ -127,6 +127,7 @@
     iconOpen.classList.toggle('hidden', !isOpen);
     iconClose.classList.toggle('hidden', isOpen);
     btn.setAttribute('aria-expanded', String(!isOpen));
+    btn.setAttribute('aria-label', isOpen ? 'Apri menu' : 'Chiudi menu');
   }
 
   btn.addEventListener('click', toggleMenu);
