@@ -1,0 +1,62 @@
+RUOLO: Agisci come Senior Full-Stack Developer e UX Designer esperto in Data Visualization e Lead Generation.
+
+PROGETTO: Crea una Web App a pagina singola chiamata "TEMPORE" per il brand securdata.pro.
+CLAIM: "La tua analisi spazio-temporale, in totale sicurezza."
+OBIETTIVO: Una dashboard "Spazio-Tempo" che serva da Lead Magnet per servizi di sicurezza dati e integrazioni AI.
+
+TECNOLOGIE RICHIESTE:
+
+Singolo file HTML5 completo di CSS (Tailwind CDN) e Vanilla JavaScript.
+
+Icone: Lucide Icons (CDN). Font: 'Inter' o 'Montserrat' per un look tech-premium.
+
+LOGICA DI PERSONALIZZAZIONE & PRIVACY:
+
+All'avvio, controlla localStorage per dati utente: Nome, Età, Sesso (M/F), Città.
+
+Fallback / Default: Se l'utente ha bloccato i cookie o l'accesso ai dati, usa i seguenti valori preimpostati di default: "Utente Ospite", 35 anni, Maschio, Roma.
+
+Geolocalizzazione: Usa ipapi.co per rilevare Città, Regione, Nazione e Continente in modo non invasivo.
+
+DASHBOARD WIDGETS (Layout 3x3 per Desktop - No Scroll):
+
+Area Tempo: Orologio Analogico SVG Minimal + Orologio Digitale HH:MM:SS + Data estesa auto-tradotta (es. "Lunedì 30 Marzo 2026").
+
+The Life Bar (Analisi Tempo Totale): Barra grafica dinamica basata su età e sesso (aspettativa vita media 80 anni). Mostra: Anni vissuti/totali, Settimane e Giorni trascorsi/rimanenti.
+
+Analisi Tempo 2026 (Anno/Giorno): Barre di progressione per l'anno corrente (settimane 14/52) e per il giorno corrente (ore/minuti trascorsi).
+
+Meteo & Ambiente: Widget con Temperatura, Umidità e Condizioni (placeholder per OpenWeatherMap API).
+
+Connessione Globale: 3 Mini-clock per New York, Londra e Tokyo con indicatori LED (Verde/Rosso) per lo stato delle Borse Valori.
+
+Ciclo Astrale: Icone dinamiche per Alba, Tramonto e Fase Lunare.
+
+Mindset: Box con "Citazione del Giorno" (Stoicismo/Produttività) che cambia ogni 24 ore da un array interno.
+
+CONVERSIONE & LEAD MAGNET:
+
+CTA Card: "Ricevi il tuo Report Spazio-Tempo via Email ogni mattina."
+
+Lead Form: Campo Input Email + Pulsante "Attiva Report Gratuito".
+
+Integrazione Email: Implementa una funzione JavaScript sendDailyReport() pronta per essere collegata a un Webhook o EmailJS.
+
+Footer Professionale: "© 2026 securdata.pro | Consapevolezza del Tempo, Sicurezza dei Dati. Proteggiamo il tuo valore digitale."
+
+REQUISITI VISIVI:
+
+Stile Glassmorphism (card sfocate, sfondi scuri con gradienti profondi).
+
+Layout perfettamente responsive: Griglia fissa su PC (monitor a casa), stack verticale fluido su Mobile.
+
+OUTPUT: Genera il codice sorgente completo in un unico blocco, pronto da salvare come index.html.
+
+Perché questo prompt è il migliore per il tuo business:
+Coerenza del Brand: Il nome TEMPORE e il sottodominio tempore.securdata.pro creano un'immagine professionale immediata.
+
+Soluzione Privacy: Inserendo i dati di "Default" (Punto 2 della sezione Personalizzazione), risolvi il problema degli utenti che bloccano i cookie: la pagina funzionerà comunque, mostrando dati medi, ma invitandoli a personalizzarli.
+
+Psicologia del Lead: La "Life Bar" (Barra della Vita) crea un impatto emotivo forte. L'utente sarà molto più propenso a inserire la mail per "monitorare" il suo tempo se percepisce che quel tempo è limitato e prezioso.
+
+Posizionamento securdata.pro: Il claim coordinato ("Proteggiamo il tuo valore digitale") chiude il cerchio: se il tempo è il tuo valore più grande, i dati ne sono la traccia digitale, e tu sei l'esperto che li mette in sicurezza.
