@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TEMPORE — La tua analisi spazio-temporale, in totale sicurezza.</title>
+  <meta name="description" content="Analizza il tuo tempo, la tua posizione e i mercati globali in tempo reale. Uno strumento gratuito firmato securdata.pro.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+    :root {
+      --glass-bg: rgba(15, 23, 42, 0.7);
+      --glass-border: rgba(99, 102, 241, 0.2);
+      --accent: #6366f1;
+      --accent2: #a855f7;
+    }
+
+    * { font-family: 'Inter', sans-serif; }
+
+    body {
+      background: linear-gradient(135deg, #020617 0%, #0f172a 40%, #1e0a3c 100%);
+      min-height: 100vh;
+    }
+
+    .glass {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+
+    .glass-hover:hover {
+      border-color: rgba(99, 102, 241, 0.5);
+      box-shadow: 0 0 24px rgba(99, 102, 241, 0.15);
+      transition: all 0.3s ease;
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #6366f1, #a855f7, #ec4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .pulse-live {
+      animation: pulse-live 2s infinite;
+    }
+    @keyframes pulse-live {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    #analog-clock {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, rgba(99,102,241,0.3), rgba(15,23,42,0.9));
+      border: 2px solid rgba(99,102,241,0.4);
+      margin: 0 auto;
+    }
+    .clock-hand {
+      position: absolute;
+      bottom: 50%;
+      left: 50%;
+      transform-origin: bottom center;
+      border-radius: 4px;
+    }
+    .hour-hand   { width: 3px; height: 32px; background: #e2e8f0; margin-left: -1.5px; }
+    .minute-hand { width: 2px; height: 44px; background: #6366f1; margin-left: -1px; }
+    .second-hand { width: 1px; height: 50px; background: #ec4899; margin-left: -0.5px; }
+    .clock-center {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      width: 8px; height: 8px;
+      background: #6366f1;
+      border-radius: 50%;
+      z-index: 10;
+    }
+
+    .life-bar-fill {
+      transition: width 1s ease;
+      background: linear-gradient(90deg, #6366f1, #a855f7);
+    }
+
+    .reaction-btn {
+      transition: transform 0.15s ease;
+    }
+    .reaction-btn:active {
+      transform: scale(1.3);
+    }
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 1000;
+      backdrop-filter: blur(4px);
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    @media (max-width: 768px) {
+      .grid-3x3 { grid-template-columns: 1fr !important; }
+    }
+    @media (min-width: 769px) and (max-width: 1200px) {
+      .grid-3x3 { grid-template-columns: repeat(2, 1fr) !important; }
+    }
+  </style>
+</head>
+<body class="text-slate-100">
+
+<!-- ══════════════════ NAVBAR ══════════════════ -->
+<nav class="fixed w-full top-0 z-50 glass border-b border-slate-800/50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-16">
+      <a href="../" class="flex items-center gap-2 hover:opacity-80 transition">
+        <img src="../logo-00-securdata-pro.svg?v=20260329" alt="SECURDATA.PRO" class="h-10 w-auto rounded-full">
+        <span class="font-bold text-lg tracking-tight hidden sm:block">SECURDATA.PRO</span>
+      </a>
+      <div class="flex items-center gap-2">
+        <span class="text-slate-400 text-sm hidden sm:block">Risorse Gratuite</span>
+        <span class="text-indigo-400 text-sm font-bold">/ TEMPORE</span>
+      </div>
+      <a href="../" class="px-4 py-2 text-sm text-slate-300 hover:text-indigo-400 transition flex items-center gap-1">
+        <i data-lucide="arrow-left" class="w-4 h-4"></i>
+        <span class="hidden sm:inline">Torna al sito</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- ══════════════════ SOCIAL PROOF BAR ══════════════════ -->
+<div class="fixed top-16 w-full z-40 bg-indigo-950/80 backdrop-blur-sm border-b border-indigo-900/40 py-1.5 px-4">
+  <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2 text-xs">
+    <div class="flex items-center gap-4">
+      <span class="flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-green-400 pulse-live inline-block"></span>
+        <span class="text-green-400 font-semibold" id="live-users">142</span>
+        <span class="text-slate-400">persone online ora</span>
+      </span>
+      <span class="text-slate-600 hidden sm:inline">|</span>
+      <span class="text-slate-400 hidden sm:flex items-center gap-1">
+        <i data-lucide="bar-chart-2" class="w-3 h-3 text-indigo-400"></i>
+        <span class="font-semibold text-slate-300">15.400+</span> Analisi effettuate
+      </span>
+    </div>
+    <div class="flex items-center gap-1.5">
+      <i data-lucide="zap" class="w-3 h-3 text-amber-400"></i>
+      <span class="text-amber-400 font-semibold" id="reports-left">12</span>
+      <span class="text-slate-400">/50 Report AI disponibili oggi</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ HERO ══════════════════ -->
+<div class="pt-28 pb-4 px-4 text-center">
+  <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full glass text-xs font-semibold text-indigo-400 border border-indigo-500/30 mb-4">
+    <i data-lucide="sparkles" class="w-3 h-3"></i>
+    Strumento Gratuito — securdata.pro
+  </div>
+  <h1 class="text-4xl md:text-5xl font-black gradient-text mb-2">TEMPORE</h1>
+  <p class="text-slate-400 text-sm md:text-base max-w-xl mx-auto">
+    La tua analisi spazio-temporale, in totale sicurezza.
+  </p>
+</div>
+
+<!-- ══════════════════ WIDGETS 3×3 ══════════════════ -->
+<main class="max-w-7xl mx-auto px-4 pb-8 grid-3x3" style="display:grid; grid-template-columns:repeat(3,1fr); gap:1rem;">
+
+  <!-- 1. Orologio Analogico/Digitale -->
+  <div class="glass glass-hover rounded-2xl p-5 flex flex-col items-center justify-center gap-3">
+    <div class="flex items-center gap-2 self-start w-full mb-1">
+      <i data-lucide="clock" class="w-4 h-4 text-indigo-400"></i>
+      <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Orologio</span>
+    </div>
+    <div id="analog-clock">
+      <div class="clock-hand hour-hand"   id="hour-hand"   style="transform: rotate(0deg)"></div>
+      <div class="clock-hand minute-hand" id="minute-hand" style="transform: rotate(0deg)"></div>
+      <div class="clock-hand second-hand" id="second-hand" style="transform: rotate(0deg)"></div>
+      <div class="clock-center"></div>
+    </div>
+    <div id="digital-time" class="text-3xl font-mono font-bold text-white tabular-nums"></div>
+    <div id="digital-date" class="text-xs text-slate-400"></div>
+  </div>
+
+  <!-- 2. Data Geolocalizzata -->
+  <div class="glass glass-hover rounded-2xl p-5 flex flex-col gap-3">
+    <div class="flex items-center gap-2 mb-1">
+      <i data-lucide="map-pin" class="w-4 h-4 text-indigo-400"></i>
+      <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Posizione & Data</span>
+    </div>
+    <div id="geo-location" class="text-slate-300 text-sm flex items-center gap-2">
+      <i data-lucide="loader-2" class="w-4 h-4 text-indigo-400 animate-spin"></i>
+      Rilevamento...
+    </div>
+    <div class="mt-auto">
+      <div id="geo-date" class="text-2xl font-bold text-white"></div>
+      <div id="geo-day" class="text-sm text-indigo-400 font-semibold mt-1"></div>
+      <div id="geo-timezone" class="text-xs text-slate-500 mt-1"></div>
+    </div>
+  </div>
+
+  <!-- 3. Life Bar (Anni/Settimane/Giorni) -->
+  <div class="glass glass-hover rounded-2xl p-5 flex flex-col gap-3">
+    <div class="flex items-center gap-2 mb-1">
+      <i data-lucide="activity" class="w-4 h-4 text-purple-400"></i>
+      <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Life Progress</span>
+    </div>
+    <div id="life-input-section" class="flex gap-2 items-center">
+      <input type="number" id="birth-year" placeholder="Anno nascita" min="1920"
+        class="w-full bg-slate-800/60 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+      <button onclick="calcLifeBar()" class="px-3 py-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg text-sm font-semibold transition whitespace-nowrap">Calcola</button>
+
+    </div>
+    <div id="life-bars" class="flex flex-col gap-2.5 hidden">
+      <div>
+        <div class="flex justify-between text-xs text-slate-400 mb-1"><span>Anni</span><span id="years-pct">0%</span></div>
+        <div class="h-2 bg-slate-800 rounded-full overflow-hidden"><div id="years-bar" class="h-full life-bar-fill rounded-full w-0"></div></div>
+      </div>
+      <div>
+        <div class="flex justify-between text-xs text-slate-400 mb-1"><span>Settimane</span><span id="weeks-pct">0%</span></div>
+        <div class="h-2 bg-slate-800 rounded-full overflow-hidden"><div id="weeks-bar" class="h-full life-bar-fill rounded-full w-0"></div></div>
+      </div>
+      <div>
+        <div class="flex justify-between text-xs text-slate-400 mb-1"><span>Giorni</span><span id="days-pct">0%</span></div>
+        <div class="h-2 bg-slate-800 rounded-full overflow-hidden"><div id="days-bar" class="h-full life-bar-fill rounded-full w-0"></div></div>
+      </div>
+      <div id="life-summary" class="text-xs text-slate-400 mt-1"></div>
+    </div>
+  </div>
+
+  <!-- 4. Analisi Anno 2026 -->
+  <div class="glass glass-hover rounded-2xl p-5 flex flex-col gap-3">
+    <div class="flex items-center gap-2 mb-1">
+      <i data-lucide="calendar-check-2" class="w-4 h-4 text-cyan-400"></i>
+      <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Analisi Anno 2026</span>
+    </div>
+    <div>
+      <div class="flex justify-between text-xs text-slate-400 mb-1"><span>Progresso Anno</span><span id="year-pct-label">0%</span></div>
+      <div class="h-2.5 bg-slate-800 rounded-full overflow-hidden">
+        <div id="year-bar" class="h-full rounded-full w-0" style="background:linear-gradient(90deg,#06b6d4,#6366f1);transition:width 1s ease;"></div>
+      </div>
+    </div>
+    <div class="grid grid-cols-2 gap-2 mt-1">
+      <div class="bg-slate-800/50 rounded-xl p-2.5 text-center">
+        <div id="days-passed" class="text-xl font-bold text-cyan-400">—</div>
+        <div class="text-xs text-slate-500">Giorni trascorsi</div>
+      </div>
+      <div class="bg-slate-800/50 rounded-xl p-2.5 text-center">
+        <div id="days-remaining" class="text-xl font-bold text-purple-400">—</div>
+        <div class="text-xs text-slate-500">Giorni rimanenti</div>
+      </div>
+      <div class="bg-slate-800/50 rounded-xl p-2.5 text-center">
+        <div id="week-of-year" class="text-xl font-bold text-indigo-400">—</div>
+        <div class="text-xs text-slate-500">Settimana n°</div>
+      </div>
+      <div class="bg-slate-800/50 rounded-xl p-2.5 text-center">
+        <div id="quarter-label" class="text-xl font-bold text-amber-400">—</div>
+        <div class="text-xs text-slate-500">Trimestre</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Meteo Locale -->
+  <div class="glass glass-hover rounded-2xl p-5 flex flex-col gap-3">
+    <div class="flex items-center gap-2 mb-1">
+      <i data-lucide="cloud-sun" class="w-4 h-4 text-amber-400"></i>
+      <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Meteo Locale</span>
+    </div>
+    <div id="weather-content" class="flex flex-col gap-2">
+      <div class="flex items-center gap-2 text-slate-400 text-sm">
+        <i data-lucide="loader-2" class="w-4 h-4 text-amber-400 animate-spin"></i>
+        Recupero dati meteo...
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. Borse Mondiali -->
+  <div class="glass glass-hover rounded-2xl p-5 flex flex-col gap-3">
+    <div class="flex items-center gap-2 mb-1">
+      <i data-lucide="trending-up" class="w-4 h-4 text-green-400"></i>
+      <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Mercati Globali</span>
+    </div>
+    <div id="markets-content" class="flex flex-col gap-2">
+      <div id="market-ny"  class="market-row flex justify-between items-center p-2 bg-slate-800/50 rounded-lg"></div>
+      <div id="market-lon" class="market-row flex justify-between items-center p-2 bg-slate-800/50 rounded-lg"></div>
+      <div id="market-tyo" class="market-row flex justify-between items-center p-2 bg-slate-800/50 rounded-lg"></div>
+    </div>
+    <div id="market-disclaimer" class="text-xs text-slate-600 mt-auto">Dati simulati a scopo illustrativo</div>
+  </div>
+
+  <!-- 7. Citazione Stoica -->
+  <div class="glass glass-hover rounded-2xl p-5 flex flex-col gap-3">
+    <div class="flex items-center gap-2 mb-1">
+      <i data-lucide="book-open" class="w-4 h-4 text-amber-400"></i>
+      <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Saggezza Stoica</span>
+    </div>
+    <blockquote id="stoic-quote" class="text-slate-300 text-sm italic leading-relaxed flex-grow"></blockquote>
+    <div id="stoic-author" class="text-xs text-indigo-400 font-semibold"></div>
+    <button onclick="nextQuote()" class="self-start text-xs text-slate-500 hover:text-slate-300 flex items-center gap-1 transition mt-auto">
+      <i data-lucide="refresh-cw" class="w-3 h-3"></i> Nuova citazione
+    </button>
+  </div>
+
+  <!-- 8. Ciclo Astrale -->
+  <div class="glass glass-hover rounded-2xl p-5 flex flex-col gap-3">
+    <div class="flex items-center gap-2 mb-1">
+      <i data-lucide="moon" class="w-4 h-4 text-yellow-300"></i>
+      <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Ciclo Astrale</span>
+    </div>
+    <div class="flex items-center justify-center gap-4">
+      <div id="moon-icon" class="text-5xl select-none"></div>
+      <div>
+        <div id="moon-phase-name" class="text-white font-bold text-lg"></div>
+        <div id="moon-illumination" class="text-xs text-slate-400 mt-0.5"></div>
+        <div id="moon-age" class="text-xs text-slate-500 mt-0.5"></div>
+      </div>
+    </div>
+    <div class="grid grid-cols-2 gap-2 mt-auto">
+      <div class="text-center">
+        <div id="next-full" class="text-sm font-semibold text-yellow-300"></div>
+        <div class="text-xs text-slate-500">Prossima luna piena</div>
+      </div>
+      <div class="text-center">
+        <div id="zodiac-sign" class="text-sm font-semibold text-purple-400"></div>
+        <div class="text-xs text-slate-500">Segno zodiacale</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 9. Social Reactions + Share -->
+  <div class="glass glass-hover rounded-2xl p-5 flex flex-col gap-4">
+    <div class="flex items-center gap-2 mb-1">
+      <i data-lucide="heart" class="w-4 h-4 text-pink-400"></i>
+      <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Reagisci & Condividi</span>
+    </div>
+    <div class="flex justify-around">
+      <button class="reaction-btn flex flex-col items-center gap-1 group" onclick="react('heart')">
+        <span class="text-2xl group-hover:scale-110 transition-transform">❤️</span>
+        <span id="react-heart" class="text-xs font-bold text-slate-400">0</span>
+      </button>
+      <button class="reaction-btn flex flex-col items-center gap-1 group" onclick="react('bulb')">
+        <span class="text-2xl group-hover:scale-110 transition-transform">💡</span>
+        <span id="react-bulb" class="text-xs font-bold text-slate-400">0</span>
+      </button>
+      <button class="reaction-btn flex flex-col items-center gap-1 group" onclick="react('fire')">
+        <span class="text-2xl group-hover:scale-110 transition-transform">🔥</span>
+        <span id="react-fire" class="text-xs font-bold text-slate-400">0</span>
+      </button>
+    </div>
+    <div class="border-t border-slate-800 pt-3 flex flex-col gap-2">
+      <p class="text-xs text-slate-400 text-center">Condividi TEMPORE con la tua rete</p>
+      <div class="flex gap-2 justify-center">
+        <a id="share-linkedin" href="#" target="_blank" rel="noopener"
+          class="flex items-center gap-1.5 px-3 py-1.5 bg-[#0A66C2]/20 hover:bg-[#0A66C2]/40 border border-[#0A66C2]/30 rounded-lg text-xs font-semibold text-[#70b5f9] transition">
+          <i data-lucide="linkedin" class="w-3 h-3"></i> LinkedIn
+        </a>
+        <a id="share-whatsapp" href="#" target="_blank" rel="noopener"
+          class="flex items-center gap-1.5 px-3 py-1.5 bg-[#25D366]/20 hover:bg-[#25D366]/40 border border-[#25D366]/30 rounded-lg text-xs font-semibold text-[#25D366] transition">
+          <i data-lucide="message-circle" class="w-3 h-3"></i> WhatsApp
+        </a>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ══════════════════ CTA EMAIL REPORT ══════════════════ -->
+<section class="max-w-7xl mx-auto px-4 pb-8">
+  <div class="glass rounded-2xl p-6 md:p-8 border border-indigo-500/30">
+    <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+      <div>
+        <div class="flex items-center gap-2 mb-2">
+          <i data-lucide="mail" class="w-5 h-5 text-indigo-400"></i>
+          <h2 class="text-xl font-bold text-white">Report Giornaliero Personalizzato</h2>
+        </div>
+        <p class="text-slate-400 text-sm max-w-md">Ricevi ogni mattina la tua analisi spazio-temporale, le quote dei mercati e la citazione stoica del giorno direttamente nella tua inbox.</p>
+        <div class="flex items-center gap-2 mt-2">
+          <i data-lucide="alert-circle" class="w-4 h-4 text-amber-400"></i>
+          <span class="text-xs text-amber-400 font-semibold">
+            Disponibilità odierna: <span id="cta-reports-left">12</span>/50 Report AI generabili.
+            <span class="text-amber-300">Metti in sicurezza il tuo tempo ora.</span>
+          </span>
+        </div>
+      </div>
+      <div class="flex gap-2 w-full md:w-auto">
+        <input type="email" id="email-input" placeholder="La tua email"
+          class="flex-grow md:w-64 bg-slate-800/80 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition">
+        <button onclick="subscribeEmail()" class="px-5 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-xl font-semibold text-sm transition whitespace-nowrap shadow-lg shadow-indigo-500/30">
+          Iscrivimi
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ SEZIONE DOMANDE AI ══════════════════ -->
+<section class="max-w-7xl mx-auto px-4 pb-10">
+  <div class="glass rounded-2xl p-6 md:p-8 border border-purple-500/20 text-center">
+    <i data-lucide="bot" class="w-10 h-10 text-purple-400 mx-auto mb-3"></i>
+    <h2 class="text-xl font-bold text-white mb-1">Domande & Consulenza AI</h2>
+    <p class="text-slate-400 text-sm mb-4 max-w-lg mx-auto">
+      Hai una domanda su cybersecurity, protezione del patrimonio digitale o vuoi esplorare come l'AI può lavorare per te?
+    </p>
+    <button onclick="openAIModal()" class="px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-xl font-bold text-sm transition shadow-lg shadow-purple-500/30 inline-flex items-center gap-2">
+      <i data-lucide="sparkles" class="w-4 h-4"></i>
+      Chiedi all'AI di Securdata
+    </button>
+  </div>
+</section>
+
+<!-- ══════════════════ FOOTER ══════════════════ -->
+<footer class="border-t border-slate-800/50 text-center py-6 text-slate-500 text-xs px-4">
+  <p>© 2026 <a href="../" class="text-indigo-400 hover:underline">securdata.pro</a> | Proteggiamo il tuo valore digitale.</p>
+  <p class="mt-1 text-slate-600">TEMPORE è uno strumento informativo gratuito. I dati meteo e di borsa sono simulati a scopo illustrativo.</p>
+</footer>
+
+<!-- ══════════════════ MODAL: Chiedi all'AI ══════════════════ -->
+<div id="ai-modal" class="modal-overlay" onclick="closeAIModalOutside(event)">
+  <div class="glass rounded-2xl p-6 w-full max-w-lg mx-4 border border-purple-500/30 relative">
+    <button onclick="closeAIModal()" class="absolute top-3 right-3 text-slate-400 hover:text-white transition">
+      <i data-lucide="x" class="w-5 h-5"></i>
+    </button>
+    <div class="flex items-center gap-3 mb-4">
+      <div class="w-10 h-10 rounded-full bg-gradient-to-br from-purple-600 to-indigo-600 flex items-center justify-center">
+        <i data-lucide="bot" class="w-5 h-5 text-white"></i>
+      </div>
+      <div>
+        <h3 class="font-bold text-white text-lg">AI di Securdata</h3>
+        <p class="text-xs text-slate-400">Ti risponderemo entro 24h</p>
+      </div>
+    </div>
+    <form onsubmit="submitAIForm(event)" class="flex flex-col gap-4">
+      <div>
+        <label class="block text-xs font-semibold text-slate-400 mb-1.5">Il tuo nome</label>
+        <input type="text" id="ai-name" placeholder="Es. Marco Rossi" required
+          class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 transition">
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-400 mb-1.5">La tua email</label>
+        <input type="email" id="ai-email" placeholder="nome@azienda.it" required
+          class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 transition">
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-400 mb-1.5">La tua domanda</label>
+        <textarea id="ai-question" rows="4" placeholder="Descrivi la tua necessità o domanda..." required
+          class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 transition resize-none"></textarea>
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-400 mb-1.5">Area di interesse</label>
+        <select id="ai-topic" class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-purple-500 transition">
+          <option value="cybersecurity">Cybersecurity & Protezione Dati</option>
+          <option value="ai-consulting">Consulenza AI per il Business</option>
+          <option value="digital-wealth">Protezione Patrimonio Digitale</option>
+          <option value="tempore">Analisi Spazio-Temporale</option>
+          <option value="other">Altro</option>
+        </select>
+      </div>
+      <button type="submit" class="w-full py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-xl font-bold text-sm transition shadow-lg shadow-purple-500/30 flex items-center justify-center gap-2">
+        <i data-lucide="send" class="w-4 h-4"></i>
+        Invia la tua domanda
+      </button>
+    </form>
+    <div id="ai-form-success" class="hidden text-center py-4">
+      <div class="text-4xl mb-3">✅</div>
+      <h4 class="text-white font-bold text-lg mb-1">Domanda ricevuta!</h4>
+      <p class="text-slate-400 text-sm">Ti risponderemo entro 24 ore all'indirizzo indicato.<br>Un esperto di Securdata ti contatterà presto.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── Lucide Icons Init ───────────────────────────────────────────────────────
+lucide.createIcons();
+
+// ─── OROLOGIO ────────────────────────────────────────────────────────────────
+function updateClock() {
+  const now = new Date();
+  const h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
+  const hDeg = (h % 12) * 30 + m * 0.5;
+  const mDeg = m * 6 + s * 0.1;
+  const sDeg = s * 6;
+  document.getElementById('hour-hand').style.transform   = `rotate(${hDeg}deg)`;
+  document.getElementById('minute-hand').style.transform = `rotate(${mDeg}deg)`;
+  document.getElementById('second-hand').style.transform = `rotate(${sDeg}deg)`;
+  document.getElementById('digital-time').textContent =
+    String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+  const days = ['Domenica','Lunedì','Martedì','Mercoledì','Giovedì','Venerdì','Sabato'];
+  const months = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
+  document.getElementById('digital-date').textContent =
+    days[now.getDay()] + ', ' + now.getDate() + ' ' + months[now.getMonth()] + ' ' + now.getFullYear();
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ─── GEOLOCALIZZAZIONE ────────────────────────────────────────────────────────
+(function geoInit() {
+  const days = ['Domenica','Lunedì','Martedì','Mercoledì','Giovedì','Venerdì','Sabato'];
+  const months = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
+  const now = new Date();
+  document.getElementById('geo-date').textContent = now.getDate() + ' ' + months[now.getMonth()] + ' ' + now.getFullYear();
+  document.getElementById('geo-day').textContent  = days[now.getDay()];
+  document.getElementById('geo-timezone').textContent = 'Fuso: ' + Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        const lat = pos.coords.latitude.toFixed(2);
+        const lon = pos.coords.longitude.toFixed(2);
+        document.getElementById('geo-location').innerHTML =
+          `<i data-lucide="map-pin" class="w-4 h-4 text-green-400"></i> <span class="text-green-400 font-semibold">Posizione rilevata</span> — ${lat}°N, ${lon}°E`;
+        lucide.createIcons();
+        loadWeather(pos.coords.latitude, pos.coords.longitude);
+      },
+      () => {
+        document.getElementById('geo-location').innerHTML =
+          `<i data-lucide="map-pin-off" class="w-4 h-4 text-slate-500"></i> <span class="text-slate-500">Posizione non disponibile</span>`;
+        lucide.createIcons();
+        loadWeatherFallback();
+      }
+    );
+  } else {
+    loadWeatherFallback();
+  }
+})();
+
+// ─── METEO ────────────────────────────────────────────────────────────────────
+function loadWeather(lat, lon) {
+  fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weathercode,windspeed_10m,relativehumidity_2m&timezone=auto`)
+    .then(r => r.json())
+    .then(data => {
+      const c = data.current;
+      renderWeather(c.temperature_2m, c.weathercode, c.windspeed_10m, c.relativehumidity_2m);
+    })
+    .catch(() => loadWeatherFallback());
+}
+
+function loadWeatherFallback() {
+  renderWeather(18, 1, 12, 55);
+}
+
+function getWeatherEmoji(code) {
+  if (code === 0) return '☀️';
+  if (code <= 2) return '⛅';
+  if (code <= 3) return '☁️';
+  if (code <= 49) return '🌫️';
+  if (code <= 59) return '🌦️';
+  if (code <= 69) return '🌧️';
+  if (code <= 79) return '❄️';
+  if (code <= 99) return '⛈️';
+  return '🌡️';
+}
+
+function renderWeather(temp, code, wind, humidity) {
+  const emoji = getWeatherEmoji(code);
+  document.getElementById('weather-content').innerHTML = `
+    <div class="flex items-center gap-3">
+      <span class="text-5xl">${emoji}</span>
+      <div>
+        <div class="text-3xl font-bold text-white">${temp}°C</div>
+      </div>
+    </div>
+    <div class="grid grid-cols-2 gap-2 mt-2">
+      <div class="bg-slate-800/50 rounded-lg p-2 text-center">
+        <div class="text-sm font-bold text-blue-400">${humidity}%</div>
+        <div class="text-xs text-slate-500">Umidità</div>
+      </div>
+      <div class="bg-slate-800/50 rounded-lg p-2 text-center">
+        <div class="text-sm font-bold text-cyan-400">${wind} km/h</div>
+        <div class="text-xs text-slate-500">Vento</div>
+      </div>
+    </div>`;
+}
+
+// ─── ANALISI ANNO 2026 ────────────────────────────────────────────────────────
+(function year2026() {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), 0, 1);
+  const end   = new Date(now.getFullYear() + 1, 0, 1);
+  const totalDays = Math.round((end - start) / 86400000);
+  const passed    = Math.round((now - start) / 86400000);
+  const remaining = totalDays - passed;
+  const pct = Math.round((passed / totalDays) * 100);
+
+  // Week of year
+  const oneJan = new Date(now.getFullYear(), 0, 1);
+  const week = Math.ceil(((now - oneJan) / 86400000 + oneJan.getDay() + 1) / 7);
+
+  // Quarter
+  const q = Math.floor(now.getMonth() / 3) + 1;
+
+  document.getElementById('year-pct-label').textContent = pct + '%';
+  document.getElementById('days-passed').textContent    = passed;
+  document.getElementById('days-remaining').textContent = remaining;
+  document.getElementById('week-of-year').textContent   = week;
+  document.getElementById('quarter-label').textContent  = 'Q' + q;
+  setTimeout(() => {
+    document.getElementById('year-bar').style.width = pct + '%';
+  }, 300);
+})();
+
+// ─── LIFE BAR ────────────────────────────────────────────────────────────────
+const savedBY = localStorage.getItem('tempore_birth_year');
+if (savedBY) { document.getElementById('birth-year').value = savedBY; calcLifeBar(); }
+
+function calcLifeBar() {
+  const maxBirthYear = new Date().getFullYear() - 1;
+  const by = parseInt(document.getElementById('birth-year').value);
+  if (!by || by < 1920 || by > maxBirthYear) return;
+  localStorage.setItem('tempore_birth_year', by);
+  const lifeExpectancy = 82;
+  const now = new Date();
+  const age = now.getFullYear() - by + (now.getMonth() / 12);
+  const yearsPct   = Math.min(100, Math.round((age / lifeExpectancy) * 100));
+  const totalWeeks = lifeExpectancy * 52;
+  const livedWeeks = Math.round(age * 52);
+  const weeksPct   = Math.min(100, Math.round((livedWeeks / totalWeeks) * 100));
+  const totalDays  = lifeExpectancy * 365;
+  const livedDays  = Math.round(age * 365);
+  const daysPct    = Math.min(100, Math.round((livedDays / totalDays) * 100));
+  const daysLeft   = totalDays - livedDays;
+
+  document.getElementById('years-pct').textContent = yearsPct + '%';
+  document.getElementById('weeks-pct').textContent = weeksPct + '%';
+  document.getElementById('days-pct').textContent  = daysPct  + '%';
+  document.getElementById('life-bars').classList.remove('hidden');
+  document.getElementById('life-input-section').classList.add('hidden');
+  document.getElementById('life-summary').textContent =
+    `~${Math.round(daysLeft / 365)} anni · ${Math.round(daysLeft / 30)} mesi · ${daysLeft.toLocaleString('it')} giorni rimanenti (aspettativa media)`;
+
+  setTimeout(() => {
+    document.getElementById('years-bar').style.width = yearsPct + '%';
+    document.getElementById('weeks-bar').style.width = weeksPct + '%';
+    document.getElementById('days-bar').style.width  = daysPct  + '%';
+  }, 100);
+}
+
+// ─── MERCATI ──────────────────────────────────────────────────────────────────
+(function markets() {
+  const mkts = [
+    { id:'market-ny',  name:'S&P 500 (NY)',   base:5200, symbol:'🇺🇸' },
+    { id:'market-lon', name:'FTSE 100 (LON)', base:7800, symbol:'🇬🇧' },
+    { id:'market-tyo', name:'Nikkei (TYO)',   base:38000, symbol:'🇯🇵' },
+  ];
+  function renderMarket() {
+    mkts.forEach(m => {
+      const chgPct = (Math.random() * 3 - 1.5).toFixed(2);
+      const chg    = parseFloat(chgPct);
+      const price  = (m.base * (1 + chg / 100)).toFixed(2);
+      const color  = chg >= 0 ? 'text-green-400' : 'text-red-400';
+      const arrow  = chg >= 0 ? '▲' : '▼';
+      document.getElementById(m.id).innerHTML = `
+        <span class="text-xs text-slate-400">${m.symbol} ${m.name}</span>
+        <span class="font-bold text-white text-sm">${parseFloat(price).toLocaleString('it')}</span>
+        <span class="text-xs font-semibold ${color}">${arrow} ${Math.abs(chgPct)}%</span>`;
+    });
+  }
+  renderMarket();
+  setInterval(renderMarket, 30000);
+})();
+
+// ─── CITAZIONI STOICHE ────────────────────────────────────────────────────────
+const stoicQuotes = [
+  { q:'Non sprecare il residuo della vita in pensieri su altre persone, quando non pensi in funzione di qualche comune utilità.', a:'Marco Aurelio' },
+  { q:'Non sono le cose a turbarci, ma le opinioni che abbiamo sulle cose.', a:'Epitteto' },
+  { q:'Omnia aliena sunt, tempus tantum nostrum est.', a:'Seneca' },
+  { q:'Il tempo non è nostro ma di chi viene dopo: noi siamo solo i custodi.', a:'Seneca' },
+  { q:'Il più grande ostacolo al vivere è l\'aspettativa che dipende dal domani e perde l\'oggi.', a:'Seneca' },
+  { q:'Ricorda di agire come se fossi morente.', a:'Marco Aurelio' },
+  { q:'Non vivere come se dovessi vivere diecimila anni. La morte incombe su di te.', a:'Marco Aurelio' },
+  { q:'L\'uomo saggio non rimanda il vivere.', a:'Seneca' },
+  { q:'Il tempo è come un fiume fatto di eventi che accadono, e la sua corrente è forte.', a:'Marco Aurelio' },
+  { q:'Chiedi a te stesso ogni mattina: Cosa posso tralasciare?', a:'Marco Aurelio' },
+];
+let quoteIdx = Math.floor(Math.random() * stoicQuotes.length);
+function renderQuote() {
+  const q = stoicQuotes[quoteIdx];
+  document.getElementById('stoic-quote').textContent  = '«' + q.q + '»';
+  document.getElementById('stoic-author').textContent = '— ' + q.a;
+}
+function nextQuote() {
+  quoteIdx = (quoteIdx + 1) % stoicQuotes.length;
+  renderQuote();
+}
+renderQuote();
+
+// ─── CICLO ASTRALE / LUNA ─────────────────────────────────────────────────────
+(function moonCalc() {
+  const now = new Date();
+  // Algoritmo approssimato ciclo lunare
+  const known = new Date(2000, 0, 6, 18, 14); // Luna nuova di riferimento
+  const synodic = 29.530588853;
+  const diff = (now - known) / (1000 * 60 * 60 * 24);
+  const age = ((diff % synodic) + synodic) % synodic;
+  const illumination = Math.round((1 - Math.cos((age / synodic) * 2 * Math.PI)) / 2 * 100);
+
+  const phases = [
+    { name:'🌑 Luna Nuova',     icon:'🌑', min:0,   max:1.85 },
+    { name:'🌒 Luna Crescente', icon:'🌒', min:1.85, max:7.38 },
+    { name:'🌓 Primo Quarto',   icon:'🌓', min:7.38, max:11.1 },
+    { name:'🌔 Gibbosa Cresc.', icon:'🌔', min:11.1, max:14.77 },
+    { name:'🌕 Luna Piena',     icon:'🌕', min:14.77,max:16.62 },
+    { name:'🌖 Gibbosa Cal.',   icon:'🌖', min:16.62,max:22.15 },
+    { name:'🌗 Ultimo Quarto',  icon:'🌗', min:22.15,max:25.84 },
+    { name:'🌘 Luna Calante',   icon:'🌘', min:25.84,max:29.53 },
+  ];
+  const phase = phases.find(p => age >= p.min && age < p.max) || phases[0];
+  document.getElementById('moon-icon').textContent        = phase.icon;
+  document.getElementById('moon-phase-name').textContent  = phase.name;
+  document.getElementById('moon-illumination').textContent = `Illuminazione: ${illumination}%`;
+  document.getElementById('moon-age').textContent         = `Età luna: ${age.toFixed(1)} giorni`;
+
+  // Prossima luna piena
+  const daysToFull = age < 14.77 ? 14.77 - age : synodic - age + 14.77;
+  const nextFull = new Date(now.getTime() + daysToFull * 86400000);
+  document.getElementById('next-full').textContent = nextFull.toLocaleDateString('it-IT', {day:'2-digit', month:'short'});
+
+  // Segno zodiacale — each entry: [startDay, startMonth, name]
+  // A sign starts on startDay of startMonth and ends the day before the next sign's start
+  const zodiac = [
+    [21,3,'♈ Ariete'],[20,4,'♉ Toro'],[21,5,'♊ Gemelli'],[21,6,'♋ Cancro'],
+    [23,7,'♌ Leone'],[23,8,'♍ Vergine'],[23,9,'♎ Bilancia'],[23,10,'♏ Scorpione'],
+    [22,11,'♐ Sagittario'],[22,12,'♑ Capricorno'],[20,1,'♒ Acquario'],[20,2,'♓ Pesci']
+  ];
+  const d = now.getDate(), mo = now.getMonth() + 1;
+  // Build a comparable number (month*100+day) for clean boundary checks
+  const cur = mo * 100 + d;
+  const signEntry = zodiac.find((entry, i) => {
+    const start = entry[1] * 100 + entry[0];
+    const next  = zodiac[(i + 1) % zodiac.length];
+    const end   = next[1] * 100 + next[0] - 1;
+    if (start <= end) return cur >= start && cur <= end;
+    // Wraps across year boundary (Capricorn: Dec 22 – Jan 19)
+    return cur >= start || cur <= end;
+  });
+  document.getElementById('zodiac-sign').textContent = signEntry ? signEntry[2] : '♈ Ariete';
+})();
+
+// ─── LIVE USERS SIMULATI ──────────────────────────────────────────────────────
+(function liveUsers() {
+  const MIN_USERS = 80, MAX_USERS = 250, VARIANCE = 5, STEP_RANGE = 11;
+  let base = 120 + Math.floor(Math.random() * 60);
+  setInterval(() => {
+    base = Math.max(MIN_USERS, Math.min(MAX_USERS, base + Math.floor(Math.random() * STEP_RANGE) - VARIANCE));
+    document.getElementById('live-users').textContent = base;
+  }, 5000);
+})();
+
+// ─── REPORT COUNTER DINAMICO ──────────────────────────────────────────────────
+(function reportCounter() {
+  let count = parseInt(localStorage.getItem('tempore_reports_left') || '12');
+  document.getElementById('reports-left').textContent = count;
+  document.getElementById('cta-reports-left').textContent = count;
+})();
+
+// ─── SOCIAL REACTIONS ─────────────────────────────────────────────────────────
+(function loadReactions() {
+  ['heart','bulb','fire'].forEach(k => {
+    const v = parseInt(localStorage.getItem('tempore_react_' + k) || '0');
+    document.getElementById('react-' + k).textContent = v;
+  });
+})();
+
+function react(type) {
+  const el = document.getElementById('react-' + type);
+  let v = parseInt(el.textContent) + 1;
+  el.textContent = v;
+  localStorage.setItem('tempore_react_' + type, v);
+}
+
+// ─── SHARE LINKS ─────────────────────────────────────────────────────────────
+(function shareLinks() {
+  const url   = encodeURIComponent('https://securdata.pro/tempore/');
+  const msg   = encodeURIComponent('Ho scoperto TEMPORE di securdata.pro: analisi spazio-temporale gratuita! 🕐');
+  document.getElementById('share-linkedin').href  = `https://www.linkedin.com/sharing/share-offsite/?url=${url}`;
+  document.getElementById('share-whatsapp').href  = `https://wa.me/?text=${msg}%20${url}`;
+})();
+
+// ─── EMAIL SUBSCRIBE ──────────────────────────────────────────────────────────
+function subscribeEmail() {
+  const email = document.getElementById('email-input').value.trim();
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    document.getElementById('email-input').style.borderColor = '#ef4444';
+    setTimeout(() => document.getElementById('email-input').style.borderColor = '', 2000);
+    return;
+  }
+  // Decrement counter
+  let count = parseInt(localStorage.getItem('tempore_reports_left') || '12');
+  if (count > 1) {
+    count--;
+    localStorage.setItem('tempore_reports_left', count);
+    document.getElementById('reports-left').textContent = count;
+    document.getElementById('cta-reports-left').textContent = count;
+  }
+  document.getElementById('email-input').value = '';
+  const btn = document.querySelector('[onclick="subscribeEmail()"]');
+  btn.textContent = '✅ Iscritto!';
+  btn.disabled = true;
+  setTimeout(() => { btn.textContent = 'Iscrivimi'; btn.disabled = false; }, 3000);
+}
+
+// ─── AI MODAL ────────────────────────────────────────────────────────────────
+function openAIModal() {
+  document.getElementById('ai-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeAIModal() {
+  document.getElementById('ai-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function closeAIModalOutside(e) {
+  if (e.target === document.getElementById('ai-modal')) closeAIModal();
+}
+function submitAIForm(e) {
+  e.preventDefault();
+  const form = e.target;
+  form.style.display = 'none';
+  document.getElementById('ai-form-success').classList.remove('hidden');
+  setTimeout(closeAIModal, 4000);
+  setTimeout(() => {
+    form.style.display = '';
+    document.getElementById('ai-form-success').classList.add('hidden');
+    form.reset();
+  }, 4500);
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAIModal(); });
+</script>
+</body>
+</html>

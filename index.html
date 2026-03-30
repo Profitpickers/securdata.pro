@@ -77,11 +77,12 @@
       </div>
       
       <!-- Menu Desktop -->
-      <div class="hidden md:flex gap-8">
+      <div class="hidden md:flex gap-8 items-center">
         <a href="#servizi" class="text-slate-300 hover:text-indigo-400 transition font-medium">Servizi</a>
         <a href="#percorso" class="text-slate-300 hover:text-indigo-400 transition font-medium">Percorso</a>
         <a href="#vantaggi" class="text-slate-300 hover:text-indigo-400 transition font-medium">Vantaggi</a>
         <a href="#security" class="text-slate-300 hover:text-indigo-400 transition font-medium">Security</a>
+        <a href="./tempore/" class="px-3 py-1.5 rounded-lg text-sm font-bold text-indigo-300 border border-indigo-500/40 hover:bg-indigo-500/10 hover:text-indigo-200 transition">RISORSE GRATUITE</a>
       </div>
       
       <!-- CTA Button -->
@@ -90,14 +91,57 @@
       </button>
       
       <!-- Mobile Menu Button -->
-      <button class="md:hidden text-slate-300">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <button id="mobile-menu-btn" class="md:hidden text-slate-300 focus:outline-none" aria-label="Apri menu" aria-expanded="false" aria-controls="mobile-menu">
+        <svg id="mobile-menu-icon-open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+        <svg id="mobile-menu-icon-close" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
         </svg>
       </button>
     </div>
   </div>
 </nav>
+
+<!-- ═══════════════════ MOBILE MENU ═══════════════════ -->
+<div id="mobile-menu" class="md:hidden fixed top-20 left-0 right-0 z-40 hidden bg-slate-950/95 backdrop-blur-md border-b border-slate-800 px-4 py-4 flex flex-col gap-3">
+  <a href="#servizi"  class="mobile-nav-link block px-3 py-2 rounded-lg text-slate-300 hover:text-indigo-400 hover:bg-slate-800/50 transition font-medium">Servizi</a>
+  <a href="#percorso" class="mobile-nav-link block px-3 py-2 rounded-lg text-slate-300 hover:text-indigo-400 hover:bg-slate-800/50 transition font-medium">Percorso</a>
+  <a href="#vantaggi" class="mobile-nav-link block px-3 py-2 rounded-lg text-slate-300 hover:text-indigo-400 hover:bg-slate-800/50 transition font-medium">Vantaggi</a>
+  <a href="#security" class="mobile-nav-link block px-3 py-2 rounded-lg text-slate-300 hover:text-indigo-400 hover:bg-slate-800/50 transition font-medium">Security</a>
+  <a href="./tempore/" class="block px-3 py-2 rounded-lg font-bold text-indigo-300 border border-indigo-500/30 hover:bg-indigo-500/10 transition text-sm">RISORSE GRATUITE</a>
+  <button class="mt-1 px-6 py-2.5 bg-gradient-accent text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-indigo-500/50 transition">
+    Contattaci
+  </button>
+</div>
+<script>
+(function() {
+  var btn  = document.getElementById('mobile-menu-btn');
+  var menu = document.getElementById('mobile-menu');
+  var iconOpen  = document.getElementById('mobile-menu-icon-open');
+  var iconClose = document.getElementById('mobile-menu-icon-close');
+
+  function toggleMenu() {
+    var isOpen = !menu.classList.contains('hidden');
+    menu.classList.toggle('hidden', isOpen);
+    iconOpen.classList.toggle('hidden', !isOpen);
+    iconClose.classList.toggle('hidden', isOpen);
+    btn.setAttribute('aria-expanded', String(!isOpen));
+  }
+
+  btn.addEventListener('click', toggleMenu);
+
+  // Close on hash link click (smooth scroll links)
+  menu.querySelectorAll('.mobile-nav-link').forEach(function(link) {
+    link.addEventListener('click', function() {
+      menu.classList.add('hidden');
+      iconOpen.classList.remove('hidden');
+      iconClose.classList.add('hidden');
+      btn.setAttribute('aria-expanded', 'false');
+    });
+  });
+})();
+</script>
 
 <!-- ═══════════════════ HERO SECTION ═══════════════════ -->
 <section class="pt-40 pb-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
