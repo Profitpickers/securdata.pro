@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Termini di Servizio | SECURDATA.PRO</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+
+    .bg-gradient-dark {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+    }
+
+    .bg-gradient-accent {
+      background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+    }
+
+    .glow-text {
+      text-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
+    }
+
+    .logo-container img {
+      filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.6));
+    }
+
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: #6366f1; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #a855f7; }
+  </style>
+</head>
+<body class="bg-gradient-dark text-slate-100">
+
+<!-- ═══════════════════ NAVBAR ═══════════════════ -->
+<nav class="fixed w-full top-0 z-50 bg-slate-950/80 backdrop-blur-md border-b border-slate-800">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-20">
+      <div class="flex items-center gap-3 logo-container">
+        <a href="./index.html">
+          <img src="logo-00-securdata-pro.svg?v=20260329" alt="SECURDATA.PRO Logo" class="h-14 w-auto rounded-full filter drop-shadow-lg">
+        </a>
+        <a href="./index.html" class="font-bold text-xl tracking-tight text-white hidden sm:block">SECURDATA.PRO</a>
+      </div>
+
+      <div class="hidden md:flex gap-8 items-center">
+        <a href="./index.html#servizi" class="text-slate-300 hover:text-indigo-400 transition font-medium">Servizi</a>
+        <a href="./index.html#percorso" class="text-slate-300 hover:text-indigo-400 transition font-medium">Percorso</a>
+        <a href="./index.html#vantaggi" class="text-slate-300 hover:text-indigo-400 transition font-medium">Vantaggi</a>
+        <a href="./index.html#security" class="text-slate-300 hover:text-indigo-400 transition font-medium">Security</a>
+        <a href="./tempore/" class="px-3 py-1.5 rounded-lg text-sm font-bold text-indigo-300 border border-indigo-500/40 hover:bg-indigo-500/10 hover:text-indigo-200 transition">RISORSE GRATUITE</a>
+      </div>
+
+      <button class="hidden md:block px-6 py-2.5 bg-gradient-accent text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-indigo-500/50 transition">
+        Contattaci
+      </button>
+
+      <button id="mobile-menu-btn" class="md:hidden text-slate-300 focus:outline-none" aria-label="Apri menu" aria-expanded="false" aria-controls="mobile-menu">
+        <svg id="mobile-menu-icon-open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+        <svg id="mobile-menu-icon-close" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════════════ MOBILE MENU ═══════════════════ -->
+<div id="mobile-menu" class="md:hidden fixed top-20 left-0 right-0 z-40 hidden bg-slate-950/95 backdrop-blur-md border-b border-slate-800 px-4 py-4 flex flex-col gap-3">
+  <a href="./index.html#servizi"  class="mobile-nav-link block px-3 py-2 rounded-lg text-slate-300 hover:text-indigo-400 hover:bg-slate-800/50 transition font-medium">Servizi</a>
+  <a href="./index.html#percorso" class="mobile-nav-link block px-3 py-2 rounded-lg text-slate-300 hover:text-indigo-400 hover:bg-slate-800/50 transition font-medium">Percorso</a>
+  <a href="./index.html#vantaggi" class="mobile-nav-link block px-3 py-2 rounded-lg text-slate-300 hover:text-indigo-400 hover:bg-slate-800/50 transition font-medium">Vantaggi</a>
+  <a href="./index.html#security" class="mobile-nav-link block px-3 py-2 rounded-lg text-slate-300 hover:text-indigo-400 hover:bg-slate-800/50 transition font-medium">Security</a>
+  <a href="./tempore/" class="block px-3 py-2 rounded-lg font-bold text-indigo-300 border border-indigo-500/30 hover:bg-indigo-500/10 transition text-sm">RISORSE GRATUITE</a>
+  <button class="mt-1 px-6 py-2.5 bg-gradient-accent text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-indigo-500/50 transition">
+    Contattaci
+  </button>
+</div>
+<script>
+(function() {
+  var btn  = document.getElementById('mobile-menu-btn');
+  var menu = document.getElementById('mobile-menu');
+  var iconOpen  = document.getElementById('mobile-menu-icon-open');
+  var iconClose = document.getElementById('mobile-menu-icon-close');
+
+  function toggleMenu() {
+    var isOpen = !menu.classList.contains('hidden');
+    menu.classList.toggle('hidden', isOpen);
+    iconOpen.classList.toggle('hidden', !isOpen);
+    iconClose.classList.toggle('hidden', isOpen);
+    btn.setAttribute('aria-expanded', String(!isOpen));
+    btn.setAttribute('aria-label', isOpen ? 'Apri menu' : 'Chiudi menu');
+  }
+
+  btn.addEventListener('click', toggleMenu);
+
+  menu.querySelectorAll('.mobile-nav-link').forEach(function(link) {
+    link.addEventListener('click', function() {
+      menu.classList.add('hidden');
+      iconOpen.classList.remove('hidden');
+      iconClose.classList.add('hidden');
+      btn.setAttribute('aria-expanded', 'false');
+    });
+  });
+})();
+</script>
+
+<!-- ═══════════════════ TERMINI DI SERVIZIO ═══════════════════ -->
+<section class="bg-gradient-dark text-slate-100 pt-36 pb-16">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <h1 class="text-5xl md:text-7xl font-extrabold leading-tight mb-8 text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400">
+      Termini di Servizio
+    </h1>
+    <p class="text-xl text-slate-300 mb-10 leading-relaxed">
+      Ultimo aggiornamento: [Data Ultimo Aggiornamento]
+    </p>
+
+    <hr class="border-slate-800 my-8">
+
+    <h2 class="text-3xl font-bold text-indigo-400 mb-4">1. Accettazione dei Termini</h2>
+    <p class="text-slate-300 mb-6 leading-relaxed">
+      Benvenuti nei Termini di Servizio di [Nome Azienda], operante come SecurData.pro. Questi Termini regolano l'accesso e l'utilizzo dei nostri servizi di cybersecurity e intelligenza artificiale. Accedendo o utilizzando i nostri servizi, l'utente accetta di essere vincolato da questi Termini. Se non si accettano questi Termini, non è possibile utilizzare i nostri servizi.
+    </p>
+
+    <hr class="border-slate-800 my-8">
+
+    <h2 class="text-3xl font-bold text-indigo-400 mb-4">2. Definizioni</h2>
+    <ul class="list-disc list-inside text-slate-300 mb-6 leading-relaxed space-y-2">
+      <li><strong class="text-white">Servizi</strong>: Le soluzioni di cybersecurity e intelligenza artificiale fornite da SecurData.pro.</li>
+      <li><strong class="text-white">Utente/Cliente</strong>: La persona fisica o giuridica che accede o utilizza i Servizi.</li>
+      <li><strong class="text-white">Dati del Cliente</strong>: Tutti i dati, inclusi i dati personali, forniti dall'Utente a SecurData.pro o raccolti da SecurData.pro per conto dell'Utente nell'ambito della fornitura dei Servizi.</li>
+      <li><strong class="text-white">Sistemi AI</strong>: I sistemi di intelligenza artificiale sviluppati e utilizzati da SecurData.pro per fornire i Servizi.</li>
+      <li><strong class="text-white">Dati di Training AI</strong>: Dati utilizzati per addestrare e migliorare i Sistemi AI.</li>
+    </ul>
+
+    <hr class="border-slate-800 my-8">
+
+    <h2 class="text-3xl font-bold text-indigo-400 mb-4">3. Licenza d'Uso</h2>
+    <p class="text-slate-300 mb-6 leading-relaxed">
+      SecurData.pro concede all'Utente una licenza limitata, non esclusiva, non trasferibile e revocabile per accedere e utilizzare i Servizi in conformità con questi Termini. Questa licenza è valida per la durata del contratto di servizio. [Dettagli Specifici Licenza: es. restrizioni d'uso, numero di utenti].
+    </p>
+
+    <hr class="border-slate-800 my-8">
+
+    <h2 class="text-3xl font-bold text-indigo-400 mb-4">4. Responsabilità sulla Sicurezza</h2>
+    <ul class="list-disc list-inside text-slate-300 mb-6 leading-relaxed space-y-2">
+      <li><strong class="text-white">Responsabilità di SecurData.pro</strong>: Ci impegniamo a implementare e mantenere misure di sicurezza tecniche e organizzative adeguate per proteggere i Dati del Cliente e i nostri Sistemi AI. [Dettagli Misure Sicurezza SecurData.pro: es. certificazioni, protocolli].</li>
+      <li><strong class="text-white">Responsabilità del Cliente</strong>: L'Utente è responsabile della sicurezza delle proprie credenziali di accesso, della configurazione sicura dei propri sistemi e della conformità con le politiche di sicurezza interne.</li>
+    </ul>
+
+    <hr class="border-slate-800 my-8">
+
+    <h2 class="text-3xl font-bold text-indigo-400 mb-4">5. Uptime e Service Level Agreement (SLA)</h2>
+    <p class="text-slate-300 mb-6 leading-relaxed">
+      Ci impegniamo a mantenere un elevato livello di disponibilità dei nostri Servizi. L'uptime garantito è del [Percentuale Uptime]%. Per maggiori dettagli, si prega di fare riferimento al nostro Service Level Agreement (SLA) completo disponibile su <a href="[URL SLA]" class="text-indigo-400 hover:underline">[URL SLA]</a>. [Dettagli SLA: es. crediti di servizio per downtime].
+    </p>
+
+    <hr class="border-slate-800 my-8">
+
+    <h2 class="text-3xl font-bold text-indigo-400 mb-4">6. Proprietà Intellettuale</h2>
+    <ul class="list-disc list-inside text-slate-300 mb-6 leading-relaxed space-y-2">
+      <li><strong class="text-white">Proprietà di SecurData.pro</strong>: Tutti i diritti di proprietà intellettuale relativi ai Servizi, inclusi i Sistemi AI e i Dati di Training AI (esclusi i Dati del Cliente), sono e rimarranno di proprietà esclusiva di [Nome Azienda].</li>
+      <li><strong class="text-white">Proprietà del Cliente</strong>: I Dati del Cliente rimangono di proprietà esclusiva del Cliente. SecurData.pro utilizzerà i Dati del Cliente solo per fornire i Servizi e, se specificamente autorizzato, per migliorare i Sistemi AI in forma anonimizzata o aggregata.</li>
+    </ul>
+
+    <hr class="border-slate-800 my-8">
+
+    <h2 class="text-3xl font-bold text-indigo-400 mb-4">7. Gestione dei Dati</h2>
+    <p class="text-slate-300 mb-6 leading-relaxed">
+      La raccolta, l'elaborazione, l'archiviazione e la cancellazione dei Dati del Cliente sono descritte in dettaglio nella nostra <a href="./privacy-policy.html" class="text-indigo-400 hover:underline">Privacy Policy</a>. L'Utente riconosce e accetta che i Dati del Cliente possano essere utilizzati, in forma anonimizzata o pseudonimizzata, per l'addestramento e il miglioramento continuo dei nostri Sistemi AI, come specificato nella Privacy Policy.
+    </p>
+
+    <hr class="border-slate-800 my-8">
+
+    <h2 class="text-3xl font-bold text-indigo-400 mb-4">8. Limitazione di Responsabilità</h2>
+    <p class="text-slate-300 mb-6 leading-relaxed">
+      Nella misura massima consentita dalla legge applicabile, SecurData.pro non sarà responsabile per danni indiretti, incidentali, speciali, consequenziali o punitivi, o per qualsiasi perdita di profitti o ricavi, subiti dall'Utente o da terzi, derivanti dall'uso o dall'impossibilità di utilizzare i Servizi, inclusi quelli derivanti da malfunzionamenti dei Sistemi AI o violazioni della sicurezza, salvo dolo o colpa grave. La responsabilità complessiva di SecurData.pro sarà limitata a [Limite di Responsabilità, es. l'importo pagato dall'Utente negli ultimi 12 mesi].
+    </p>
+
+    <hr class="border-slate-800 my-8">
+
+    <h2 class="text-3xl font-bold text-indigo-400 mb-4">9. Indennizzo</h2>
+    <p class="text-slate-300 mb-6 leading-relaxed">
+      L'Utente accetta di indennizzare e tenere indenne [Nome Azienda] e i suoi affiliati, funzionari, agenti e dipendenti da qualsiasi reclamo, responsabilità, danno, perdita e spesa, inclusi, senza limitazione, onorari legali e contabili ragionevoli, derivanti da o in qualsiasi modo correlati all'accesso o all'utilizzo dei Servizi da parte dell'Utente, o alla violazione di questi Termini.
+    </p>
+
+    <hr class="border-slate-800 my-8">
+
+    <h2 class="text-3xl font-bold text-indigo-400 mb-4">10. Modifiche ai Termini</h2>
+    <p class="text-slate-300 mb-6 leading-relaxed">
+      SecurData.pro si riserva il diritto di modificare questi Termini in qualsiasi momento. In caso di modifiche sostanziali, notificheremo l'Utente tramite email o tramite un avviso ben visibile sui nostri Servizi prima che le modifiche diventino effettive. L'uso continuato dei Servizi dopo tali modifiche costituirà l'accettazione dei nuovi Termini.
+    </p>
+
+    <hr class="border-slate-800 my-8">
+
+    <h2 class="text-3xl font-bold text-indigo-400 mb-4">11. Risoluzione</h2>
+    <p class="text-slate-300 mb-6 leading-relaxed">
+      SecurData.pro può risolvere o sospendere l'accesso ai Servizi immediatamente, senza preavviso o responsabilità, per qualsiasi motivo, incluso, senza limitazione, in caso di violazione dei Termini. Alla risoluzione, il diritto dell'Utente di utilizzare i Servizi cesserà immediatamente.
+    </p>
+
+    <hr class="border-slate-800 my-8">
+
+    <h2 class="text-3xl font-bold text-indigo-400 mb-4">12. Legge Applicabile e Foro Competente</h2>
+    <p class="text-slate-300 mb-6 leading-relaxed">
+      Questi Termini saranno regolati e interpretati in conformità con le leggi di [Giurisdizione], senza riguardo ai suoi conflitti di principi legali. Qualsiasi controversia derivante da o relativa a questi Termini sarà soggetta alla giurisdizione esclusiva dei tribunali di [Città, Paese].
+    </p>
+
+    <hr class="border-slate-800 my-8">
+
+    <h2 class="text-3xl font-bold text-indigo-400 mb-4">13. Contatti</h2>
+    <p class="text-slate-300 mb-4 leading-relaxed">
+      Per qualsiasi domanda o preoccupazione riguardo a questi Termini di Servizio, vi preghiamo di contattarci:
+    </p>
+    <ul class="list-disc list-inside text-slate-300 mb-6 leading-relaxed space-y-2">
+      <li><strong class="text-white">Email</strong>: <a href="mailto:[Indirizzo Email Supporto]" class="text-indigo-400 hover:underline">[Indirizzo Email Supporto]</a></li>
+      <li><strong class="text-white">Indirizzo</strong>: [Indirizzo Sede Legale]</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══════════════════ FOOTER ═══════════════════ -->
+<footer class="bg-slate-950 border-t border-slate-900 pt-20 pb-10 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-7xl mx-auto">
+    <div class="grid md:grid-cols-4 gap-16 mb-20">
+      <div class="col-span-1 md:col-span-1">
+        <div class="flex items-center gap-3 mb-8 logo-container">
+          <img src="logo-securdata-originale.jpg?v=20260329" alt="SECURDATA.PRO Logo" class="h-10 w-auto rounded-full filter drop-shadow-lg">
+          <span class="font-bold text-lg text-white">SECURDATA.PRO</span>
+        </div>
+        <p class="text-slate-500 text-sm leading-relaxed">
+          Leader nelle soluzioni di sicurezza informatica e intelligenza artificiale per il settore enterprise.
+        </p>
+      </div>
+
+      <div>
+        <h4 class="font-bold text-white mb-8 uppercase tracking-widest text-xs">Navigazione</h4>
+        <ul class="space-y-4 text-slate-500 text-sm">
+          <li><a href="./index.html#servizi" class="hover:text-indigo-400 transition">Servizi</a></li>
+          <li><a href="#" class="hover:text-indigo-400 transition">Case Studies</a></li>
+          <li><a href="#" class="hover:text-indigo-400 transition">Blog</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="font-bold text-white mb-8 uppercase tracking-widest text-xs">Legale</h4>
+        <ul class="space-y-4 text-slate-500 text-sm">
+          <li><a href="./privacy-policy.html" class="hover:text-indigo-400 transition">Privacy Policy</a></li>
+          <li><a href="./termini-di-servizio.html" class="hover:text-indigo-400 transition">Termini di Servizio</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="font-bold text-white mb-8 uppercase tracking-widest text-xs">Social</h4>
+        <ul class="space-y-4 text-slate-500 text-sm">
+          <li><a href="#" class="hover:text-indigo-400 transition">LinkedIn</a></li>
+          <li><a href="#" class="hover:text-indigo-400 transition">Twitter</a></li>
+          <li><a href="#" class="hover:text-indigo-400 transition">Instagram</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="border-t border-slate-900 pt-10 text-center">
+      <p class="text-slate-600 text-xs font-medium">
+        &copy; 2026 SECURDATA.PRO. All rights reserved.
+      </p>
+      <div class="flex justify-center gap-2 mt-4">
+        <div class="w-1.5 h-1.5 bg-slate-800 rounded-full"></div>
+        <div class="w-1.5 h-1.5 bg-slate-800 rounded-full"></div>
+        <div class="w-1.5 h-1.5 bg-slate-800 rounded-full"></div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
