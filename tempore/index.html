@@ -18,7 +18,7 @@
       --c2: #a855f7;
       --c3: #ec4899;
     }
-    html { font-size: 18px; }
+    html { font-size: 19px; }
     html, body { height: 100%; margin: 0; }
     body {
       font-family: 'Inter', system-ui, sans-serif;
@@ -162,10 +162,12 @@
     @keyframes spin { to { transform: rotate(360deg); } }
     @media (max-width: 1023px) {
       #widget-grid { grid-template-columns: repeat(2,1fr); grid-template-rows: auto; height: auto; }
+      #forex-sessions { grid-template-columns: 1fr 1fr; }
     }
     @media (max-width: 639px) {
       #widget-grid { grid-template-columns: 1fr; }
       #digital-time { font-size: 2.4rem; }
+      #forex-sessions { grid-template-columns: 1fr; }
     }
     .nano-inp {
       background: rgba(30,41,59,.8);
@@ -211,22 +213,22 @@
 <!-- SOCIAL PROOF BAR -->
 <div id="proofbar">
   <div style="max-width:1280px;margin:0 auto;height:100%;display:flex;align-items:center;justify-content:space-between;padding:0 1rem;gap:.75rem;">
-    <div style="display:flex;align-items:center;gap:.75rem;font-size:.78rem;">
+    <div style="display:flex;align-items:center;gap:.75rem;font-size:1rem;">
       <span style="display:flex;align-items:center;gap:.3rem;">
         <span class="pulse-dot"></span>
         <span style="color:#4ade80;font-weight:700;" id="live-users">142</span>
-        <span style="color:#94a3b8;">persone online</span>
+        <span style="color:#cbd5e1;">persone online</span>
       </span>
       <span style="color:#64748b;" class="sm-show">·</span>
-      <span style="color:#94a3b8;display:none;" class="sm-show">
+      <span style="color:#cbd5e1;display:none;" class="sm-show">
         <i data-lucide="bar-chart-2" style="width:13px;height:13px;color:#6366f1;vertical-align:middle;"></i>
         <strong style="color:#e2e8f0;">15.400+</strong> Analisi effettuate
       </span>
     </div>
-    <div style="display:flex;align-items:center;gap:.3rem;font-size:.78rem;">
+    <div style="display:flex;align-items:center;gap:.3rem;font-size:1rem;">
       <i data-lucide="zap" style="width:13px;height:13px;color:#f59e0b;flex-shrink:0;"></i>
       <span style="color:#f59e0b;font-weight:700;" id="reports-bar">12</span>
-      <span style="color:#94a3b8;">/50 Report AI oggi</span>
+      <span style="color:#cbd5e1;">/50 Report AI oggi</span>
     </div>
   </div>
 </div>
@@ -351,7 +353,8 @@
         <div id="mkt-ny"  class="mkt-row"></div>
         <div id="mkt-lon" class="mkt-row"></div>
         <div id="mkt-tyo" class="mkt-row"></div>
-        <div id="mkt-btc" class="mkt-row"></div>
+        <div id="mkt-btc"   class="mkt-row"></div>
+        <div id="mkt-brent" class="mkt-row"></div>
       </div>
       <div style="font-size:.9rem;color:#94a3b8;">Dati simulativi — solo a scopo illustrativo</div>
     </div>
@@ -428,6 +431,16 @@
           </a>
         </div>
       </div>
+    </div>
+
+
+    <!-- 10 SESSIONI FOREX -->
+    <div class="card glass" style="grid-column:1/-1;">
+      <div class="card-hd">
+        <i data-lucide="globe-2" style="color:#6366f1;"></i>
+        <span>Sessioni Forex — Orari Italiani (CEST/CET)</span>
+      </div>
+      <div id="forex-sessions" style="display:grid;grid-template-columns:repeat(3,1fr);gap:.55rem;flex:1;"></div>
     </div>
 
   </main>
@@ -653,7 +666,7 @@ function renderWX(t,code,wind,hum){
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.32rem;margin-top:auto;">'+
       '<div style="background:rgba(30,41,59,.6);border-radius:.48rem;padding:.32rem;text-align:center;">'+
         '<div style="font-size:1.15rem;font-weight:700;color:#93c5fd;">'+hum+'%</div>'+
-        '<div style="font-size:.72rem;color:#64748b;">Umidit&agrave;</div></div>'+
+        '<div style="font-size:.9rem;color:#94a3b8;">Umidit&agrave;</div></div>'+
       '<div style="background:rgba(30,41,59,.6);border-radius:.48rem;padding:.32rem;text-align:center;">'+
         '<div style="font-size:1.15rem;font-weight:700;color:#67e8f9;">'+wind+'<span style="font-size:.75rem;font-weight:400;"> km/h</span></div>'+
         '<div style="font-size:.9rem;color:#94a3b8;">Vento</div></div>'+
@@ -666,7 +679,7 @@ function loadWeather(lt,ln){
 function loadWeatherFB(){renderWX(18,1,12,52);}
 
 /* ══ MARKETS ══ */
-const MKTS=[{id:'mkt-ny',f:'🇺🇸',n:'S&P 500',b:5248},{id:'mkt-lon',f:'🇬🇧',n:'FTSE 100',b:7892},{id:'mkt-tyo',f:'🇯🇵',n:'Nikkei',b:38540},{id:'mkt-btc',f:'₿',n:'Bitcoin',b:68200}];
+const MKTS=[{id:'mkt-ny',f:'🇺🇸',n:'S&P 500',b:5248},{id:'mkt-lon',f:'🇬🇧',n:'FTSE 100',b:7892},{id:'mkt-tyo',f:'🇯🇵',n:'Nikkei',b:38540},{id:'mkt-btc',f:'₿',n:'Bitcoin',b:68200},{id:'mkt-brent',f:'🛢️',n:'Brent Oil',b:84.60}];
 function renderMkts(){
   MKTS.forEach(m=>{
     const cp=(Math.random()*4-2).toFixed(2),c=parseFloat(cp),up=c>=0;
@@ -678,6 +691,49 @@ function renderMkts(){
   });
 }
 renderMkts();setInterval(renderMkts,30000);
+
+/* ══ FOREX SESSIONS ══ */
+const FSESS=[
+  {id:'fs-lon',flag:'🟢',name:'Londra',tz:'Europe/London',
+   openH:9,closeH:18,col:'#4ade80',tagOpen:'rgba(74,222,128,.10)',tagBorder:'rgba(74,222,128,.30)'},
+  {id:'fs-ny', flag:'🔵',name:'New York',tz:'America/New_York',
+   openH:14,closeH:23,col:'#60a5fa',tagOpen:'rgba(96,165,250,.10)',tagBorder:'rgba(96,165,250,.30)'},
+  {id:'fs-tyo',flag:'🔴',name:'Tokyo',tz:'Asia/Tokyo',
+   openH:2,closeH:11,col:'#f87171',tagOpen:'rgba(248,113,113,.10)',tagBorder:'rgba(248,113,113,.30)'}
+];
+/* Return current decimal hour in Europe/Rome (handles CET/CEST automatically) */
+function italianDecHour(){
+  const n=new Date();
+  const itParts=new Intl.DateTimeFormat('en',{timeZone:'Europe/Rome',hour:'numeric',minute:'numeric',hour12:false}).formatToParts(n);
+  const h=+itParts.find(p=>p.type==='hour').value;
+  const m=+itParts.find(p=>p.type==='minute').value;
+  return h+m/60;
+}
+function fmtTZ(tz){
+  return new Intl.DateTimeFormat('it',{timeZone:tz,hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).format(new Date());
+}
+function padH(h){return String(h).padStart(2,'0')+':00';}
+function renderForex(){
+  const itH=italianDecHour();
+  $('forex-sessions').innerHTML=FSESS.map(s=>{
+    /* session wraps midnight only for Tokyo (02–11) — straightforward here */
+    const open=(s.openH<s.closeH)?(itH>=s.openH&&itH<s.closeH):(itH>=s.openH||itH<s.closeH);
+    const bg=open?s.tagOpen:'rgba(15,23,42,.6)';
+    const bd=open?s.tagBorder:'rgba(99,102,241,.15)';
+    const statusColor=open?s.col:'#64748b';
+    const statusTxt=open?'● APERTA':'○ CHIUSA';
+    return '<div style="background:'+bg+';border:1.5px solid '+bd+';border-radius:.65rem;padding:.55rem .7rem;display:flex;flex-direction:column;gap:.3rem;">'+
+      '<div style="display:flex;align-items:center;justify-content:space-between;">'+
+        '<span style="font-size:1.3rem;line-height:1;">'+s.flag+'</span>'+
+        '<span style="font-size:.95rem;font-weight:800;color:'+statusColor+';">'+statusTxt+'</span>'+
+      '</div>'+
+      '<div style="font-size:1.1rem;font-weight:800;color:#f1f5f9;line-height:1.1;">'+s.name+'</div>'+
+      '<div style="font-family:monospace;font-size:1.55rem;font-weight:600;color:#ffffff;letter-spacing:.04em;line-height:1;">'+fmtTZ(s.tz)+'</div>'+
+      '<div style="font-size:.9rem;color:#94a3b8;">'+padH(s.openH)+' – '+padH(s.closeH)+' (ora it.)</div>'+
+    '</div>';
+  }).join('');
+}
+renderForex();setInterval(renderForex,1000);
 
 /* ══ STOIC QUOTES ══ */
 const QQ=[
