@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy | SECURDATA.PRO</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+
+    .bg-gradient-dark {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+    }
+
+    .bg-gradient-accent {
+      background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+    }
+
+    .glow-text {
+      text-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
+    }
+
+    .logo-container img {
+      filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.6));
+    }
+
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: #6366f1; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #a855f7; }
+  </style>
+</head>
+<body class="bg-gradient-dark text-slate-100">
+
+<!-- ═══════════════════ NAVBAR ═══════════════════ -->
+<nav class="fixed w-full top-0 z-50 bg-slate-950/80 backdrop-blur-md border-b border-slate-800">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-20">
+      <div class="flex items-center gap-3 logo-container">
+        <a href="./index.html">
+          <img src="logo-00-securdata-pro.svg?v=20260329" alt="SECURDATA.PRO Logo" class="h-14 w-auto rounded-full filter drop-shadow-lg">
+        </a>
+        <a href="./index.html" class="font-bold text-xl tracking-tight text-white hidden sm:block">SECURDATA.PRO</a>
+      </div>
+
+      <div class="hidden md:flex gap-8 items-center">
+        <a href="./index.html#servizi" class="text-slate-300 hover:text-indigo-400 transition font-medium">Servizi</a>
+        <a href="./index.html#percorso" class="text-slate-300 hover:text-indigo-400 transition font-medium">Percorso</a>
+        <a href="./index.html#vantaggi" class="text-slate-300 hover:text-indigo-400 transition font-medium">Vantaggi</a>
+        <a href="./index.html#security" class="text-slate-300 hover:text-indigo-400 transition font-medium">Security</a>
+        <a href="./tempore/" class="px-3 py-1.5 rounded-lg text-sm font-bold text-indigo-300 border border-indigo-500/40 hover:bg-indigo-500/10 hover:text-indigo-200 transition">RISORSE GRATUITE</a>
+      </div>
+
+      <button class="hidden md:block px-6 py-2.5 bg-gradient-accent text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-indigo-500/50 transition">
+        Contattaci
+      </button>
+
+      <button id="mobile-menu-btn" class="md:hidden text-slate-300 focus:outline-none" aria-label="Apri menu" aria-expanded="false" aria-controls="mobile-menu">
+        <svg id="mobile-menu-icon-open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+        <svg id="mobile-menu-icon-close" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════════════ MOBILE MENU ═══════════════════ -->
+<div id="mobile-menu" class="md:hidden fixed top-20 left-0 right-0 z-40 hidden bg-slate-950/95 backdrop-blur-md border-b border-slate-800 px-4 py-4 flex flex-col gap-3">
+  <a href="./index.html#servizi"  class="mobile-nav-link block px-3 py-2 rounded-lg text-slate-300 hover:text-indigo-400 hover:bg-slate-800/50 transition font-medium">Servizi</a>
+  <a href="./index.html#percorso" class="mobile-nav-link block px-3 py-2 rounded-lg text-slate-300 hover:text-indigo-400 hover:bg-slate-800/50 transition font-medium">Percorso</a>
+  <a href="./index.html#vantaggi" class="mobile-nav-link block px-3 py-2 rounded-lg text-slate-300 hover:text-indigo-400 hover:bg-slate-800/50 transition font-medium">Vantaggi</a>
+  <a href="./index.html#security" class="mobile-nav-link block px-3 py-2 rounded-lg text-slate-300 hover:text-indigo-400 hover:bg-slate-800/50 transition font-medium">Security</a>
+  <a href="./tempore/" class="block px-3 py-2 rounded-lg font-bold text-indigo-300 border border-indigo-500/30 hover:bg-indigo-500/10 transition text-sm">RISORSE GRATUITE</a>
+  <button class="mt-1 px-6 py-2.5 bg-gradient-accent text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-indigo-500/50 transition">
+    Contattaci
+  </button>
+</div>
+<script>
+(function() {
+  var btn  = document.getElementById('mobile-menu-btn');
+  var menu = document.getElementById('mobile-menu');
+  var iconOpen  = document.getElementById('mobile-menu-icon-open');
+  var iconClose = document.getElementById('mobile-menu-icon-close');
+
+  function toggleMenu() {
+    var isOpen = !menu.classList.contains('hidden');
+    menu.classList.toggle('hidden', isOpen);
+    iconOpen.classList.toggle('hidden', !isOpen);
+    iconClose.classList.toggle('hidden', isOpen);
+    btn.setAttribute('aria-expanded', String(!isOpen));
+    btn.setAttribute('aria-label', isOpen ? 'Apri menu' : 'Chiudi menu');
+  }
+
+  btn.addEventListener('click', toggleMenu);
+
+  menu.querySelectorAll('.mobile-nav-link').forEach(function(link) {
+    link.addEventListener('click', function() {
+      menu.classList.add('hidden');
+      iconOpen.classList.remove('hidden');
+      iconClose.classList.add('hidden');
+      btn.setAttribute('aria-expanded', 'false');
+    });
+  });
+})();
+</script>
+
+<!-- ═══════════════════ PRIVACY POLICY ═══════════════════ -->
+<section class="bg-gradient-dark text-slate-100 pt-36 pb-16">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <h1 class="text-5xl md:text-7xl font-extrabold leading-tight mb-8 text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400">
+      Privacy Policy
+    </h1>
+    <p class="text-xl text-slate-300 mb-10 leading-relaxed">
+      Ultimo aggiornamento: [Data Ultimo Aggiornamento]
+    </p>
+
+    <hr class="border-slate-800 my-8">
+
+    <h2 class="text-3xl font-bold text-indigo-400 mb-4">1. Introduzione</h2>
+    <p class="text-slate-300 mb-6 leading-relaxed">
+      Benvenuti nella Privacy Policy di [Nome Azienda], operante come SecurData.pro ("<strong class="text-white">SecurData.pro</strong>", "<strong class="text-white">noi</strong>", "<strong class="text-white">nostro</strong>"). La presente Privacy Policy descrive come raccogliamo, utilizziamo, divulghiamo e proteggiamo le informazioni personali degli utenti ("<strong class="text-white">Utente</strong>", "<strong class="text-white">voi</strong>") che accedono al nostro sito web <a href="https://securdata.pro" class="text-indigo-400 hover:underline">securdata.pro</a> e utilizzano i nostri servizi di cybersecurity e intelligenza artificiale.
+    </p>
+    <p class="text-slate-300 mb-6 leading-relaxed">
+      Ci impegniamo a proteggere la vostra privacy e a trattare i vostri dati personali in conformità con il Regolamento Generale sulla Protezione dei Dati (GDPR – Regolamento UE 2016/679), la normativa nazionale applicabile e l'EU AI Act. Vi invitiamo a leggere attentamente questa Policy prima di utilizzare i nostri servizi.
+    </p>
+
+    <hr class="border-slate-800 my-8">
+
+    <h2 class="text-3xl font-bold text-indigo-400 mb-4">2. Titolare del Trattamento</h2>
+    <p class="text-slate-300 mb-4 leading-relaxed">
+      Il Titolare del Trattamento dei dati personali è:
+    </p>
+    <ul class="list-disc list-inside text-slate-300 mb-6 leading-relaxed space-y-2">
+      <li><strong class="text-white">Ragione Sociale</strong>: [Nome Azienda / Ragione Sociale]</li>
+      <li><strong class="text-white">Sede Legale</strong>: [Indirizzo Sede Legale]</li>
+      <li><strong class="text-white">P. IVA / C.F.</strong>: [Partita IVA / Codice Fiscale]</li>
+      <li><strong class="text-white">Email</strong>: <a href="mailto:[Indirizzo Email DPO/Privacy]" class="text-indigo-400 hover:underline">[Indirizzo Email DPO/Privacy]</a></li>
+      <li><strong class="text-white">DPO (Data Protection Officer)</strong>: [Nome DPO, se applicabile] – <a href="mailto:[Email DPO]" class="text-indigo-400 hover:underline">[Email DPO]</a></li>
+    </ul>
+
+    <hr class="border-slate-800 my-8">
+
+    <h2 class="text-3xl font-bold text-indigo-400 mb-4">3. Tipologie di Dati Raccolti</h2>
+    <p class="text-slate-300 mb-4 leading-relaxed">
+      Nell'ambito della fornitura dei nostri servizi, raccogliamo le seguenti categorie di dati:
+    </p>
+
+    <h3 class="text-xl font-bold text-white mb-3">3.1 Dati Forniti Direttamente dall'Utente</h3>
+    <ul class="list-disc list-inside text-slate-300 mb-6 leading-relaxed space-y-2 ml-4">
+      <li>Dati identificativi: nome, cognome, indirizzo email, numero di telefono, ragione sociale, ruolo professionale.</li>
+      <li>Dati di accesso: credenziali di autenticazione (username e password in forma hashed), token di sessione.</li>
+      <li>Dati di pagamento: informazioni di fatturazione (gestiti tramite provider di pagamento certificato PCI-DSS: [Nome Provider Pagamento]).</li>
+      <li>Comunicazioni: contenuto di messaggi inviati tramite form di contatto, email di supporto o chat.</li>
+    </ul>
+
+    <h3 class="text-xl font-bold text-white mb-3">3.2 Dati Raccolti Automaticamente</h3>
+    <ul class="list-disc list-inside text-slate-300 mb-6 leading-relaxed space-y-2 ml-4">
+      <li>Dati tecnici: indirizzo IP, tipo di browser, sistema operativo, versione dell'applicazione client, timestamp delle sessioni.</li>
+      <li>Dati di utilizzo: log di accesso ai servizi, funzionalità utilizzate, query effettuate, metriche di performance.</li>
+      <li>Dati di sicurezza: eventi di sicurezza rilevati, tentativi di accesso, anomalie comportamentali (raccolti per finalità di protezione dei sistemi).</li>
+    </ul>
+
+    <h3 class="text-xl font-bold text-white mb-3">3.3 Dati Relativi ai Sistemi AI</h3>
+    <ul class="list-disc list-inside text-slate-300 mb-6 leading-relaxed space-y-2 ml-4">
+      <li>Input e output delle interazioni con i nostri sistemi di intelligenza artificiale, in forma pseudonimizzata o anonimizzata, ai fini del miglioramento continuo dei modelli, previo consenso esplicito.</li>
+      <li>Metadati relativi all'utilizzo degli strumenti AI (es. tipologia di richiesta, latenza, accuratezza percepita).</li>
+    </ul>
+
+    <hr class="border-slate-800 my-8">
+
+    <h2 class="text-3xl font-bold text-indigo-400 mb-4">4. Finalità e Basi Giuridiche del Trattamento</h2>
+    <p class="text-slate-300 mb-4 leading-relaxed">
+      Trattiamo i vostri dati personali per le seguenti finalità, ciascuna fondata su una specifica base giuridica ai sensi dell'art. 6 GDPR:
+    </p>
+    <ul class="list-disc list-inside text-slate-300 mb-6 leading-relaxed space-y-3 ml-4">
+      <li><strong class="text-white">Erogazione dei Servizi</strong> (art. 6.1.b – esecuzione del contratto): registrazione, autenticazione, fornitura delle funzionalità richieste, gestione delle licenze e del supporto tecnico.</li>
+      <li><strong class="text-white">Adempimento di Obblighi Legali</strong> (art. 6.1.c – obbligo legale): conservazione di dati fiscali e contabili, risposta a richieste delle autorità competenti.</li>
+      <li><strong class="text-white">Legittimo Interesse</strong> (art. 6.1.f – legittimo interesse): prevenzione delle frodi, sicurezza dei sistemi, analisi aggregate per miglioramento del servizio, gestione delle comunicazioni di servizio.</li>
+      <li><strong class="text-white">Consenso</strong> (art. 6.1.a – consenso): invio di comunicazioni di marketing, newsletter, utilizzo di dati per l'addestramento dei modelli AI in forma anonimizzata. Il consenso può essere revocato in qualsiasi momento.</li>
+      <li><strong class="text-white">Contrasto alle minacce di sicurezza</strong> (art. 6.1.f – legittimo interesse): monitoraggio proattivo per rilevare e rispondere a incidenti di cybersecurity, anche tramite sistemi automatizzati.</li>
+    </ul>
+
+    <hr class="border-slate-800 my-8">
+
+    <h2 class="text-3xl font-bold text-indigo-400 mb-4">5. Conservazione dei Dati</h2>
+    <p class="text-slate-300 mb-4 leading-relaxed">
+      I dati personali sono conservati per il tempo strettamente necessario a conseguire le finalità per cui sono stati raccolti, nel rispetto dei principi di minimizzazione e limitazione della conservazione (artt. 5.1.c e 5.1.e GDPR):
+    </p>
+    <ul class="list-disc list-inside text-slate-300 mb-6 leading-relaxed space-y-2 ml-4">
+      <li>Dati contrattuali e di fatturazione: <strong class="text-white">[X] anni</strong> dalla cessazione del contratto, in ottemperanza agli obblighi fiscali.</li>
+      <li>Log di sicurezza e accesso: <strong class="text-white">[X] mesi/anni</strong>, salvo necessità di conservazione per indagini in corso.</li>
+      <li>Dati di marketing (con consenso): fino alla revoca del consenso o per un massimo di <strong class="text-white">[X] anni</strong> dall'ultima interazione.</li>
+      <li>Dati di training AI (anonimizzati): conservati indefinitamente poiché non più riconducibili a persone fisiche identificabili.</li>
+    </ul>
+
+    <hr class="border-slate-800 my-8">
+
+    <h2 class="text-3xl font-bold text-indigo-400 mb-4">6. Condivisione e Trasferimento dei Dati</h2>
+    <p class="text-slate-300 mb-4 leading-relaxed">
+      I dati personali potranno essere condivisi con le seguenti categorie di destinatari:
+    </p>
+    <ul class="list-disc list-inside text-slate-300 mb-6 leading-relaxed space-y-3 ml-4">
+      <li><strong class="text-white">Fornitori di Servizi (Sub-Responsabili)</strong>: provider di infrastruttura cloud ([Nome Cloud Provider, es. AWS/Azure/GCP]), piattaforme di pagamento ([Nome Provider Pagamento]), strumenti di monitoraggio e analytics – tutti vincolati da appositi Data Processing Agreement (DPA).</li>
+      <li><strong class="text-white">Autorità Competenti</strong>: quando richiesto dalla legge applicabile, da provvedimenti giudiziari o da obblighi di segnalazione (es. CSIRT, Garante Privacy).</li>
+      <li><strong class="text-white">Trasferimenti Extra-UE</strong>: qualora i dati siano trasferiti verso paesi terzi, garantiamo adeguate salvaguardie ai sensi del Capo V GDPR, incluse Clausole Contrattuali Standard (SCC) approvate dalla Commissione Europea o decisioni di adeguatezza.</li>
+    </ul>
+
+    <hr class="border-slate-800 my-8">
+
+    <h2 class="text-3xl font-bold text-indigo-400 mb-4">7. Misure di Sicurezza</h2>
+    <p class="text-slate-300 mb-4 leading-relaxed">
+      In qualità di azienda di cybersecurity, adottiamo misure di sicurezza tecniche e organizzative di livello avanzato, in conformità con l'art. 32 GDPR, tra cui:
+    </p>
+    <ul class="list-disc list-inside text-slate-300 mb-6 leading-relaxed space-y-2 ml-4">
+      <li>Cifratura dei dati in transito (TLS 1.3+) e a riposo (AES-256).</li>
+      <li>Controllo degli accessi basato sui ruoli (RBAC) e autenticazione a più fattori (MFA).</li>
+      <li>Penetration testing periodico e vulnerability assessment.</li>
+      <li>Procedure di gestione degli incidenti di sicurezza e Data Breach Notification entro 72 ore al Garante (art. 33 GDPR).</li>
+      <li>Segregazione dei dati e minimizzazione dell'accesso secondo il principio del privilegio minimo.</li>
+      <li>[Eventuali certificazioni: es. ISO/IEC 27001, SOC 2 Type II].</li>
+    </ul>
+
+    <hr class="border-slate-800 my-8">
+
+    <h2 class="text-3xl font-bold text-indigo-400 mb-4">8. Intelligenza Artificiale e Decisioni Automatizzate</h2>
+    <p class="text-slate-300 mb-4 leading-relaxed">
+      In conformità con l'EU AI Act e l'art. 22 GDPR, vi informiamo che i nostri sistemi AI possono effettuare elaborazioni automatizzate dei dati. In particolare:
+    </p>
+    <ul class="list-disc list-inside text-slate-300 mb-6 leading-relaxed space-y-3 ml-4">
+      <li><strong class="text-white">Classificazione del rischio AI</strong>: i nostri sistemi AI rientrano nella categoria <strong class="text-white">[Alto Rischio / Rischio Limitato / Rischio Minimo]</strong> ai sensi dell'EU AI Act e sono soggetti ai relativi obblighi di trasparenza e supervisione umana.</li>
+      <li><strong class="text-white">Decisioni automatizzate</strong>: laddove i nostri sistemi adottino decisioni con effetti significativi sull'Utente, garantiamo il diritto di ottenere intervento umano, di esprimere il proprio punto di vista e di contestare la decisione (art. 22 GDPR).</li>
+      <li><strong class="text-white">Trasparenza algoritmica</strong>: forniamo informazioni comprensibili sulla logica dei sistemi AI utilizzati per fornire i nostri servizi di sicurezza.</li>
+      <li><strong class="text-white">Training dei modelli</strong>: i dati dell'Utente possono essere utilizzati in forma anonimizzata per il miglioramento dei modelli AI esclusivamente previo consenso esplicito e separato.</li>
+    </ul>
+
+    <hr class="border-slate-800 my-8">
+
+    <h2 class="text-3xl font-bold text-indigo-400 mb-4">9. Diritti degli Interessati</h2>
+    <p class="text-slate-300 mb-4 leading-relaxed">
+      In qualità di interessato, avete il diritto di esercitare i seguenti diritti ai sensi degli artt. 15–22 GDPR:
+    </p>
+    <ul class="list-disc list-inside text-slate-300 mb-6 leading-relaxed space-y-2 ml-4">
+      <li><strong class="text-white">Diritto di accesso</strong> (art. 15): ottenere conferma del trattamento e copia dei dati personali.</li>
+      <li><strong class="text-white">Diritto di rettifica</strong> (art. 16): correggere dati inesatti o incompleti.</li>
+      <li><strong class="text-white">Diritto alla cancellazione ("diritto all'oblio")</strong> (art. 17): richiedere la cancellazione dei dati, ove applicabile.</li>
+      <li><strong class="text-white">Diritto alla limitazione del trattamento</strong> (art. 18): limitare il trattamento in determinati casi.</li>
+      <li><strong class="text-white">Diritto alla portabilità</strong> (art. 20): ricevere i dati in formato strutturato e leggibile da dispositivo automatico.</li>
+      <li><strong class="text-white">Diritto di opposizione</strong> (art. 21): opporsi al trattamento basato su legittimo interesse o per finalità di marketing diretto.</li>
+      <li><strong class="text-white">Diritto di revoca del consenso</strong> (art. 7.3): revocare il consenso in qualsiasi momento, senza pregiudizio per la liceità del trattamento precedente.</li>
+      <li><strong class="text-white">Diritto di non essere sottoposto a decisioni automatizzate</strong> (art. 22): opporsi a decisioni basate esclusivamente su trattamento automatizzato.</li>
+    </ul>
+    <p class="text-slate-300 mb-6 leading-relaxed">
+      Per esercitare i propri diritti, inviare una richiesta scritta a: <a href="mailto:[Indirizzo Email Privacy]" class="text-indigo-400 hover:underline">[Indirizzo Email Privacy]</a>. Risponderemo entro 30 giorni dalla ricezione della richiesta. Avete inoltre il diritto di proporre reclamo all'Autorità Garante per la Protezione dei Dati Personali (<a href="https://www.garanteprivacy.it" class="text-indigo-400 hover:underline" target="_blank" rel="noopener noreferrer">www.garanteprivacy.it</a>).
+    </p>
+
+    <hr class="border-slate-800 my-8">
+
+    <h2 class="text-3xl font-bold text-indigo-400 mb-4">10. Cookie e Tecnologie di Tracciamento</h2>
+    <p class="text-slate-300 mb-4 leading-relaxed">
+      Il nostro sito utilizza cookie e tecnologie simili. In particolare:
+    </p>
+    <ul class="list-disc list-inside text-slate-300 mb-6 leading-relaxed space-y-2 ml-4">
+      <li><strong class="text-white">Cookie tecnici/essenziali</strong>: necessari per il funzionamento del sito e dei servizi (es. gestione sessione, autenticazione). Non richiedono consenso.</li>
+      <li><strong class="text-white">Cookie analitici</strong>: utilizzati per analisi aggregate delle visite (es. [Nome Strumento Analytics]). Richiedono consenso.</li>
+      <li><strong class="text-white">Cookie di marketing</strong>: per la personalizzazione degli annunci pubblicitari. Richiedono consenso.</li>
+    </ul>
+    <p class="text-slate-300 mb-6 leading-relaxed">
+      Per maggiori informazioni, consultare la nostra <a href="[URL Cookie Policy]" class="text-indigo-400 hover:underline">Cookie Policy</a>.
+    </p>
+
+    <hr class="border-slate-800 my-8">
+
+    <h2 class="text-3xl font-bold text-indigo-400 mb-4">11. Modifiche alla Privacy Policy</h2>
+    <p class="text-slate-300 mb-6 leading-relaxed">
+      SecurData.pro si riserva il diritto di aggiornare la presente Privacy Policy in qualsiasi momento per adeguarla a modifiche normative o operative. In caso di modifiche sostanziali, notificheremo gli Utenti tramite email o tramite un avviso visibile sul sito, prima dell'entrata in vigore delle modifiche. La data dell'ultimo aggiornamento è indicata in cima a questa pagina.
+    </p>
+
+    <hr class="border-slate-800 my-8">
+
+    <h2 class="text-3xl font-bold text-indigo-400 mb-4">12. Contatti</h2>
+    <p class="text-slate-300 mb-4 leading-relaxed">
+      Per qualsiasi domanda, richiesta o preoccupazione riguardo alla presente Privacy Policy o al trattamento dei vostri dati personali, potete contattarci:
+    </p>
+    <ul class="list-disc list-inside text-slate-300 mb-6 leading-relaxed space-y-2 ml-4">
+      <li><strong class="text-white">Email Privacy</strong>: <a href="mailto:[Indirizzo Email Privacy]" class="text-indigo-400 hover:underline">[Indirizzo Email Privacy]</a></li>
+      <li><strong class="text-white">DPO</strong>: <a href="mailto:[Email DPO]" class="text-indigo-400 hover:underline">[Email DPO]</a></li>
+      <li><strong class="text-white">Indirizzo</strong>: [Indirizzo Sede Legale]</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══════════════════ FOOTER ═══════════════════ -->
+<footer class="bg-slate-950 border-t border-slate-900 pt-20 pb-10 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-7xl mx-auto">
+    <div class="grid md:grid-cols-4 gap-16 mb-20">
+      <div class="col-span-1 md:col-span-1">
+        <div class="flex items-center gap-3 mb-8 logo-container">
+          <img src="logo-securdata-originale.jpg?v=20260329" alt="SECURDATA.PRO Logo" class="h-10 w-auto rounded-full filter drop-shadow-lg">
+          <span class="font-bold text-lg text-white">SECURDATA.PRO</span>
+        </div>
+        <p class="text-slate-500 text-sm leading-relaxed">
+          Leader nelle soluzioni di sicurezza informatica e intelligenza artificiale per il settore enterprise.
+        </p>
+      </div>
+
+      <div>
+        <h4 class="font-bold text-white mb-8 uppercase tracking-widest text-xs">Navigazione</h4>
+        <ul class="space-y-4 text-slate-500 text-sm">
+          <li><a href="./index.html#servizi" class="hover:text-indigo-400 transition">Servizi</a></li>
+          <li><a href="#" class="hover:text-indigo-400 transition">Case Studies</a></li>
+          <li><a href="#" class="hover:text-indigo-400 transition">Blog</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="font-bold text-white mb-8 uppercase tracking-widest text-xs">Legale</h4>
+        <ul class="space-y-4 text-slate-500 text-sm">
+          <li><a href="./privacy-policy.html" class="hover:text-indigo-400 transition">Privacy Policy</a></li>
+          <li><a href="./termini-di-servizio.html" class="hover:text-indigo-400 transition">Termini di Servizio</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="font-bold text-white mb-8 uppercase tracking-widest text-xs">Social</h4>
+        <ul class="space-y-4 text-slate-500 text-sm">
+          <li><a href="#" class="hover:text-indigo-400 transition">LinkedIn</a></li>
+          <li><a href="#" class="hover:text-indigo-400 transition">Twitter</a></li>
+          <li><a href="#" class="hover:text-indigo-400 transition">Instagram</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="border-t border-slate-900 pt-10 text-center">
+      <p class="text-slate-600 text-xs font-medium">
+        &copy; 2026 SECURDATA.PRO. All rights reserved.
+      </p>
+      <div class="flex justify-center gap-2 mt-4">
+        <div class="w-1.5 h-1.5 bg-slate-800 rounded-full"></div>
+        <div class="w-1.5 h-1.5 bg-slate-800 rounded-full"></div>
+        <div class="w-1.5 h-1.5 bg-slate-800 rounded-full"></div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
