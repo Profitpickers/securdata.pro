@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TEMPORE — Analisi spazio-temporale in totale sicurezza | securdata.pro</title>
+  <meta name="description" content="Orologio, meteo locale, borse mondiali, life bar e citazioni stoiche. Il tuo strumento gratuito di analisi spazio-temporale.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
+    *, *::before, *::after { box-sizing: border-box; }
+    :root {
+      --nav-h: 52px;
+      --bar-h: 30px;
+      --top-h: 82px;
+      --c1: #6366f1;
+      --c2: #a855f7;
+      --c3: #ec4899;
+    }
+    html, body { height: 100%; margin: 0; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: #020617;
+      color: #e2e8f0;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(99,102,241,.12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 90%, rgba(168,85,247,.10) 0%, transparent 55%),
+        linear-gradient(160deg, #020617 0%, #0f172a 50%, #0d0a1f 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .glass {
+      background: rgba(15,23,42,0.72);
+      border: 1px solid rgba(99,102,241,.18);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      transition: border-color .25s, box-shadow .25s;
+    }
+    .glass:hover {
+      border-color: rgba(99,102,241,.4);
+      box-shadow: 0 0 20px rgba(99,102,241,.12);
+    }
+    #topnav {
+      position: fixed; top: 0; left: 0; right: 0;
+      height: var(--nav-h);
+      z-index: 60;
+      background: rgba(2,6,23,.88);
+      border-bottom: 1px solid rgba(99,102,241,.15);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    #proofbar {
+      position: fixed; top: var(--nav-h); left: 0; right: 0;
+      height: var(--bar-h);
+      z-index: 55;
+      background: rgba(30,5,60,.75);
+      border-bottom: 1px solid rgba(99,102,241,.12);
+      backdrop-filter: blur(8px);
+    }
+    #app {
+      position: relative;
+      z-index: 1;
+      padding-top: var(--top-h);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    #widget-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      gap: .6rem;
+      padding: .6rem;
+      flex: 1;
+      height: calc(100vh - var(--top-h));
+    }
+    .card {
+      border-radius: 1rem;
+      padding: .85rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: .45rem;
+      overflow: hidden;
+    }
+    .card-hd {
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+      flex-shrink: 0;
+    }
+    .card-hd svg { width: 13px; height: 13px; flex-shrink: 0; }
+    .card-hd span {
+      font-size: .62rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: #94a3b8;
+    }
+    #digital-time {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.55rem;
+      font-weight: 600;
+      text-align: center;
+      color: #fff;
+      letter-spacing: .04em;
+      line-height: 1;
+    }
+    #digital-date { font-size: .62rem; text-align: center; color: #64748b; }
+    .lbar-track {
+      height: 5px;
+      background: rgba(30,41,59,.8);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .lbar-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--c1), var(--c2));
+      transition: width .8s cubic-bezier(.4,0,.2,1);
+      width: 0;
+    }
+    .mkt-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: .28rem .45rem;
+      border-radius: .45rem;
+      background: rgba(30,41,59,.5);
+      font-size: .67rem;
+      flex: 1;
+    }
+    .pulse-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #4ade80;
+      animation: pdot 2s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+    @keyframes pdot { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:.4;transform:scale(.8);} }
+    .rxn { transition: transform .12s; background: none; border: none; cursor: pointer; }
+    .rxn:active { transform: scale(1.35); }
+    .grad {
+      background: linear-gradient(135deg,var(--c1),var(--c2),var(--c3));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    #ai-modal {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,.75);
+      backdrop-filter: blur(5px);
+      z-index: 200;
+      align-items: center; justify-content: center;
+    }
+    #ai-modal.open { display: flex; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media (max-width: 1023px) {
+      #widget-grid { grid-template-columns: repeat(2,1fr); grid-template-rows: auto; height: auto; }
+    }
+    @media (max-width: 639px) {
+      #widget-grid { grid-template-columns: 1fr; }
+      #digital-time { font-size: 1.2rem; }
+    }
+    .nano-inp {
+      background: rgba(30,41,59,.8);
+      border: 1px solid #334155;
+      border-radius: .5rem;
+      padding: .32rem .55rem;
+      font-size: .72rem;
+      color: #fff;
+      outline: none;
+    }
+    .nano-inp:focus { border-color: #6366f1; }
+    .nano-btn {
+      padding: .32rem .6rem;
+      background: #6366f1;
+      border: none; border-radius: .5rem;
+      font-size: .7rem; font-weight: 700;
+      color: #fff; cursor: pointer;
+      white-space: nowrap; flex-shrink: 0;
+    }
+    .nano-btn:hover { background: #4f46e5; }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav id="topnav">
+  <div style="max-width:1280px;margin:0 auto;height:100%;display:flex;align-items:center;justify-content:space-between;padding:0 1rem;">
+    <a href="../" style="display:flex;align-items:center;gap:.5rem;text-decoration:none;opacity:.9;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.9">
+      <img src="../logo-00-securdata-pro.svg?v=20260329" alt="SECURDATA.PRO" style="height:30px;width:auto;border-radius:50%;">
+      <span style="font-weight:700;font-size:.85rem;color:#fff;letter-spacing:.03em;display:none;" class="sm-show">SECURDATA.PRO</span>
+    </a>
+    <div style="display:flex;align-items:center;gap:.5rem;">
+      <span class="grad" style="font-size:.95rem;font-weight:900;letter-spacing:.12em;">TEMPORE</span>
+      <span style="font-size:.6rem;color:#64748b;font-style:italic;padding:.12rem .4rem;border:1px solid rgba(99,102,241,.25);border-radius:.35rem;">Risorse Gratuite</span>
+    </div>
+    <a href="../" style="display:flex;align-items:center;gap:.3rem;font-size:.72rem;color:#94a3b8;text-decoration:none;padding:.28rem .55rem;border-radius:.45rem;" onmouseover="this.style.color='#818cf8'" onmouseout="this.style.color='#94a3b8'">
+      <i data-lucide="arrow-left" style="width:13px;height:13px;"></i>
+      <span style="display:none;" class="sm-show">Torna al sito</span>
+    </a>
+  </div>
+</nav>
+
+<!-- SOCIAL PROOF BAR -->
+<div id="proofbar">
+  <div style="max-width:1280px;margin:0 auto;height:100%;display:flex;align-items:center;justify-content:space-between;padding:0 1rem;gap:.75rem;">
+    <div style="display:flex;align-items:center;gap:.75rem;font-size:.62rem;">
+      <span style="display:flex;align-items:center;gap:.3rem;">
+        <span class="pulse-dot"></span>
+        <span style="color:#4ade80;font-weight:700;" id="live-users">142</span>
+        <span style="color:#64748b;">persone online</span>
+      </span>
+      <span style="color:#334155;" class="sm-show">·</span>
+      <span style="color:#64748b;display:none;" class="sm-show">
+        <i data-lucide="bar-chart-2" style="width:10px;height:10px;color:#6366f1;vertical-align:middle;"></i>
+        <strong style="color:#cbd5e1;">15.400+</strong> Analisi effettuate
+      </span>
+    </div>
+    <div style="display:flex;align-items:center;gap:.3rem;font-size:.62rem;">
+      <i data-lucide="zap" style="width:10px;height:10px;color:#f59e0b;flex-shrink:0;"></i>
+      <span style="color:#f59e0b;font-weight:700;" id="reports-bar">12</span>
+      <span style="color:#64748b;">/50 Report AI oggi</span>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+
+  <!-- 3x3 GRID -->
+  <main id="widget-grid">
+
+    <!-- 1 OROLOGIO -->
+    <div class="card glass">
+      <div class="card-hd">
+        <i data-lucide="clock" style="color:#6366f1;"></i>
+        <span>Orologio</span>
+      </div>
+      <canvas id="clock-canvas" width="100" height="100" style="display:block;margin:0 auto;"></canvas>
+      <div id="digital-time"></div>
+      <div id="digital-date"></div>
+    </div>
+
+    <!-- 2 POSIZIONE & DATA -->
+    <div class="card glass">
+      <div class="card-hd">
+        <i data-lucide="map-pin" style="color:#6366f1;"></i>
+        <span>Posizione &amp; Data</span>
+      </div>
+      <div id="geo-info" style="font-size:.67rem;color:#94a3b8;display:flex;align-items:center;gap:.3rem;">
+        <i data-lucide="loader-2" style="width:11px;height:11px;animation:spin 1s linear infinite;"></i>
+        Rilevamento...
+      </div>
+      <div style="margin-top:auto;">
+        <div id="geo-date" style="font-size:1.25rem;font-weight:800;color:#fff;line-height:1.1;"></div>
+        <div id="geo-day"  style="font-size:.72rem;font-weight:600;color:#818cf8;margin-top:.15rem;"></div>
+        <div id="geo-tz"   style="font-size:.58rem;color:#475569;margin-top:.2rem;"></div>
+      </div>
+    </div>
+
+    <!-- 3 LIFE PROGRESS -->
+    <div class="card glass">
+      <div class="card-hd">
+        <i data-lucide="activity" style="color:#a855f7;"></i>
+        <span>Life Progress</span>
+      </div>
+      <div id="life-input" style="display:flex;gap:.4rem;align-items:center;">
+        <input type="number" id="birth-year" placeholder="Anno nascita" min="1920" class="nano-inp" style="flex:1;width:0;">
+        <button onclick="calcLife()" class="nano-btn">Calcola</button>
+      </div>
+      <div id="life-bars" style="display:none;flex-direction:column;gap:.5rem;flex:1;">
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:.6rem;color:#64748b;margin-bottom:.18rem;">
+            <span>Anni di vita</span><span id="yr-pct" style="color:#a855f7;font-weight:600;">0%</span>
+          </div>
+          <div class="lbar-track"><div id="yr-bar" class="lbar-fill"></div></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:.6rem;color:#64748b;margin-bottom:.18rem;">
+            <span>Settimane</span><span id="wk-pct" style="color:#6366f1;font-weight:600;">0%</span>
+          </div>
+          <div class="lbar-track"><div id="wk-bar" class="lbar-fill"></div></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:.6rem;color:#64748b;margin-bottom:.18rem;">
+            <span>Giorni</span><span id="dy-pct" style="color:#ec4899;font-weight:600;">0%</span>
+          </div>
+          <div class="lbar-track"><div id="dy-bar" class="lbar-fill" style="background:linear-gradient(90deg,#ec4899,#f43f5e);"></div></div>
+        </div>
+        <div id="life-sum" style="font-size:.58rem;color:#475569;margin-top:auto;line-height:1.4;"></div>
+      </div>
+    </div>
+
+    <!-- 4 ANALISI ANNO -->
+    <div class="card glass">
+      <div class="card-hd">
+        <i data-lucide="calendar-check-2" style="color:#06b6d4;"></i>
+        <span>Analisi Anno 2026</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:.7rem;flex:1;">
+        <canvas id="year-arc" width="76" height="76" style="display:block;flex-shrink:0;"></canvas>
+        <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:.32rem;">
+          <div style="background:rgba(30,41,59,.6);border-radius:.55rem;padding:.38rem;text-align:center;">
+            <div id="y-passed"  style="font-size:1rem;font-weight:800;color:#06b6d4;line-height:1;">-</div>
+            <div style="font-size:.55rem;color:#475569;margin-top:.08rem;">giorni trascorsi</div>
+          </div>
+          <div style="background:rgba(30,41,59,.6);border-radius:.55rem;padding:.38rem;text-align:center;">
+            <div id="y-remain"  style="font-size:1rem;font-weight:800;color:#a855f7;line-height:1;">-</div>
+            <div style="font-size:.55rem;color:#475569;margin-top:.08rem;">giorni rimanenti</div>
+          </div>
+          <div style="background:rgba(30,41,59,.6);border-radius:.55rem;padding:.38rem;text-align:center;">
+            <div id="y-week"    style="font-size:1rem;font-weight:800;color:#6366f1;line-height:1;">-</div>
+            <div style="font-size:.55rem;color:#475569;margin-top:.08rem;">settimana n°</div>
+          </div>
+          <div style="background:rgba(30,41,59,.6);border-radius:.55rem;padding:.38rem;text-align:center;">
+            <div id="y-quarter" style="font-size:1rem;font-weight:800;color:#f59e0b;line-height:1;">-</div>
+            <div style="font-size:.55rem;color:#475569;margin-top:.08rem;">trimestre</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5 METEO -->
+    <div class="card glass">
+      <div class="card-hd">
+        <i data-lucide="cloud-sun" style="color:#f59e0b;"></i>
+        <span>Meteo Locale</span>
+      </div>
+      <div id="wx-content" style="display:flex;flex-direction:column;gap:.38rem;flex:1;justify-content:center;">
+        <div style="display:flex;align-items:center;gap:.45rem;font-size:.67rem;color:#64748b;">
+          <i data-lucide="loader-2" style="width:12px;height:12px;animation:spin 1s linear infinite;"></i>
+          Recupero meteo...
+        </div>
+      </div>
+    </div>
+
+    <!-- 6 MERCATI -->
+    <div class="card glass">
+      <div class="card-hd">
+        <i data-lucide="trending-up" style="color:#4ade80;"></i>
+        <span>Mercati Globali</span>
+      </div>
+      <div id="mkt-grid" style="display:flex;flex-direction:column;gap:.32rem;flex:1;justify-content:space-between;">
+        <div id="mkt-ny"  class="mkt-row"></div>
+        <div id="mkt-lon" class="mkt-row"></div>
+        <div id="mkt-tyo" class="mkt-row"></div>
+        <div id="mkt-btc" class="mkt-row"></div>
+      </div>
+      <div style="font-size:.54rem;color:#334155;">Dati simulativi — solo a scopo illustrativo</div>
+    </div>
+
+    <!-- 7 CITAZIONE STOICA -->
+    <div class="card glass">
+      <div class="card-hd">
+        <i data-lucide="book-open" style="color:#f59e0b;"></i>
+        <span>Saggezza Stoica</span>
+      </div>
+      <blockquote id="stoic-q" style="font-style:italic;font-size:.7rem;line-height:1.55;color:#cbd5e1;flex:1;padding:.25rem 0;margin:0;"></blockquote>
+      <div id="stoic-a" style="font-size:.62rem;font-weight:700;color:#818cf8;"></div>
+      <button onclick="nextQuote()" style="align-self:flex-start;display:flex;align-items:center;gap:.28rem;font-size:.6rem;color:#475569;background:none;border:none;cursor:pointer;padding:0;margin-top:.1rem;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#475569'">
+        <i data-lucide="refresh-cw" style="width:10px;height:10px;"></i> Nuova
+      </button>
+    </div>
+
+    <!-- 8 CICLO ASTRALE -->
+    <div class="card glass">
+      <div class="card-hd">
+        <i data-lucide="moon" style="color:#fde68a;"></i>
+        <span>Ciclo Astrale</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:.65rem;flex:1;">
+        <div id="moon-emoji" style="font-size:2.4rem;line-height:1;flex-shrink:0;"></div>
+        <div style="flex:1;">
+          <div id="moon-name"  style="font-size:.82rem;font-weight:700;color:#fff;line-height:1.2;"></div>
+          <div id="moon-illum" style="font-size:.6rem;color:#94a3b8;margin-top:.13rem;"></div>
+          <div id="moon-aged"  style="font-size:.57rem;color:#475569;margin-top:.1rem;"></div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.32rem;margin-top:auto;">
+        <div style="background:rgba(30,41,59,.6);border-radius:.5rem;padding:.32rem;text-align:center;">
+          <div id="moon-next"   style="font-size:.72rem;font-weight:700;color:#fde68a;"></div>
+          <div style="font-size:.54rem;color:#475569;">Luna piena</div>
+        </div>
+        <div style="background:rgba(30,41,59,.6);border-radius:.5rem;padding:.32rem;text-align:center;">
+          <div id="zodiac-sign" style="font-size:.72rem;font-weight:700;color:#c084fc;"></div>
+          <div style="font-size:.54rem;color:#475569;">Segno zodiacale</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 9 REAGISCI & CONDIVIDI -->
+    <div class="card glass">
+      <div class="card-hd">
+        <i data-lucide="heart" style="color:#f472b6;"></i>
+        <span>Reagisci &amp; Condividi</span>
+      </div>
+      <div style="display:flex;justify-content:space-around;align-items:center;flex:1;padding:.15rem 0;">
+        <button class="rxn" onclick="react('heart')" style="display:flex;flex-direction:column;align-items:center;gap:.18rem;">
+          <span style="font-size:1.5rem;">❤️</span>
+          <span id="r-heart" style="font-size:.62rem;font-weight:700;color:#64748b;">0</span>
+        </button>
+        <button class="rxn" onclick="react('bulb')" style="display:flex;flex-direction:column;align-items:center;gap:.18rem;">
+          <span style="font-size:1.5rem;">💡</span>
+          <span id="r-bulb" style="font-size:.62rem;font-weight:700;color:#64748b;">0</span>
+        </button>
+        <button class="rxn" onclick="react('fire')" style="display:flex;flex-direction:column;align-items:center;gap:.18rem;">
+          <span style="font-size:1.5rem;">🔥</span>
+          <span id="r-fire" style="font-size:.62rem;font-weight:700;color:#64748b;">0</span>
+        </button>
+      </div>
+      <div style="border-top:1px solid rgba(30,41,59,.8);padding-top:.45rem;display:flex;flex-direction:column;gap:.38rem;">
+        <p style="font-size:.6rem;color:#475569;text-align:center;margin:0;">Condividi TEMPORE con la tua rete</p>
+        <div style="display:flex;gap:.38rem;justify-content:center;">
+          <a id="sh-li" href="#" target="_blank" rel="noopener noreferrer"
+            style="display:flex;align-items:center;gap:.28rem;padding:.28rem .55rem;background:rgba(10,102,194,.18);border:1px solid rgba(10,102,194,.3);border-radius:.45rem;font-size:.6rem;font-weight:700;color:#7eb3f8;text-decoration:none;">
+            <i data-lucide="linkedin" style="width:10px;height:10px;"></i> LinkedIn
+          </a>
+          <a id="sh-wa" href="#" target="_blank" rel="noopener noreferrer"
+            style="display:flex;align-items:center;gap:.28rem;padding:.28rem .55rem;background:rgba(37,211,102,.15);border:1px solid rgba(37,211,102,.3);border-radius:.45rem;font-size:.6rem;font-weight:700;color:#25D366;text-decoration:none;">
+            <i data-lucide="message-circle" style="width:10px;height:10px;"></i> WhatsApp
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- CTA EMAIL -->
+  <section style="padding:0 .6rem .5rem;">
+    <div class="glass" style="border-radius:1rem;padding:.9rem 1.1rem;border:1px solid rgba(99,102,241,.3);">
+      <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.85rem;">
+        <div>
+          <div style="display:flex;align-items:center;gap:.38rem;margin-bottom:.28rem;">
+            <i data-lucide="mail" style="width:15px;height:15px;color:#6366f1;"></i>
+            <span style="font-weight:800;font-size:.9rem;color:#fff;">Report Giornaliero</span>
+          </div>
+          <p style="font-size:.68rem;color:#64748b;margin:0 0 .28rem;max-width:30rem;">Ricevi ogni mattina analisi spazio-temporale, quote di mercato e citazione stoica nella tua inbox.</p>
+          <div style="display:flex;align-items:center;gap:.28rem;font-size:.65rem;">
+            <i data-lucide="alert-circle" style="width:11px;height:11px;color:#f59e0b;flex-shrink:0;"></i>
+            <span style="color:#f59e0b;font-weight:700;">Disponibilità odierna: <span id="cta-reports">12</span>/50 Report AI.
+              <span style="color:#fbbf24;">Metti in sicurezza il tuo tempo ora.</span></span>
+          </div>
+        </div>
+        <div style="display:flex;gap:.45rem;align-items:center;width:100%;max-width:400px;">
+          <input type="email" id="cta-email" placeholder="La tua email"
+            style="flex:1;background:rgba(30,41,59,.9);border:1px solid #334155;border-radius:.7rem;padding:.6rem .85rem;font-size:.78rem;color:#fff;outline:none;"
+            onfocus="this.style.borderColor='#6366f1'" onblur="this.style.borderColor='#334155'">
+          <button onclick="doSubscribe()" style="padding:.6rem 1rem;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:.7rem;font-size:.78rem;font-weight:700;color:#fff;cursor:pointer;white-space:nowrap;box-shadow:0 4px 14px rgba(99,102,241,.35);" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">Iscrivimi &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AI CONSULENZA -->
+  <section style="padding:0 .6rem .6rem;">
+    <div class="glass" style="border-radius:1rem;padding:.9rem 1.1rem;border:1px solid rgba(124,58,237,.28);">
+      <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.75rem;">
+        <div style="display:flex;align-items:center;gap:.6rem;">
+          <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#6366f1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i data-lucide="bot" style="width:19px;height:19px;color:#fff;"></i>
+          </div>
+          <div>
+            <div style="font-weight:800;font-size:.88rem;color:#fff;margin-bottom:.12rem;">Domande &amp; Consulenza AI</div>
+            <div style="font-size:.65rem;color:#64748b;">Hai una domanda su cybersecurity o protezione digitale?</div>
+          </div>
+        </div>
+        <button onclick="openModal()" style="padding:.55rem 1.2rem;background:linear-gradient(135deg,#7c3aed,#6366f1);border:none;border-radius:.7rem;font-size:.75rem;font-weight:800;color:#fff;cursor:pointer;display:flex;align-items:center;gap:.38rem;box-shadow:0 4px 14px rgba(124,58,237,.4);" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+          <i data-lucide="sparkles" style="width:13px;height:13px;"></i>
+          Chiedi all'AI di Securdata
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer style="text-align:center;padding:.55rem .6rem .9rem;font-size:.6rem;color:#334155;border-top:1px solid rgba(30,41,59,.8);">
+    <p style="margin:0;">© 2026 <a href="../" style="color:#6366f1;text-decoration:none;">securdata.pro</a> &middot; Proteggiamo il tuo valore digitale.</p>
+    <p style="margin:.18rem 0 0;">TEMPORE &egrave; uno strumento informativo gratuito. Meteo e dati di borsa hanno finalit&agrave; illustrative.</p>
+  </footer>
+</div><!-- /app -->
+
+<!-- AI MODAL -->
+<div id="ai-modal" onclick="closeModalOut(event)">
+  <div class="glass" style="border-radius:1.2rem;padding:1.4rem;width:100%;max-width:460px;margin:1rem;border:1px solid rgba(124,58,237,.4);position:relative;">
+    <button onclick="closeModal()" style="position:absolute;top:.7rem;right:.7rem;background:none;border:none;cursor:pointer;color:#64748b;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#64748b'">
+      <i data-lucide="x" style="width:17px;height:17px;"></i>
+    </button>
+    <div style="display:flex;align-items:center;gap:.7rem;margin-bottom:1rem;">
+      <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#6366f1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <i data-lucide="bot" style="width:20px;height:20px;color:#fff;"></i>
+      </div>
+      <div>
+        <div style="font-weight:800;color:#fff;font-size:.95rem;">AI di Securdata</div>
+        <div style="font-size:.65rem;color:#64748b;">Risposta garantita entro 24 ore</div>
+      </div>
+    </div>
+    <form id="ai-form" onsubmit="submitForm(event)" style="display:flex;flex-direction:column;gap:.65rem;">
+      <div>
+        <label style="display:block;font-size:.65rem;font-weight:700;color:#64748b;margin-bottom:.28rem;">Nome e Cognome</label>
+        <input type="text" id="f-name" required placeholder="Es. Mario Rossi" class="nano-inp" style="width:100%;">
+      </div>
+      <div>
+        <label style="display:block;font-size:.65rem;font-weight:700;color:#64748b;margin-bottom:.28rem;">Email aziendale</label>
+        <input type="email" id="f-email" required placeholder="nome@azienda.it" class="nano-inp" style="width:100%;">
+      </div>
+      <div>
+        <label style="display:block;font-size:.65rem;font-weight:700;color:#64748b;margin-bottom:.28rem;">Area di interesse</label>
+        <select id="f-topic" class="nano-inp" style="width:100%;">
+          <option value="cyber">Cybersecurity &amp; Data Protection</option>
+          <option value="ai">Consulenza AI per il Business</option>
+          <option value="digital">Protezione Patrimonio Digitale</option>
+          <option value="tempore">Analisi Spazio-Temporale</option>
+          <option value="other">Altro</option>
+        </select>
+      </div>
+      <div>
+        <label style="display:block;font-size:.65rem;font-weight:700;color:#64748b;margin-bottom:.28rem;">La tua domanda</label>
+        <textarea id="f-question" required rows="3" placeholder="Descrivi la tua necessit&agrave; o sfida..." class="nano-inp" style="width:100%;resize:none;font-family:inherit;"></textarea>
+      </div>
+      <button type="submit" style="width:100%;padding:.7rem;background:linear-gradient(135deg,#7c3aed,#6366f1);border:none;border-radius:.7rem;font-size:.82rem;font-weight:800;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.38rem;box-shadow:0 4px 14px rgba(124,58,237,.4);">
+        <i data-lucide="send" style="width:14px;height:14px;"></i> Invia la domanda
+      </button>
+    </form>
+    <div id="form-ok" style="display:none;text-align:center;padding:.9rem 0;">
+      <div style="font-size:2.4rem;margin-bottom:.5rem;">&#10004;&#65039;</div>
+      <h4 style="color:#fff;margin:0 0 .35rem;font-size:1.05rem;">Domanda ricevuta!</h4>
+      <p style="color:#64748b;font-size:.78rem;margin:0;">Ti risponderemo entro 24h all'indirizzo indicato.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+/* ── Lucide ── */
+if(typeof lucide!=='undefined') lucide.createIcons();
+/* ── sm-show helper ── */
+if(window.innerWidth>=640) document.querySelectorAll('.sm-show').forEach(el=>el.style.display='');
+
+const $  = id => document.getElementById(id);
+const pad = n  => String(n).padStart(2,'0');
+
+/* ══ CLOCK ══ */
+const CLK = $('clock-canvas');
+const CTX = CLK.getContext('2d');
+const SZ  = CLK.width, CX = SZ/2, CY = SZ/2, R = SZ/2-4;
+function drawHand(ctx,angle,len,w,color){
+  ctx.beginPath();ctx.moveTo(CX,CY);
+  ctx.lineTo(CX+Math.cos(angle)*len,CY+Math.sin(angle)*len);
+  ctx.strokeStyle=color;ctx.lineWidth=w;ctx.lineCap='round';ctx.stroke();
+}
+function drawClock(h,m,s){
+  const ctx=CTX;
+  ctx.clearRect(0,0,SZ,SZ);
+  /* face */
+  ctx.beginPath();ctx.arc(CX,CY,R,0,Math.PI*2);
+  const bg=ctx.createRadialGradient(CX-R*.3,CY-R*.3,0,CX,CY,R);
+  bg.addColorStop(0,'rgba(99,102,241,.25)');bg.addColorStop(1,'rgba(15,23,42,.95)');
+  ctx.fillStyle=bg;ctx.fill();
+  ctx.strokeStyle='rgba(99,102,241,.4)';ctx.lineWidth=1.5;ctx.stroke();
+  /* marks */
+  for(let i=0;i<12;i++){
+    const a=(i/12)*Math.PI*2-Math.PI/2,big=i%3===0;
+    const r1=R-(big?9:5),r2=R-2;
+    ctx.beginPath();ctx.moveTo(CX+Math.cos(a)*r1,CY+Math.sin(a)*r1);
+    ctx.lineTo(CX+Math.cos(a)*r2,CY+Math.sin(a)*r2);
+    ctx.strokeStyle=big?'rgba(148,163,184,.6)':'rgba(71,85,105,.5)';
+    ctx.lineWidth=big?1.8:1;ctx.stroke();
+  }
+  /* hands */
+  drawHand(ctx,((h%12)+m/60)/12*Math.PI*2-Math.PI/2,R*.52,2.5,'#e2e8f0');
+  drawHand(ctx,(m+s/60)/60*Math.PI*2-Math.PI/2,R*.71,2,'#6366f1');
+  drawHand(ctx,s/60*Math.PI*2-Math.PI/2,R*.78,1,'#ec4899');
+  /* dot */
+  ctx.beginPath();ctx.arc(CX,CY,3.5,0,Math.PI*2);ctx.fillStyle='#6366f1';ctx.fill();
+}
+const DAYS=['Domenica','Luned\u00ec','Marted\u00ec','Mercoled\u00ec','Gioved\u00ec','Venerd\u00ec','Sabato'];
+const MONTHS=['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
+function tickClock(){
+  const n=new Date(),h=n.getHours(),m=n.getMinutes(),s=n.getSeconds();
+  drawClock(h,m,s);
+  $('digital-time').textContent=pad(h)+':'+pad(m)+':'+pad(s);
+  $('digital-date').textContent=DAYS[n.getDay()]+', '+n.getDate()+' '+MONTHS[n.getMonth()]+' '+n.getFullYear();
+}
+tickClock();setInterval(tickClock,1000);
+
+/* ══ GEO ══ */
+(function(){
+  const n=new Date();
+  $('geo-date').textContent=n.getDate()+' '+MONTHS[n.getMonth()]+' '+n.getFullYear();
+  $('geo-day').textContent=DAYS[n.getDay()];
+  $('geo-tz').textContent='Fuso: '+Intl.DateTimeFormat().resolvedOptions().timeZone;
+  if(!navigator.geolocation){geoFail();loadWeatherFB();return;}
+  navigator.geolocation.getCurrentPosition(pos=>{
+    const lt=pos.coords.latitude.toFixed(2),ln=pos.coords.longitude.toFixed(2);
+    $('geo-info').innerHTML='<span style="color:#4ade80;font-size:.65rem;font-weight:600;">&#128205; '+lt+'\u00b0N\u00a0 '+ln+'\u00b0E</span>';
+    loadWeather(pos.coords.latitude,pos.coords.longitude);
+  },()=>{geoFail();loadWeatherFB();});
+})();
+function geoFail(){$('geo-info').innerHTML='<span style="color:#475569;font-size:.65rem;">Posizione non disponibile</span>';}
+
+/* ══ YEAR ARC ══ */
+(function(){
+  const n=new Date(),start=new Date(n.getFullYear(),0,1),end=new Date(n.getFullYear()+1,0,1);
+  const total=Math.round((end-start)/86400000),passed=Math.round((n-start)/86400000);
+  const pct=passed/total;
+  const week=Math.ceil(((n-start)/86400000+start.getDay()+1)/7);
+  const q=Math.floor(n.getMonth()/3)+1;
+  $('y-passed').textContent=passed;$('y-remain').textContent=total-passed;
+  $('y-week').textContent=week;$('y-quarter').textContent='Q'+q;
+  const c=$('year-arc'),ctx=c.getContext('2d'),sz=c.width,cx=sz/2,cy=sz/2,r=sz/2-6;
+  ctx.clearRect(0,0,sz,sz);
+  ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.strokeStyle='rgba(30,41,59,.8)';ctx.lineWidth=6;ctx.stroke();
+  ctx.beginPath();ctx.arc(cx,cy,r,-Math.PI/2,-Math.PI/2+pct*Math.PI*2);
+  const g=ctx.createLinearGradient(0,0,sz,sz);g.addColorStop(0,'#06b6d4');g.addColorStop(1,'#6366f1');
+  ctx.strokeStyle=g;ctx.lineWidth=6;ctx.lineCap='round';ctx.stroke();
+  ctx.fillStyle='#fff';ctx.font='bold 12px Inter,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText(Math.round(pct*100)+'%',cx,cy);
+})();
+
+/* ══ WEATHER ══ */
+const WX={0:'Soleggiato',1:'Prev. soleggiato',2:'Parz. nuvoloso',3:'Coperto',45:'Nebbia',
+  51:'Pioggirel.',53:'Pioggirel.',61:'Pioggia lieve',63:'Pioggia',65:'Pioggia intensa',
+  71:'Neve lieve',80:'Rovesci',81:'Rovesci',95:'Temporale'};
+function wxIcon(c){
+  if(c===0)return'☀️';if(c<=2)return'⛅';if(c===3)return'☁️';
+  if(c<=49)return'🌫️';if(c<=69)return'🌧️';if(c<=79)return'❄️';return'⛈️';
+}
+function renderWX(t,code,wind,hum){
+  const lbl=WX[code]||'Variabile';
+  $('wx-content').innerHTML=
+    '<div style="display:flex;align-items:center;gap:.65rem;">'+
+      '<span style="font-size:2rem;line-height:1;">'+wxIcon(code)+'</span>'+
+      '<div><div style="font-size:1.5rem;font-weight:800;color:#fff;line-height:1;">'+t+'&deg;C</div>'+
+      '<div style="font-size:.62rem;color:#94a3b8;margin-top:.1rem;">'+lbl+'</div></div>'+
+    '</div>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.32rem;margin-top:auto;">'+
+      '<div style="background:rgba(30,41,59,.6);border-radius:.48rem;padding:.32rem;text-align:center;">'+
+        '<div style="font-size:.82rem;font-weight:700;color:#60a5fa;">'+hum+'%</div>'+
+        '<div style="font-size:.54rem;color:#475569;">Umidit&agrave;</div></div>'+
+      '<div style="background:rgba(30,41,59,.6);border-radius:.48rem;padding:.32rem;text-align:center;">'+
+        '<div style="font-size:.82rem;font-weight:700;color:#67e8f9;">'+wind+'<span style="font-size:.57rem;font-weight:400;"> km/h</span></div>'+
+        '<div style="font-size:.54rem;color:#475569;">Vento</div></div>'+
+    '</div>';
+}
+function loadWeather(lt,ln){
+  fetch('https://api.open-meteo.com/v1/forecast?latitude='+lt+'&longitude='+ln+'&current=temperature_2m,weathercode,windspeed_10m,relativehumidity_2m&timezone=auto')
+    .then(r=>r.json()).then(d=>{const c=d.current;renderWX(Math.round(c.temperature_2m),c.weathercode,Math.round(c.windspeed_10m),c.relativehumidity_2m);}).catch(loadWeatherFB);
+}
+function loadWeatherFB(){renderWX(18,1,12,52);}
+
+/* ══ MARKETS ══ */
+const MKTS=[{id:'mkt-ny',f:'🇺🇸',n:'S&P 500',b:5248},{id:'mkt-lon',f:'🇬🇧',n:'FTSE 100',b:7892},{id:'mkt-tyo',f:'🇯🇵',n:'Nikkei',b:38540},{id:'mkt-btc',f:'₿',n:'Bitcoin',b:68200}];
+function renderMkts(){
+  MKTS.forEach(m=>{
+    const cp=(Math.random()*4-2).toFixed(2),c=parseFloat(cp),up=c>=0;
+    const px=(m.b*(1+c/100)).toFixed(m.b>1000?0:2);
+    const el=$(m.id);if(!el)return;
+    el.innerHTML='<span style="font-size:.62rem;color:#64748b;">'+m.f+'&nbsp;'+m.n+'</span>'+
+      '<span style="font-weight:700;color:#fff;font-size:.72rem;">'+parseFloat(px).toLocaleString('it')+'</span>'+
+      '<span style="font-size:.64rem;font-weight:700;color:'+(up?'#4ade80':'#f87171')+';">'+(up?'&#9650;':'&#9660;')+'&nbsp;'+Math.abs(cp)+'%</span>';
+  });
+}
+renderMkts();setInterval(renderMkts,30000);
+
+/* ══ STOIC QUOTES ══ */
+const QQ=[
+  {q:'Omnia aliena sunt, tempus tantum nostrum est. Tutto \u00e8 altrui, solo il tempo \u00e8 nostro.',a:'Seneca'},
+  {q:'Non sono le cose a turbarci, ma le opinioni che abbiamo sulle cose.',a:'Epitteto'},
+  {q:'Ogni giorno che passa \u00e8 un giorno in meno: cogli il frutto di questo giorno.',a:'Seneca'},
+  {q:"L'uomo saggio non rimanda il vivere, ma vive ora.",a:'Seneca'},
+  {q:"Non vivere come se dovessi vivere diecimila anni. La morte incombe. Finch\u00e9 vivi, renditi migliore.",a:'Marco Aurelio'},
+  {q:'Ricorda che la tua vita non \u00e8 lunga; bisogna che tu sia rapido nell\u2019agire.',a:'Marco Aurelio'},
+  {q:'Il punto di forza non sta nel decidere di vivere bene un giorno; sta nel continuare ogni giorno.',a:'Epitteto'},
+  {q:'Il tempo \u00e8 una delle poche cose veramente tue. Non sprecarlo sul conto altrui.',a:'Seneca'},
+  {q:'Ogni istante che passa non torner\u00e0 mai pi\u00f9; medita sulle cose che vuoi fare, e falle.',a:'Marco Aurelio'},
+  {q:'Il coraggio non \u00e8 assenza di paura, ma la decisione che qualcosa \u00e8 pi\u00f9 importante della paura.',a:'Epitteto'},
+];
+let qi=Math.floor(Math.random()*QQ.length);
+function renderQ(){$('stoic-q').textContent='\u00ab\u202f'+QQ[qi].q+'\u202f\u00bb';$('stoic-a').textContent='\u2014 '+QQ[qi].a;}
+function nextQuote(){qi=(qi+1)%QQ.length;renderQ();}
+renderQ();
+
+/* ══ MOON ══ */
+(function(){
+  const n=new Date(),kn=new Date(2000,0,6,18,14),SYN=29.530588853;
+  const diff=(n-kn)/(1000*60*60*24),age=((diff%SYN)+SYN)%SYN;
+  const ill=Math.round((1-Math.cos(age/SYN*2*Math.PI))/2*100);
+  const PH=[{i:'\uD83C\uDF11',n:'Luna Nuova',mx:1.85},{i:'\uD83C\uDF12',n:'Luna Crescente',mx:7.38},{i:'\uD83C\uDF13',n:'Primo Quarto',mx:11.1},{i:'\uD83C\uDF14',n:'Gibbosa Cresc.',mx:14.77},{i:'\uD83C\uDF15',n:'Luna Piena',mx:16.62},{i:'\uD83C\uDF16',n:'Gibbosa Cal.',mx:22.15},{i:'\uD83C\uDF17',n:'Ultimo Quarto',mx:25.84},{i:'\uD83C\uDF18',n:'Luna Calante',mx:29.53}];
+  const ph=PH.find(p=>age<p.mx)||PH[PH.length-1];
+  $('moon-emoji').textContent=ph.i;$('moon-name').textContent=ph.n;
+  $('moon-illum').textContent='Illuminazione: '+ill+'%';$('moon-aged').textContent='Et\u00e0: '+age.toFixed(1)+' giorni';
+  const dtf=age<14.77?14.77-age:SYN-age+14.77,nf=new Date(n.getTime()+dtf*86400000);
+  $('moon-next').textContent=nf.toLocaleDateString('it-IT',{day:'2-digit',month:'short'});
+  /* Zodiac — use a numeric day-of-year comparison to avoid month-boundary confusion */
+  const ZD=[[20,1,'\u2652 Acquario'],[19,2,'\u2653 Pesci'],[20,3,'\u2648 Ariete'],[19,4,'\u2649 Toro'],[20,5,'\u264A Gemelli'],[21,6,'\u264B Cancro'],[22,7,'\u264C Leone'],[22,8,'\u264D Vergine'],[22,9,'\u264E Bilancia'],[22,10,'\u264F Scorpione'],[22,11,'\u2650 Sagittario'],[21,12,'\u2651 Capricorno']];
+  const d=n.getDate(),mo=n.getMonth()+1;
+  // Convert each zodiac start to a comparable integer (mo*100+day)
+  const cur=mo*100+d;
+  let sign=ZD[ZD.length-1][2]; // default to last sign
+  for(let i=0;i<ZD.length;i++){
+    const[sd,sm,sn]=ZD[i];
+    const[nd2,nm2]=ZD[(i+1)%ZD.length];
+    const start=sm*100+sd, end=nm2*100+nd2-1;
+    if(start<=end){if(cur>=start&&cur<=end){sign=sn;break;}}
+    else{if(cur>=start||cur<=end){sign=sn;break;}} // wraps year boundary
+  }
+  $('zodiac-sign').textContent=sign;
+})();
+
+/* ══ LIFE BAR ══ */
+const sby=localStorage.getItem('tp_by');if(sby){$('birth-year').value=sby;calcLife();}
+function calcLife(){
+  const by=parseInt($('birth-year').value),max=new Date().getFullYear()-1;
+  if(!by||by<1920||by>max)return;
+  localStorage.setItem('tp_by',by);
+  const LE=82,n=new Date(),age=n.getFullYear()-by+n.getMonth()/12;
+  const yp=Math.min(100,+(age/LE*100).toFixed(1));
+  const wp=Math.min(100,+(age*52.18/(LE*52.18)*100).toFixed(1));
+  const dp=Math.min(100,+(age*365.25/(LE*365.25)*100).toFixed(1));
+  const dl=Math.round(LE*365-age*365);
+  $('yr-pct').textContent=yp+'%';$('wk-pct').textContent=wp+'%';$('dy-pct').textContent=dp+'%';
+  $('life-input').style.display='none';$('life-bars').style.display='flex';
+  $('life-sum').textContent='\u2248 '+Math.round(dl/365)+' anni \u00b7 '+Math.round(dl/30)+' mesi \u00b7 '+dl.toLocaleString('it')+' giorni rimanenti (aspettativa media 82 anni)';
+  setTimeout(()=>{$('yr-bar').style.width=yp+'%';$('wk-bar').style.width=wp+'%';$('dy-bar').style.width=dp+'%';},80);
+}
+
+/* ══ LIVE USERS ══ */
+const MIN_U=75,MAX_U=260,VAR=5;let lb=120+Math.floor(Math.random()*60);
+setInterval(()=>{lb=Math.max(MIN_U,Math.min(MAX_U,lb+Math.floor(Math.random()*11)-VAR));$('live-users').textContent=lb;},5000);
+
+/* ══ REPORT COUNTER ══ */
+let rc=parseInt(localStorage.getItem('tp_rc')||'12');
+function syncRC(){$('reports-bar').textContent=rc;$('cta-reports').textContent=rc;}
+syncRC();
+
+/* ══ REACTIONS ══ */
+['heart','bulb','fire'].forEach(k=>{$('r-'+k).textContent=localStorage.getItem('tp_r_'+k)||'0';});
+function react(t){const e=$('r-'+t),v=parseInt(e.textContent)+1;e.textContent=v;localStorage.setItem('tp_r_'+t,v);}
+
+/* ══ SHARE ══ */
+const su=encodeURIComponent('https://securdata.pro/tempore/'),sm2=encodeURIComponent('Ho scoperto TEMPORE di securdata.pro: analisi spazio-temporale gratuita! \u23f0');
+$('sh-li').href='https://www.linkedin.com/sharing/share-offsite/?url='+su;
+$('sh-wa').href='https://wa.me/?text='+sm2+'%20'+su;
+
+/* ══ EMAIL SUBSCRIBE ══ */
+function doSubscribe(){
+  const inp=$('cta-email'),v=inp.value.trim();
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)){inp.style.borderColor='#ef4444';setTimeout(()=>{inp.style.borderColor='#334155';},2000);return;}
+  if(rc>1){rc--;localStorage.setItem('tp_rc',rc);syncRC();}
+  inp.value='';const btn=inp.nextElementSibling;btn.textContent='\u2705 Iscritto!';btn.disabled=true;
+  setTimeout(()=>{btn.textContent='Iscrivimi \u2192';btn.disabled=false;},3500);
+}
+
+/* ══ AI MODAL ══ */
+function openModal(){$('ai-modal').classList.add('open');document.body.style.overflow='hidden';}
+function closeModal(){$('ai-modal').classList.remove('open');document.body.style.overflow='';}
+function closeModalOut(e){if(e.target===$('ai-modal'))closeModal();}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+function submitForm(e){
+  e.preventDefault();
+  $('ai-form').style.display='none';$('form-ok').style.display='block';
+  setTimeout(()=>{closeModal();setTimeout(()=>{$('ai-form').style.display='';$('form-ok').style.display='none';$('ai-form').reset();},600);},3800);
+}
+</script>
+</body>
+</html>
