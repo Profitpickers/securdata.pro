@@ -11,18 +11,19 @@
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
     *, *::before, *::after { box-sizing: border-box; }
     :root {
-      --nav-h: 52px;
-      --bar-h: 30px;
-      --top-h: 82px;
+      --nav-h: 56px;
+      --bar-h: 34px;
+      --top-h: 90px;
       --c1: #6366f1;
       --c2: #a855f7;
       --c3: #ec4899;
     }
+    html { font-size: 19px; }
     html, body { height: 100%; margin: 0; }
     body {
       font-family: 'Inter', system-ui, sans-serif;
       background: #020617;
-      color: #e2e8f0;
+      color: #f1f5f9;
       overflow-x: hidden;
     }
     body::before {
@@ -37,15 +38,15 @@
       z-index: 0;
     }
     .glass {
-      background: rgba(15,23,42,0.72);
-      border: 1px solid rgba(99,102,241,.18);
+      background: rgba(15,23,42,0.78);
+      border: 1px solid rgba(99,102,241,.28);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
       transition: border-color .25s, box-shadow .25s;
     }
     .glass:hover {
       border-color: rgba(99,102,241,.4);
-      box-shadow: 0 0 20px rgba(99,102,241,.12);
+      box-shadow: 0 0 24px rgba(99,102,241,.25);
     }
     #topnav {
       position: fixed; top: 0; left: 0; right: 0;
@@ -79,14 +80,14 @@
       gap: .6rem;
       padding: .6rem;
       flex: 1;
-      height: calc(100vh - var(--top-h));
+      min-height: calc(100vh - var(--top-h)); height: auto;
     }
     .card {
       border-radius: 1rem;
-      padding: .85rem 1rem;
+      padding: 1rem 1.1rem;
       display: flex;
       flex-direction: column;
-      gap: .45rem;
+      gap: .6rem;
       overflow: hidden;
     }
     .card-hd {
@@ -95,27 +96,27 @@
       gap: .4rem;
       flex-shrink: 0;
     }
-    .card-hd svg { width: 13px; height: 13px; flex-shrink: 0; }
+    .card-hd svg { width: 20px; height: 20px; flex-shrink: 0; }
     .card-hd span {
-      font-size: .62rem;
+      font-size: 1rem;
       font-weight: 700;
       letter-spacing: .1em;
       text-transform: uppercase;
-      color: #94a3b8;
+      color: #f1f5f9;
     }
     #digital-time {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 1.55rem;
+      font-size: 3rem;
       font-weight: 600;
       text-align: center;
       color: #fff;
       letter-spacing: .04em;
       line-height: 1;
     }
-    #digital-date { font-size: .62rem; text-align: center; color: #64748b; }
+    #digital-date { font-size: 1.05rem; text-align: center; color: #cbd5e1; }
     .lbar-track {
-      height: 5px;
-      background: rgba(30,41,59,.8);
+      height: 7px;
+      background: rgba(30,41,59,.9);
       border-radius: 999px;
       overflow: hidden;
     }
@@ -131,7 +132,7 @@
       padding: .28rem .45rem;
       border-radius: .45rem;
       background: rgba(30,41,59,.5);
-      font-size: .67rem;
+      font-size: 1rem;
       flex: 1;
     }
     .pulse-dot {
@@ -161,26 +162,28 @@
     @keyframes spin { to { transform: rotate(360deg); } }
     @media (max-width: 1023px) {
       #widget-grid { grid-template-columns: repeat(2,1fr); grid-template-rows: auto; height: auto; }
+      #forex-sessions { grid-template-columns: 1fr 1fr; }
     }
     @media (max-width: 639px) {
       #widget-grid { grid-template-columns: 1fr; }
-      #digital-time { font-size: 1.2rem; }
+      #digital-time { font-size: 2.4rem; }
+      #forex-sessions { grid-template-columns: 1fr; }
     }
     .nano-inp {
       background: rgba(30,41,59,.8);
       border: 1px solid #334155;
       border-radius: .5rem;
-      padding: .32rem .55rem;
-      font-size: .72rem;
+      padding: .42rem .65rem;
+      font-size: 1rem;
       color: #fff;
       outline: none;
     }
     .nano-inp:focus { border-color: #6366f1; }
     .nano-btn {
-      padding: .32rem .6rem;
+      padding: .38rem .7rem;
       background: #6366f1;
       border: none; border-radius: .5rem;
-      font-size: .7rem; font-weight: 700;
+      font-size: 1rem; font-weight: 700;
       color: #fff; cursor: pointer;
       white-space: nowrap; flex-shrink: 0;
     }
@@ -193,15 +196,15 @@
 <nav id="topnav">
   <div style="max-width:1280px;margin:0 auto;height:100%;display:flex;align-items:center;justify-content:space-between;padding:0 1rem;">
     <a href="../" style="display:flex;align-items:center;gap:.5rem;text-decoration:none;opacity:.9;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.9">
-      <img src="../logo-00-securdata-pro.svg?v=20260329" alt="SECURDATA.PRO" style="height:30px;width:auto;border-radius:50%;">
-      <span style="font-weight:700;font-size:.85rem;color:#fff;letter-spacing:.03em;display:none;" class="sm-show">SECURDATA.PRO</span>
+      <img src="../logo-00-securdata-pro.svg?v=20260329" alt="SECURDATA.PRO" style="height:36px;width:auto;border-radius:50%;">
+      <span style="font-weight:700;font-size:1rem;color:#fff;letter-spacing:.03em;display:none;" class="sm-show">SECURDATA.PRO</span>
     </a>
     <div style="display:flex;align-items:center;gap:.5rem;">
-      <span class="grad" style="font-size:.95rem;font-weight:900;letter-spacing:.12em;">TEMPORE</span>
-      <span style="font-size:.6rem;color:#64748b;font-style:italic;padding:.12rem .4rem;border:1px solid rgba(99,102,241,.25);border-radius:.35rem;">Risorse Gratuite</span>
+      <span class="grad" style="font-size:1.1rem;font-weight:900;letter-spacing:.12em;">TEMPORE</span>
+      <span style="font-size:.85rem;color:#a5b4fc;font-style:italic;padding:.15rem .5rem;border:1px solid rgba(99,102,241,.4);border-radius:.35rem;background:rgba(99,102,241,.08);">Risorse Gratuite</span>
     </div>
-    <a href="../" style="display:flex;align-items:center;gap:.3rem;font-size:.72rem;color:#94a3b8;text-decoration:none;padding:.28rem .55rem;border-radius:.45rem;" onmouseover="this.style.color='#818cf8'" onmouseout="this.style.color='#94a3b8'">
-      <i data-lucide="arrow-left" style="width:13px;height:13px;"></i>
+    <a href="../" style="display:flex;align-items:center;gap:.3rem;font-size:.85rem;color:#94a3b8;text-decoration:none;padding:.28rem .55rem;border-radius:.45rem;" onmouseover="this.style.color='#818cf8'" onmouseout="this.style.color='#94a3b8'">
+      <i data-lucide="arrow-left" style="width:16px;height:16px;"></i>
       <span style="display:none;" class="sm-show">Torna al sito</span>
     </a>
   </div>
@@ -210,22 +213,22 @@
 <!-- SOCIAL PROOF BAR -->
 <div id="proofbar">
   <div style="max-width:1280px;margin:0 auto;height:100%;display:flex;align-items:center;justify-content:space-between;padding:0 1rem;gap:.75rem;">
-    <div style="display:flex;align-items:center;gap:.75rem;font-size:.62rem;">
+    <div style="display:flex;align-items:center;gap:.75rem;font-size:1rem;">
       <span style="display:flex;align-items:center;gap:.3rem;">
         <span class="pulse-dot"></span>
         <span style="color:#4ade80;font-weight:700;" id="live-users">142</span>
-        <span style="color:#64748b;">persone online</span>
+        <span style="color:#cbd5e1;">persone online</span>
       </span>
-      <span style="color:#334155;" class="sm-show">·</span>
-      <span style="color:#64748b;display:none;" class="sm-show">
-        <i data-lucide="bar-chart-2" style="width:10px;height:10px;color:#6366f1;vertical-align:middle;"></i>
-        <strong style="color:#cbd5e1;">15.400+</strong> Analisi effettuate
+      <span style="color:#64748b;" class="sm-show">·</span>
+      <span style="color:#cbd5e1;display:none;" class="sm-show">
+        <i data-lucide="bar-chart-2" style="width:13px;height:13px;color:#6366f1;vertical-align:middle;"></i>
+        <strong style="color:#e2e8f0;">15.400+</strong> Analisi effettuate
       </span>
     </div>
-    <div style="display:flex;align-items:center;gap:.3rem;font-size:.62rem;">
-      <i data-lucide="zap" style="width:10px;height:10px;color:#f59e0b;flex-shrink:0;"></i>
+    <div style="display:flex;align-items:center;gap:.3rem;font-size:1rem;">
+      <i data-lucide="zap" style="width:13px;height:13px;color:#f59e0b;flex-shrink:0;"></i>
       <span style="color:#f59e0b;font-weight:700;" id="reports-bar">12</span>
-      <span style="color:#64748b;">/50 Report AI oggi</span>
+      <span style="color:#cbd5e1;">/50 Report AI oggi</span>
     </div>
   </div>
 </div>
@@ -242,7 +245,7 @@
         <i data-lucide="clock" style="color:#6366f1;"></i>
         <span>Orologio</span>
       </div>
-      <canvas id="clock-canvas" width="100" height="100" style="display:block;margin:0 auto;"></canvas>
+      <canvas id="clock-canvas" width="180" height="180" style="display:block;margin:0 auto;max-width:100%;"></canvas>
       <div id="digital-time"></div>
       <div id="digital-date"></div>
     </div>
@@ -253,14 +256,14 @@
         <i data-lucide="map-pin" style="color:#6366f1;"></i>
         <span>Posizione &amp; Data</span>
       </div>
-      <div id="geo-info" style="font-size:.67rem;color:#94a3b8;display:flex;align-items:center;gap:.3rem;">
-        <i data-lucide="loader-2" style="width:11px;height:11px;animation:spin 1s linear infinite;"></i>
+      <div id="geo-info" style="font-size:1rem;color:#cbd5e1;display:flex;align-items:center;gap:.3rem;">
+        <i data-lucide="loader-2" style="width:16px;height:16px;animation:spin 1s linear infinite;"></i>
         Rilevamento...
       </div>
       <div style="margin-top:auto;">
-        <div id="geo-date" style="font-size:1.25rem;font-weight:800;color:#fff;line-height:1.1;"></div>
-        <div id="geo-day"  style="font-size:.72rem;font-weight:600;color:#818cf8;margin-top:.15rem;"></div>
-        <div id="geo-tz"   style="font-size:.58rem;color:#475569;margin-top:.2rem;"></div>
+        <div id="geo-date" style="font-size:2rem;font-weight:800;color:#fff;line-height:1.1;"></div>
+        <div id="geo-day"  style="font-size:1.05rem;font-weight:600;color:#a5b4fc;margin-top:.15rem;"></div>
+        <div id="geo-tz"   style="font-size:.9rem;color:#94a3b8;margin-top:.2rem;"></div>
       </div>
     </div>
 
@@ -276,24 +279,24 @@
       </div>
       <div id="life-bars" style="display:none;flex-direction:column;gap:.5rem;flex:1;">
         <div>
-          <div style="display:flex;justify-content:space-between;font-size:.6rem;color:#64748b;margin-bottom:.18rem;">
+          <div style="display:flex;justify-content:space-between;font-size:1rem;color:#cbd5e1;margin-bottom:.2rem;">
             <span>Anni di vita</span><span id="yr-pct" style="color:#a855f7;font-weight:600;">0%</span>
           </div>
           <div class="lbar-track"><div id="yr-bar" class="lbar-fill"></div></div>
         </div>
         <div>
-          <div style="display:flex;justify-content:space-between;font-size:.6rem;color:#64748b;margin-bottom:.18rem;">
+          <div style="display:flex;justify-content:space-between;font-size:1rem;color:#cbd5e1;margin-bottom:.2rem;">
             <span>Settimane</span><span id="wk-pct" style="color:#6366f1;font-weight:600;">0%</span>
           </div>
           <div class="lbar-track"><div id="wk-bar" class="lbar-fill"></div></div>
         </div>
         <div>
-          <div style="display:flex;justify-content:space-between;font-size:.6rem;color:#64748b;margin-bottom:.18rem;">
+          <div style="display:flex;justify-content:space-between;font-size:1rem;color:#cbd5e1;margin-bottom:.2rem;">
             <span>Giorni</span><span id="dy-pct" style="color:#ec4899;font-weight:600;">0%</span>
           </div>
           <div class="lbar-track"><div id="dy-bar" class="lbar-fill" style="background:linear-gradient(90deg,#ec4899,#f43f5e);"></div></div>
         </div>
-        <div id="life-sum" style="font-size:.58rem;color:#475569;margin-top:auto;line-height:1.4;"></div>
+        <div id="life-sum" style="font-size:.9rem;color:#94a3b8;margin-top:auto;line-height:1.4;"></div>
       </div>
     </div>
 
@@ -304,23 +307,23 @@
         <span>Analisi Anno 2026</span>
       </div>
       <div style="display:flex;align-items:center;gap:.7rem;flex:1;">
-        <canvas id="year-arc" width="76" height="76" style="display:block;flex-shrink:0;"></canvas>
+        <canvas id="year-arc" width="120" height="120" style="display:block;flex-shrink:0;"></canvas>
         <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:.32rem;">
           <div style="background:rgba(30,41,59,.6);border-radius:.55rem;padding:.38rem;text-align:center;">
-            <div id="y-passed"  style="font-size:1rem;font-weight:800;color:#06b6d4;line-height:1;">-</div>
-            <div style="font-size:.55rem;color:#475569;margin-top:.08rem;">giorni trascorsi</div>
+            <div id="y-passed"  style="font-size:1.5rem;font-weight:800;color:#06b6d4;line-height:1;">-</div>
+            <div style="font-size:.9rem;color:#94a3b8;margin-top:.1rem;">giorni trascorsi</div>
           </div>
           <div style="background:rgba(30,41,59,.6);border-radius:.55rem;padding:.38rem;text-align:center;">
-            <div id="y-remain"  style="font-size:1rem;font-weight:800;color:#a855f7;line-height:1;">-</div>
-            <div style="font-size:.55rem;color:#475569;margin-top:.08rem;">giorni rimanenti</div>
+            <div id="y-remain"  style="font-size:1.5rem;font-weight:800;color:#a855f7;line-height:1;">-</div>
+            <div style="font-size:.9rem;color:#94a3b8;margin-top:.1rem;">giorni rimanenti</div>
           </div>
           <div style="background:rgba(30,41,59,.6);border-radius:.55rem;padding:.38rem;text-align:center;">
-            <div id="y-week"    style="font-size:1rem;font-weight:800;color:#6366f1;line-height:1;">-</div>
-            <div style="font-size:.55rem;color:#475569;margin-top:.08rem;">settimana n°</div>
+            <div id="y-week"    style="font-size:1.5rem;font-weight:800;color:#6366f1;line-height:1;">-</div>
+            <div style="font-size:.9rem;color:#94a3b8;margin-top:.1rem;">settimana n°</div>
           </div>
           <div style="background:rgba(30,41,59,.6);border-radius:.55rem;padding:.38rem;text-align:center;">
-            <div id="y-quarter" style="font-size:1rem;font-weight:800;color:#f59e0b;line-height:1;">-</div>
-            <div style="font-size:.55rem;color:#475569;margin-top:.08rem;">trimestre</div>
+            <div id="y-quarter" style="font-size:1.5rem;font-weight:800;color:#f59e0b;line-height:1;">-</div>
+            <div style="font-size:.9rem;color:#94a3b8;margin-top:.1rem;">trimestre</div>
           </div>
         </div>
       </div>
@@ -333,8 +336,8 @@
         <span>Meteo Locale</span>
       </div>
       <div id="wx-content" style="display:flex;flex-direction:column;gap:.38rem;flex:1;justify-content:center;">
-        <div style="display:flex;align-items:center;gap:.45rem;font-size:.67rem;color:#64748b;">
-          <i data-lucide="loader-2" style="width:12px;height:12px;animation:spin 1s linear infinite;"></i>
+        <div style="display:flex;align-items:center;gap:.45rem;font-size:1rem;color:#cbd5e1;">
+          <i data-lucide="loader-2" style="width:16px;height:16px;animation:spin 1s linear infinite;"></i>
           Recupero meteo...
         </div>
       </div>
@@ -350,9 +353,10 @@
         <div id="mkt-ny"  class="mkt-row"></div>
         <div id="mkt-lon" class="mkt-row"></div>
         <div id="mkt-tyo" class="mkt-row"></div>
-        <div id="mkt-btc" class="mkt-row"></div>
+        <div id="mkt-btc"   class="mkt-row"></div>
+        <div id="mkt-brent" class="mkt-row"></div>
       </div>
-      <div style="font-size:.54rem;color:#334155;">Dati simulativi — solo a scopo illustrativo</div>
+      <div style="font-size:.9rem;color:#94a3b8;">Dati simulativi — solo a scopo illustrativo</div>
     </div>
 
     <!-- 7 CITAZIONE STOICA -->
@@ -361,10 +365,10 @@
         <i data-lucide="book-open" style="color:#f59e0b;"></i>
         <span>Saggezza Stoica</span>
       </div>
-      <blockquote id="stoic-q" style="font-style:italic;font-size:.7rem;line-height:1.55;color:#cbd5e1;flex:1;padding:.25rem 0;margin:0;"></blockquote>
-      <div id="stoic-a" style="font-size:.62rem;font-weight:700;color:#818cf8;"></div>
-      <button onclick="nextQuote()" style="align-self:flex-start;display:flex;align-items:center;gap:.28rem;font-size:.6rem;color:#475569;background:none;border:none;cursor:pointer;padding:0;margin-top:.1rem;" onmouseover="this.style.color='#94a3b8'" onmouseout="this.style.color='#475569'">
-        <i data-lucide="refresh-cw" style="width:10px;height:10px;"></i> Nuova
+      <blockquote id="stoic-q" style="font-style:italic;font-size:1.05rem;line-height:1.55;color:#f1f5f9;flex:1;padding:.25rem 0;margin:0;"></blockquote>
+      <div id="stoic-a" style="font-size:1rem;font-weight:700;color:#c4b5fd;"></div>
+      <button onclick="nextQuote()" style="align-self:flex-start;display:flex;align-items:center;gap:.28rem;font-size:.95rem;color:#94a3b8;background:none;border:none;cursor:pointer;padding:0;margin-top:.1rem;" onmouseover="this.style.color='#cbd5e1'" onmouseout="this.style.color='#94a3b8'">
+        <i data-lucide="refresh-cw" style="width:15px;height:15px;"></i> Nuova
       </button>
     </div>
 
@@ -375,21 +379,21 @@
         <span>Ciclo Astrale</span>
       </div>
       <div style="display:flex;align-items:center;gap:.65rem;flex:1;">
-        <div id="moon-emoji" style="font-size:2.4rem;line-height:1;flex-shrink:0;"></div>
+        <div id="moon-emoji" style="font-size:3.5rem;line-height:1;flex-shrink:0;"></div>
         <div style="flex:1;">
-          <div id="moon-name"  style="font-size:.82rem;font-weight:700;color:#fff;line-height:1.2;"></div>
-          <div id="moon-illum" style="font-size:.6rem;color:#94a3b8;margin-top:.13rem;"></div>
-          <div id="moon-aged"  style="font-size:.57rem;color:#475569;margin-top:.1rem;"></div>
+          <div id="moon-name"  style="font-size:1.15rem;font-weight:700;color:#f1f5f9;line-height:1.2;"></div>
+          <div id="moon-illum" style="font-size:1rem;color:#e2e8f0;margin-top:.13rem;"></div>
+          <div id="moon-aged"  style="font-size:.95rem;color:#94a3b8;margin-top:.1rem;"></div>
         </div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.32rem;margin-top:auto;">
         <div style="background:rgba(30,41,59,.6);border-radius:.5rem;padding:.32rem;text-align:center;">
-          <div id="moon-next"   style="font-size:.72rem;font-weight:700;color:#fde68a;"></div>
-          <div style="font-size:.54rem;color:#475569;">Luna piena</div>
+          <div id="moon-next"   style="font-size:1.05rem;font-weight:700;color:#fde68a;"></div>
+          <div style="font-size:.9rem;color:#94a3b8;">Luna piena</div>
         </div>
         <div style="background:rgba(30,41,59,.6);border-radius:.5rem;padding:.32rem;text-align:center;">
-          <div id="zodiac-sign" style="font-size:.72rem;font-weight:700;color:#c084fc;"></div>
-          <div style="font-size:.54rem;color:#475569;">Segno zodiacale</div>
+          <div id="zodiac-sign" style="font-size:1.05rem;font-weight:700;color:#c084fc;"></div>
+          <div style="font-size:.9rem;color:#94a3b8;">Segno zodiacale</div>
         </div>
       </div>
     </div>
@@ -402,31 +406,41 @@
       </div>
       <div style="display:flex;justify-content:space-around;align-items:center;flex:1;padding:.15rem 0;">
         <button class="rxn" onclick="react('heart')" style="display:flex;flex-direction:column;align-items:center;gap:.18rem;">
-          <span style="font-size:1.5rem;">❤️</span>
-          <span id="r-heart" style="font-size:.62rem;font-weight:700;color:#64748b;">0</span>
+          <span style="font-size:2rem;">❤️</span>
+          <span id="r-heart" style="font-size:1rem;font-weight:700;color:#cbd5e1;">0</span>
         </button>
         <button class="rxn" onclick="react('bulb')" style="display:flex;flex-direction:column;align-items:center;gap:.18rem;">
-          <span style="font-size:1.5rem;">💡</span>
-          <span id="r-bulb" style="font-size:.62rem;font-weight:700;color:#64748b;">0</span>
+          <span style="font-size:2rem;">💡</span>
+          <span id="r-bulb" style="font-size:1rem;font-weight:700;color:#cbd5e1;">0</span>
         </button>
         <button class="rxn" onclick="react('fire')" style="display:flex;flex-direction:column;align-items:center;gap:.18rem;">
-          <span style="font-size:1.5rem;">🔥</span>
-          <span id="r-fire" style="font-size:.62rem;font-weight:700;color:#64748b;">0</span>
+          <span style="font-size:2rem;">🔥</span>
+          <span id="r-fire" style="font-size:1rem;font-weight:700;color:#cbd5e1;">0</span>
         </button>
       </div>
       <div style="border-top:1px solid rgba(30,41,59,.8);padding-top:.45rem;display:flex;flex-direction:column;gap:.38rem;">
-        <p style="font-size:.6rem;color:#475569;text-align:center;margin:0;">Condividi TEMPORE con la tua rete</p>
+        <p style="font-size:.95rem;color:#94a3b8;text-align:center;margin:0;">Condividi TEMPORE con la tua rete</p>
         <div style="display:flex;gap:.38rem;justify-content:center;">
           <a id="sh-li" href="#" target="_blank" rel="noopener noreferrer"
-            style="display:flex;align-items:center;gap:.28rem;padding:.28rem .55rem;background:rgba(10,102,194,.18);border:1px solid rgba(10,102,194,.3);border-radius:.45rem;font-size:.6rem;font-weight:700;color:#7eb3f8;text-decoration:none;">
-            <i data-lucide="linkedin" style="width:10px;height:10px;"></i> LinkedIn
+            style="display:flex;align-items:center;gap:.28rem;padding:.35rem .65rem;background:rgba(10,102,194,.18);border:1px solid rgba(10,102,194,.3);border-radius:.45rem;font-size:.95rem;font-weight:700;color:#93c5fd;text-decoration:none;">
+            <i data-lucide="linkedin" style="width:15px;height:15px;"></i> LinkedIn
           </a>
           <a id="sh-wa" href="#" target="_blank" rel="noopener noreferrer"
-            style="display:flex;align-items:center;gap:.28rem;padding:.28rem .55rem;background:rgba(37,211,102,.15);border:1px solid rgba(37,211,102,.3);border-radius:.45rem;font-size:.6rem;font-weight:700;color:#25D366;text-decoration:none;">
-            <i data-lucide="message-circle" style="width:10px;height:10px;"></i> WhatsApp
+            style="display:flex;align-items:center;gap:.28rem;padding:.35rem .65rem;background:rgba(37,211,102,.15);border:1px solid rgba(37,211,102,.3);border-radius:.45rem;font-size:.95rem;font-weight:700;color:#4ade80;text-decoration:none;">
+            <i data-lucide="message-circle" style="width:15px;height:15px;"></i> WhatsApp
           </a>
         </div>
       </div>
+    </div>
+
+
+    <!-- 10 SESSIONI FOREX -->
+    <div class="card glass" style="grid-column:1/-1;">
+      <div class="card-hd">
+        <i data-lucide="globe-2" style="color:#6366f1;"></i>
+        <span>Sessioni Forex — Orari Italiani (CEST/CET)</span>
+      </div>
+      <div id="forex-sessions" style="display:grid;grid-template-columns:repeat(3,1fr);gap:.55rem;flex:1;"></div>
     </div>
 
   </main>
@@ -437,21 +451,21 @@
       <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.85rem;">
         <div>
           <div style="display:flex;align-items:center;gap:.38rem;margin-bottom:.28rem;">
-            <i data-lucide="mail" style="width:15px;height:15px;color:#6366f1;"></i>
-            <span style="font-weight:800;font-size:.9rem;color:#fff;">Report Giornaliero</span>
+            <i data-lucide="mail" style="width:18px;height:18px;color:#818cf8;"></i>
+            <span style="font-weight:800;font-size:1.25rem;color:#f1f5f9;">Report Giornaliero</span>
           </div>
-          <p style="font-size:.68rem;color:#64748b;margin:0 0 .28rem;max-width:30rem;">Ricevi ogni mattina analisi spazio-temporale, quote di mercato e citazione stoica nella tua inbox.</p>
-          <div style="display:flex;align-items:center;gap:.28rem;font-size:.65rem;">
-            <i data-lucide="alert-circle" style="width:11px;height:11px;color:#f59e0b;flex-shrink:0;"></i>
+          <p style="font-size:1.05rem;color:#cbd5e1;margin:0 0 .28rem;max-width:30rem;">Ricevi ogni mattina analisi spazio-temporale, quote di mercato e citazione stoica nella tua inbox.</p>
+          <div style="display:flex;align-items:center;gap:.28rem;font-size:1rem;">
+            <i data-lucide="alert-circle" style="width:14px;height:14px;color:#f59e0b;flex-shrink:0;"></i>
             <span style="color:#f59e0b;font-weight:700;">Disponibilità odierna: <span id="cta-reports">12</span>/50 Report AI.
               <span style="color:#fbbf24;">Metti in sicurezza il tuo tempo ora.</span></span>
           </div>
         </div>
         <div style="display:flex;gap:.45rem;align-items:center;width:100%;max-width:400px;">
           <input type="email" id="cta-email" placeholder="La tua email"
-            style="flex:1;background:rgba(30,41,59,.9);border:1px solid #334155;border-radius:.7rem;padding:.6rem .85rem;font-size:.78rem;color:#fff;outline:none;"
+            style="flex:1;background:rgba(30,41,59,.9);border:1px solid #334155;border-radius:.7rem;padding:.6rem .85rem;font-size:.92rem;color:#fff;outline:none;"
             onfocus="this.style.borderColor='#6366f1'" onblur="this.style.borderColor='#334155'">
-          <button onclick="doSubscribe()" style="padding:.6rem 1rem;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:.7rem;font-size:.78rem;font-weight:700;color:#fff;cursor:pointer;white-space:nowrap;box-shadow:0 4px 14px rgba(99,102,241,.35);" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">Iscrivimi &rarr;</button>
+          <button onclick="doSubscribe()" style="padding:.6rem 1rem;background:linear-gradient(135deg,#6366f1,#a855f7);border:none;border-radius:.7rem;font-size:.92rem;font-weight:700;color:#fff;cursor:pointer;white-space:nowrap;box-shadow:0 4px 14px rgba(99,102,241,.35);" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">Iscrivimi &rarr;</button>
         </div>
       </div>
     </div>
@@ -466,12 +480,12 @@
             <i data-lucide="bot" style="width:19px;height:19px;color:#fff;"></i>
           </div>
           <div>
-            <div style="font-weight:800;font-size:.88rem;color:#fff;margin-bottom:.12rem;">Domande &amp; Consulenza AI</div>
-            <div style="font-size:.65rem;color:#64748b;">Hai una domanda su cybersecurity o protezione digitale?</div>
+            <div style="font-weight:800;font-size:1.2rem;color:#f1f5f9;margin-bottom:.12rem;">Domande &amp; Consulenza AI</div>
+            <div style="font-size:1.05rem;color:#cbd5e1;">Hai una domanda su cybersecurity o protezione digitale?</div>
           </div>
         </div>
-        <button onclick="openModal()" style="padding:.55rem 1.2rem;background:linear-gradient(135deg,#7c3aed,#6366f1);border:none;border-radius:.7rem;font-size:.75rem;font-weight:800;color:#fff;cursor:pointer;display:flex;align-items:center;gap:.38rem;box-shadow:0 4px 14px rgba(124,58,237,.4);" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
-          <i data-lucide="sparkles" style="width:13px;height:13px;"></i>
+        <button onclick="openModal()" style="padding:.6rem 1.3rem;background:linear-gradient(135deg,#7c3aed,#6366f1);border:none;border-radius:.7rem;font-size:.9rem;font-weight:800;color:#fff;cursor:pointer;display:flex;align-items:center;gap:.38rem;box-shadow:0 4px 14px rgba(124,58,237,.4);" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+          <i data-lucide="sparkles" style="width:16px;height:16px;"></i>
           Chiedi all'AI di Securdata
         </button>
       </div>
@@ -479,7 +493,7 @@
   </section>
 
   <!-- FOOTER -->
-  <footer style="text-align:center;padding:.55rem .6rem .9rem;font-size:.6rem;color:#334155;border-top:1px solid rgba(30,41,59,.8);">
+  <footer style="text-align:center;padding:.55rem .6rem .9rem;font-size:.95rem;color:#94a3b8;border-top:1px solid rgba(30,41,59,.8);">
     <p style="margin:0;">© 2026 <a href="../" style="color:#6366f1;text-decoration:none;">securdata.pro</a> &middot; Proteggiamo il tuo valore digitale.</p>
     <p style="margin:.18rem 0 0;">TEMPORE &egrave; uno strumento informativo gratuito. Meteo e dati di borsa hanno finalit&agrave; illustrative.</p>
   </footer>
@@ -496,21 +510,21 @@
         <i data-lucide="bot" style="width:20px;height:20px;color:#fff;"></i>
       </div>
       <div>
-        <div style="font-weight:800;color:#fff;font-size:.95rem;">AI di Securdata</div>
-        <div style="font-size:.65rem;color:#64748b;">Risposta garantita entro 24 ore</div>
+        <div style="font-weight:800;color:#f1f5f9;font-size:1.25rem;">AI di Securdata</div>
+        <div style="font-size:1rem;color:#cbd5e1;">Risposta garantita entro 24 ore</div>
       </div>
     </div>
     <form id="ai-form" onsubmit="submitForm(event)" style="display:flex;flex-direction:column;gap:.65rem;">
       <div>
-        <label style="display:block;font-size:.65rem;font-weight:700;color:#64748b;margin-bottom:.28rem;">Nome e Cognome</label>
+        <label style="display:block;font-size:1rem;font-weight:700;color:#cbd5e1;margin-bottom:.3rem;">Nome e Cognome</label>
         <input type="text" id="f-name" required placeholder="Es. Mario Rossi" class="nano-inp" style="width:100%;">
       </div>
       <div>
-        <label style="display:block;font-size:.65rem;font-weight:700;color:#64748b;margin-bottom:.28rem;">Email aziendale</label>
+        <label style="display:block;font-size:1rem;font-weight:700;color:#cbd5e1;margin-bottom:.3rem;">Email aziendale</label>
         <input type="email" id="f-email" required placeholder="nome@azienda.it" class="nano-inp" style="width:100%;">
       </div>
       <div>
-        <label style="display:block;font-size:.65rem;font-weight:700;color:#64748b;margin-bottom:.28rem;">Area di interesse</label>
+        <label style="display:block;font-size:1rem;font-weight:700;color:#cbd5e1;margin-bottom:.3rem;">Area di interesse</label>
         <select id="f-topic" class="nano-inp" style="width:100%;">
           <option value="cyber">Cybersecurity &amp; Data Protection</option>
           <option value="ai">Consulenza AI per il Business</option>
@@ -520,17 +534,17 @@
         </select>
       </div>
       <div>
-        <label style="display:block;font-size:.65rem;font-weight:700;color:#64748b;margin-bottom:.28rem;">La tua domanda</label>
+        <label style="display:block;font-size:1rem;font-weight:700;color:#cbd5e1;margin-bottom:.3rem;">La tua domanda</label>
         <textarea id="f-question" required rows="3" placeholder="Descrivi la tua necessit&agrave; o sfida..." class="nano-inp" style="width:100%;resize:none;font-family:inherit;"></textarea>
       </div>
-      <button type="submit" style="width:100%;padding:.7rem;background:linear-gradient(135deg,#7c3aed,#6366f1);border:none;border-radius:.7rem;font-size:.82rem;font-weight:800;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.38rem;box-shadow:0 4px 14px rgba(124,58,237,.4);">
+      <button type="submit" style="width:100%;padding:.75rem;background:linear-gradient(135deg,#7c3aed,#6366f1);border:none;border-radius:.7rem;font-size:.95rem;font-weight:800;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.38rem;box-shadow:0 4px 14px rgba(124,58,237,.4);">
         <i data-lucide="send" style="width:14px;height:14px;"></i> Invia la domanda
       </button>
     </form>
     <div id="form-ok" style="display:none;text-align:center;padding:.9rem 0;">
       <div style="font-size:2.4rem;margin-bottom:.5rem;">&#10004;&#65039;</div>
       <h4 style="color:#fff;margin:0 0 .35rem;font-size:1.05rem;">Domanda ricevuta!</h4>
-      <p style="color:#64748b;font-size:.78rem;margin:0;">Ti risponderemo entro 24h all'indirizzo indicato.</p>
+      <p style="color:#94a3b8;font-size:.92rem;margin:0;">Ti risponderemo entro 24h all'indirizzo indicato.</p>
     </div>
   </div>
 </div>
@@ -557,27 +571,37 @@ function drawHand(ctx,angle,len,w,color){
 function drawClock(h,m,s){
   const ctx=CTX;
   ctx.clearRect(0,0,SZ,SZ);
-  /* face */
+  /* face with glow */
   ctx.beginPath();ctx.arc(CX,CY,R,0,Math.PI*2);
   const bg=ctx.createRadialGradient(CX-R*.3,CY-R*.3,0,CX,CY,R);
-  bg.addColorStop(0,'rgba(99,102,241,.25)');bg.addColorStop(1,'rgba(15,23,42,.95)');
+  bg.addColorStop(0,'rgba(99,102,241,.35)');bg.addColorStop(1,'rgba(10,15,35,.98)');
   ctx.fillStyle=bg;ctx.fill();
-  ctx.strokeStyle='rgba(99,102,241,.4)';ctx.lineWidth=1.5;ctx.stroke();
-  /* marks */
+  /* outer glow ring */
+  ctx.shadowBlur=12;ctx.shadowColor='rgba(99,102,241,.6)';
+  ctx.strokeStyle='rgba(129,140,248,.85)';ctx.lineWidth=2.5;ctx.stroke();
+  ctx.shadowBlur=0;
+  /* tick marks with numbers */
   for(let i=0;i<12;i++){
     const a=(i/12)*Math.PI*2-Math.PI/2,big=i%3===0;
-    const r1=R-(big?9:5),r2=R-2;
+    const r1=R-(big?13:7),r2=R-3;
     ctx.beginPath();ctx.moveTo(CX+Math.cos(a)*r1,CY+Math.sin(a)*r1);
     ctx.lineTo(CX+Math.cos(a)*r2,CY+Math.sin(a)*r2);
-    ctx.strokeStyle=big?'rgba(148,163,184,.6)':'rgba(71,85,105,.5)';
-    ctx.lineWidth=big?1.8:1;ctx.stroke();
+    ctx.strokeStyle=big?'rgba(248,250,252,.9)':'rgba(148,163,184,.6)';
+    ctx.lineWidth=big?3:1.5;ctx.stroke();
   }
   /* hands */
-  drawHand(ctx,((h%12)+m/60)/12*Math.PI*2-Math.PI/2,R*.52,2.5,'#e2e8f0');
-  drawHand(ctx,(m+s/60)/60*Math.PI*2-Math.PI/2,R*.71,2,'#6366f1');
-  drawHand(ctx,s/60*Math.PI*2-Math.PI/2,R*.78,1,'#ec4899');
-  /* dot */
-  ctx.beginPath();ctx.arc(CX,CY,3.5,0,Math.PI*2);ctx.fillStyle='#6366f1';ctx.fill();
+  ctx.shadowBlur=6;ctx.shadowColor='rgba(226,232,240,.5)';
+  drawHand(ctx,((h%12)+m/60)/12*Math.PI*2-Math.PI/2,R*.52,4.5,'#f1f5f9');
+  ctx.shadowBlur=8;ctx.shadowColor='rgba(99,102,241,.8)';
+  drawHand(ctx,(m+s/60)/60*Math.PI*2-Math.PI/2,R*.72,3,'#818cf8');
+  ctx.shadowBlur=6;ctx.shadowColor='rgba(236,72,153,.9)';
+  drawHand(ctx,s/60*Math.PI*2-Math.PI/2,R*.80,1.5,'#f472b6');
+  ctx.shadowBlur=0;
+  /* center dot */
+  ctx.beginPath();ctx.arc(CX,CY,5,0,Math.PI*2);
+  ctx.fillStyle='#818cf8';ctx.fill();
+  ctx.beginPath();ctx.arc(CX,CY,2.5,0,Math.PI*2);
+  ctx.fillStyle='#f1f5f9';ctx.fill();
 }
 const DAYS=['Domenica','Luned\u00ec','Marted\u00ec','Mercoled\u00ec','Gioved\u00ec','Venerd\u00ec','Sabato'];
 const MONTHS=['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
@@ -598,11 +622,11 @@ tickClock();setInterval(tickClock,1000);
   if(!navigator.geolocation){geoFail();loadWeatherFB();return;}
   navigator.geolocation.getCurrentPosition(pos=>{
     const lt=pos.coords.latitude.toFixed(2),ln=pos.coords.longitude.toFixed(2);
-    $('geo-info').innerHTML='<span style="color:#4ade80;font-size:.65rem;font-weight:600;">&#128205; '+lt+'\u00b0N\u00a0 '+ln+'\u00b0E</span>';
+    $('geo-info').innerHTML='<span style="color:#4ade80;font-size:1rem;font-weight:600;">&#128205; '+lt+'\u00b0N\u00a0 '+ln+'\u00b0E</span>';
     loadWeather(pos.coords.latitude,pos.coords.longitude);
   },()=>{geoFail();loadWeatherFB();});
 })();
-function geoFail(){$('geo-info').innerHTML='<span style="color:#475569;font-size:.65rem;">Posizione non disponibile</span>';}
+function geoFail(){$('geo-info').innerHTML='<span style="color:#94a3b8;font-size:1rem;">Posizione non disponibile</span>';}
 
 /* ══ YEAR ARC ══ */
 (function(){
@@ -619,7 +643,7 @@ function geoFail(){$('geo-info').innerHTML='<span style="color:#475569;font-size
   ctx.beginPath();ctx.arc(cx,cy,r,-Math.PI/2,-Math.PI/2+pct*Math.PI*2);
   const g=ctx.createLinearGradient(0,0,sz,sz);g.addColorStop(0,'#06b6d4');g.addColorStop(1,'#6366f1');
   ctx.strokeStyle=g;ctx.lineWidth=6;ctx.lineCap='round';ctx.stroke();
-  ctx.fillStyle='#fff';ctx.font='bold 12px Inter,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillStyle='#f1f5f9';ctx.font='bold 20px Inter,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
   ctx.fillText(Math.round(pct*100)+'%',cx,cy);
 })();
 
@@ -635,17 +659,17 @@ function renderWX(t,code,wind,hum){
   const lbl=WX[code]||'Variabile';
   $('wx-content').innerHTML=
     '<div style="display:flex;align-items:center;gap:.65rem;">'+
-      '<span style="font-size:2rem;line-height:1;">'+wxIcon(code)+'</span>'+
-      '<div><div style="font-size:1.5rem;font-weight:800;color:#fff;line-height:1;">'+t+'&deg;C</div>'+
-      '<div style="font-size:.62rem;color:#94a3b8;margin-top:.1rem;">'+lbl+'</div></div>'+
+      '<span style="font-size:3rem;line-height:1;">'+wxIcon(code)+'</span>'+
+      '<div><div style="font-size:1.85rem;font-weight:800;color:#fff;line-height:1;">'+t+'&deg;C</div>'+
+      '<div style="font-size:1rem;color:#e2e8f0;margin-top:.1rem;">'+lbl+'</div></div>'+
     '</div>'+
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.32rem;margin-top:auto;">'+
       '<div style="background:rgba(30,41,59,.6);border-radius:.48rem;padding:.32rem;text-align:center;">'+
-        '<div style="font-size:.82rem;font-weight:700;color:#60a5fa;">'+hum+'%</div>'+
-        '<div style="font-size:.54rem;color:#475569;">Umidit&agrave;</div></div>'+
+        '<div style="font-size:1.15rem;font-weight:700;color:#93c5fd;">'+hum+'%</div>'+
+        '<div style="font-size:.9rem;color:#94a3b8;">Umidit&agrave;</div></div>'+
       '<div style="background:rgba(30,41,59,.6);border-radius:.48rem;padding:.32rem;text-align:center;">'+
-        '<div style="font-size:.82rem;font-weight:700;color:#67e8f9;">'+wind+'<span style="font-size:.57rem;font-weight:400;"> km/h</span></div>'+
-        '<div style="font-size:.54rem;color:#475569;">Vento</div></div>'+
+        '<div style="font-size:1.15rem;font-weight:700;color:#67e8f9;">'+wind+'<span style="font-size:.75rem;font-weight:400;"> km/h</span></div>'+
+        '<div style="font-size:.9rem;color:#94a3b8;">Vento</div></div>'+
     '</div>';
 }
 function loadWeather(lt,ln){
@@ -655,18 +679,61 @@ function loadWeather(lt,ln){
 function loadWeatherFB(){renderWX(18,1,12,52);}
 
 /* ══ MARKETS ══ */
-const MKTS=[{id:'mkt-ny',f:'🇺🇸',n:'S&P 500',b:5248},{id:'mkt-lon',f:'🇬🇧',n:'FTSE 100',b:7892},{id:'mkt-tyo',f:'🇯🇵',n:'Nikkei',b:38540},{id:'mkt-btc',f:'₿',n:'Bitcoin',b:68200}];
+const MKTS=[{id:'mkt-ny',f:'🇺🇸',n:'S&P 500',b:5248},{id:'mkt-lon',f:'🇬🇧',n:'FTSE 100',b:7892},{id:'mkt-tyo',f:'🇯🇵',n:'Nikkei',b:38540},{id:'mkt-btc',f:'₿',n:'Bitcoin',b:68200},{id:'mkt-brent',f:'🛢️',n:'Brent Oil',b:84.60}];
 function renderMkts(){
   MKTS.forEach(m=>{
     const cp=(Math.random()*4-2).toFixed(2),c=parseFloat(cp),up=c>=0;
     const px=(m.b*(1+c/100)).toFixed(m.b>1000?0:2);
     const el=$(m.id);if(!el)return;
-    el.innerHTML='<span style="font-size:.62rem;color:#64748b;">'+m.f+'&nbsp;'+m.n+'</span>'+
-      '<span style="font-weight:700;color:#fff;font-size:.72rem;">'+parseFloat(px).toLocaleString('it')+'</span>'+
-      '<span style="font-size:.64rem;font-weight:700;color:'+(up?'#4ade80':'#f87171')+';">'+(up?'&#9650;':'&#9660;')+'&nbsp;'+Math.abs(cp)+'%</span>';
+    el.innerHTML='<span style="font-size:1rem;color:#cbd5e1;">'+m.f+'&nbsp;'+m.n+'</span>'+
+      '<span style="font-weight:700;color:#f1f5f9;font-size:1.05rem;">'+parseFloat(px).toLocaleString('it')+'</span>'+
+      '<span style="font-size:1rem;font-weight:700;color:'+(up?'#4ade80':'#f87171')+';">'+(up?'&#9650;':'&#9660;')+'&nbsp;'+Math.abs(cp)+'%</span>';
   });
 }
 renderMkts();setInterval(renderMkts,30000);
+
+/* ══ FOREX SESSIONS ══ */
+const FSESS=[
+  {id:'fs-lon',flag:'🟢',name:'Londra',tz:'Europe/London',
+   openH:9,closeH:18,col:'#4ade80',tagOpen:'rgba(74,222,128,.10)',tagBorder:'rgba(74,222,128,.30)'},
+  {id:'fs-ny', flag:'🔵',name:'New York',tz:'America/New_York',
+   openH:14,closeH:23,col:'#60a5fa',tagOpen:'rgba(96,165,250,.10)',tagBorder:'rgba(96,165,250,.30)'},
+  {id:'fs-tyo',flag:'🔴',name:'Tokyo',tz:'Asia/Tokyo',
+   openH:2,closeH:11,col:'#f87171',tagOpen:'rgba(248,113,113,.10)',tagBorder:'rgba(248,113,113,.30)'}
+];
+/* Return current decimal hour in Europe/Rome (handles CET/CEST automatically) */
+function italianDecHour(){
+  const n=new Date();
+  const itParts=new Intl.DateTimeFormat('en',{timeZone:'Europe/Rome',hour:'numeric',minute:'numeric',hour12:false}).formatToParts(n);
+  const h=+itParts.find(p=>p.type==='hour').value;
+  const m=+itParts.find(p=>p.type==='minute').value;
+  return h+m/60;
+}
+function fmtTZ(tz){
+  return new Intl.DateTimeFormat('it',{timeZone:tz,hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).format(new Date());
+}
+function padH(h){return String(h).padStart(2,'0')+':00';}
+function renderForex(){
+  const itH=italianDecHour();
+  $('forex-sessions').innerHTML=FSESS.map(s=>{
+    /* session wraps midnight only for Tokyo (02–11) — straightforward here */
+    const open=(s.openH<s.closeH)?(itH>=s.openH&&itH<s.closeH):(itH>=s.openH||itH<s.closeH);
+    const bg=open?s.tagOpen:'rgba(15,23,42,.6)';
+    const bd=open?s.tagBorder:'rgba(99,102,241,.15)';
+    const statusColor=open?s.col:'#64748b';
+    const statusTxt=open?'● APERTA':'○ CHIUSA';
+    return '<div style="background:'+bg+';border:1.5px solid '+bd+';border-radius:.65rem;padding:.55rem .7rem;display:flex;flex-direction:column;gap:.3rem;">'+
+      '<div style="display:flex;align-items:center;justify-content:space-between;">'+
+        '<span style="font-size:1.3rem;line-height:1;">'+s.flag+'</span>'+
+        '<span style="font-size:.95rem;font-weight:800;color:'+statusColor+';">'+statusTxt+'</span>'+
+      '</div>'+
+      '<div style="font-size:1.1rem;font-weight:800;color:#f1f5f9;line-height:1.1;">'+s.name+'</div>'+
+      '<div style="font-family:monospace;font-size:1.55rem;font-weight:600;color:#ffffff;letter-spacing:.04em;line-height:1;">'+fmtTZ(s.tz)+'</div>'+
+      '<div style="font-size:.9rem;color:#94a3b8;">'+padH(s.openH)+' – '+padH(s.closeH)+' (ora it.)</div>'+
+    '</div>';
+  }).join('');
+}
+renderForex();setInterval(renderForex,1000);
 
 /* ══ STOIC QUOTES ══ */
 const QQ=[
