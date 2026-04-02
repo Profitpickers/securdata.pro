@@ -1,0 +1,406 @@
+/* =====================================================
+   SECURDATA.PRO – Cookie Consent Banner & Modal
+   Palette: deep-blue #1E2A38 | indigo #5B3FFF | green #2ECC71
+   ===================================================== */
+
+/* ── Reduced-motion override ── */
+@media (prefers-reduced-motion: reduce) {
+  .sd-cc-banner,
+  .sd-cc-modal-overlay,
+  .sd-cc-modal {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* ══════════════════════════════════════════════════
+   BANNER
+══════════════════════════════════════════════════ */
+.sd-cc-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 99990;
+  background: #1E2A38;
+  border-top: 2px solid #5B3FFF;
+  color: #e2e8f0;
+  padding: 20px 24px;
+  box-shadow: 0 -4px 32px rgba(0, 0, 0, 0.45);
+  transform: translateY(0);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.sd-cc-banner[hidden],
+.sd-cc-banner.sd-cc-hidden {
+  display: none;
+}
+
+.sd-cc-banner-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.sd-cc-banner-text {
+  flex: 1 1 280px;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: #cbd5e1;
+}
+
+.sd-cc-banner-text a {
+  color: #818cf8;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.sd-cc-banner-text a:hover,
+.sd-cc-banner-text a:focus {
+  color: #a5b4fc;
+}
+
+.sd-cc-banner-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* ── Buttons ── */
+.sd-cc-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 20px;
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  white-space: nowrap;
+  font-family: inherit;
+  line-height: 1;
+  min-height: 38px;
+}
+
+.sd-cc-btn:focus-visible {
+  outline: 3px solid #5B3FFF;
+  outline-offset: 3px;
+}
+
+/* Accept all */
+.sd-cc-btn-accept {
+  background: #2ECC71;
+  color: #0f172a;
+  border-color: #2ECC71;
+}
+
+.sd-cc-btn-accept:hover {
+  background: #27ae60;
+  border-color: #27ae60;
+  box-shadow: 0 0 12px rgba(46, 204, 113, 0.4);
+}
+
+/* Manage settings */
+.sd-cc-btn-manage {
+  background: transparent;
+  color: #e2e8f0;
+  border-color: #5B3FFF;
+}
+
+.sd-cc-btn-manage:hover {
+  background: rgba(91, 63, 255, 0.15);
+  color: #fff;
+}
+
+/* Technical only / Reject */
+.sd-cc-btn-reject {
+  background: transparent;
+  color: #94a3b8;
+  border-color: rgba(148, 163, 184, 0.3);
+  font-weight: 500;
+}
+
+.sd-cc-btn-reject:hover {
+  background: rgba(148, 163, 184, 0.1);
+  color: #cbd5e1;
+  border-color: rgba(148, 163, 184, 0.5);
+}
+
+/* ══════════════════════════════════════════════════
+   MODAL OVERLAY
+══════════════════════════════════════════════════ */
+.sd-cc-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99995;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  transition: opacity 0.25s ease;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.sd-cc-modal-overlay[hidden],
+.sd-cc-modal-overlay.sd-cc-hidden {
+  display: none;
+}
+
+/* ══════════════════════════════════════════════════
+   MODAL
+══════════════════════════════════════════════════ */
+.sd-cc-modal {
+  background: #1E2A38;
+  border: 1px solid rgba(91, 63, 255, 0.4);
+  border-radius: 12px;
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  scrollbar-width: thin;
+  scrollbar-color: #5B3FFF #1e2a38;
+}
+
+.sd-cc-modal:focus {
+  outline: none;
+}
+
+.sd-cc-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.sd-cc-modal-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  margin: 0;
+}
+
+.sd-cc-modal-close {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s, background 0.2s;
+  font-family: inherit;
+}
+
+.sd-cc-modal-close:hover {
+  color: #f1f5f9;
+  background: rgba(148, 163, 184, 0.1);
+}
+
+.sd-cc-modal-close:focus-visible {
+  outline: 3px solid #5B3FFF;
+  outline-offset: 2px;
+}
+
+.sd-cc-modal-body {
+  padding: 20px 24px;
+  flex: 1;
+}
+
+.sd-cc-modal-desc {
+  font-size: 0.8125rem;
+  color: #94a3b8;
+  line-height: 1.65;
+  margin-bottom: 20px;
+}
+
+/* ── Category rows ── */
+.sd-cc-category {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.08);
+}
+
+.sd-cc-category:last-child {
+  border-bottom: none;
+}
+
+.sd-cc-category-info {
+  flex: 1;
+}
+
+.sd-cc-category-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #e2e8f0;
+  margin-bottom: 4px;
+}
+
+.sd-cc-category-desc {
+  font-size: 0.75rem;
+  color: #64748b;
+  line-height: 1.55;
+}
+
+/* ── Toggle ── */
+.sd-cc-toggle-wrap {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sd-cc-toggle {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.sd-cc-toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+.sd-cc-toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: rgba(148, 163, 184, 0.2);
+  border-radius: 24px;
+  cursor: pointer;
+  transition: background 0.25s ease;
+}
+
+.sd-cc-toggle-slider::before {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  left: 3px;
+  top: 3px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.25s ease;
+}
+
+.sd-cc-toggle input:checked + .sd-cc-toggle-slider {
+  background: #5B3FFF;
+}
+
+.sd-cc-toggle input:checked + .sd-cc-toggle-slider::before {
+  transform: translateX(20px);
+}
+
+.sd-cc-toggle input:disabled + .sd-cc-toggle-slider {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.sd-cc-toggle input:focus-visible + .sd-cc-toggle-slider {
+  outline: 3px solid #5B3FFF;
+  outline-offset: 2px;
+}
+
+/* ── Modal footer ── */
+.sd-cc-modal-footer {
+  padding: 16px 24px 20px;
+  border-top: 1px solid rgba(148, 163, 184, 0.1);
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* ══════════════════════════════════════════════════
+   REOPEN BUTTON (injected if no #sd-cookie-reopen)
+══════════════════════════════════════════════════ */
+.sd-cc-reopen-btn {
+  position: fixed;
+  bottom: 16px;
+  left: 16px;
+  z-index: 99980;
+  background: #1E2A38;
+  border: 1px solid rgba(91, 63, 255, 0.5);
+  color: #94a3b8;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  white-space: nowrap;
+}
+
+.sd-cc-reopen-btn:hover {
+  color: #e2e8f0;
+  border-color: #5B3FFF;
+  background: rgba(91, 63, 255, 0.1);
+}
+
+.sd-cc-reopen-btn:focus-visible {
+  outline: 3px solid #5B3FFF;
+  outline-offset: 3px;
+}
+
+.sd-cc-reopen-btn[hidden],
+.sd-cc-reopen-btn.sd-cc-hidden {
+  display: none;
+}
+
+/* ══════════════════════════════════════════════════
+   MOBILE — full-width bottom sheet
+══════════════════════════════════════════════════ */
+@media (max-width: 640px) {
+  .sd-cc-banner {
+    padding: 16px;
+  }
+
+  .sd-cc-banner-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .sd-cc-banner-actions {
+    width: 100%;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .sd-cc-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .sd-cc-modal {
+    max-height: 88vh;
+  }
+
+  .sd-cc-modal-footer {
+    flex-direction: column;
+  }
+
+  .sd-cc-modal-footer .sd-cc-btn {
+    width: 100%;
+  }
+}
