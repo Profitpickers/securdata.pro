@@ -1,0 +1,20 @@
+lead-popup.js — il popup raccolta lead da incollare sul sito esistente
+admin.html — il pannello backend per gestire tutto
+qrcard.html — la versione aggiornata del biglietto con QR (già integrata col backend)
+Eseguiti 3 comandi, file lettoEseguiti 3 comandi, file lettoEcco i tuoi 2 file pronti! Ecco come usarli:
+
+📁 admin.html — Il tuo pannello di controllo
+Aprilo direttamente nel browser (nessun server necessario). Contiene:
+
+Dashboard con statistiche live sui lead
+Lista Lead con ricerca, filtri, modifica, elimina ed esporta CSV
+Profilo & Biglietto — modifica tutti i dati, sostituisci foto e logo, anteprima live
+QR Code — genera e scarica la pagina HTML del biglietto aggiornata
+Note & Archivio — per appunti su clienti o campagne
+
+Tutti i dati vengono salvati nel localStorage del browser, nessun server necessario.
+
+📁 lead-popup.js — Il popup raccolta lead
+Dove caricarlo: Caricalo nella root del tuo sito GitHub, accanto agli altri file (index.html, ecc.), e incolla questo codice prima della chiusura </body> nel tuo index.html:
+html<script src="lead-popup.js"></script>
+Il popup appare automaticamente al primo accesso, raccoglie nome, email, telefono WhatsApp, nome attività e settore, e salva tutto nel localStorage — pronti da leggere nell'admin.html.
