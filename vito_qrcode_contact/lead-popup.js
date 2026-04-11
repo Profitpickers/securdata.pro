@@ -118,13 +118,16 @@
     if (el) el.style.display = 'none';
   }
 
-  /** Rimuove caratteri pericolosi per CSV e limita la lunghezza */
+  /**
+   * Rimuove HTML (completo e incompleto), caratteri CSV-breaking e
+   * limita la lunghezza per prevenire injection e XSS.
+   */
   function sanitize(val) {
     if (!val) return '';
     return String(val)
       .substring(0, 250)
-      .replace(/<[^>]*>/g, '')
-      .replace(/["\r\n]/g, ' ')
+      .replace(/<[^>]*>?/gm, '')   // strip tag HTML completi E incompleti (es. <script)
+      .replace(/["\r\n]/g, ' ')    // rimuove virgolette e a-capo (CSV-breaking)
       .trim();
   }
 
@@ -132,9 +135,22 @@
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   }
 
-  /** Converte una stringa in Base64 supportando caratteri UTF-8 */
+  /** Codifica una stringa UTF-8 in Base64 senza usare escape/unescape deprecati */
   function toBase64(str) {
-    return btoa(unescape(encodeURIComponent(str)));
+    var bytes = new TextEncoder().encode(str);
+    var binary = '';
+    bytes.forEach(function (b) { binary += String.fromCharCode(b); });
+    return btoa(binary);
+  }
+
+  /** Decodifica Base64 in stringa UTF-8 senza usare escape/unescape deprecati */
+  function fromBase64(b64) {
+    var binary = atob(b64.replace(/\n/g, ''));
+    var bytes = new Uint8Array(binary.length);
+    for (var i = 0; i < binary.length; i++) {
+      bytes[i] = binary.charCodeAt(i);
+    }
+    return new TextDecoder('utf-8').decode(bytes);
   }
 
   /** Invia la riga al CSV su GitHub via API */
@@ -147,7 +163,7 @@
     var apiUrl = 'https://api.github.com/repos/' +
       GITHUB_OWNER + '/' + GITHUB_REPO + '/contents/' + GITHUB_FILE;
     var headers = {
-      'Authorization': 'token ' + GITHUB_TOKEN,
+      'Authorization': 'Bearer ' + GITHUB_TOKEN,
       'Accept': 'application/vnd.github.v3+json',
       'Content-Type': 'application/json'
     };
@@ -157,7 +173,7 @@
       .then(function (fileData) {
         var current = '';
         try {
-          current = decodeURIComponent(escape(atob(fileData.content.replace(/\n/g, ''))));
+          current = fromBase64(fileData.content);
         } catch (_) { current = ''; }
 
         var newContent = current + row + '\n';
@@ -174,7 +190,7 @@
       })
       .then(function (r) {
         if (!r.ok) {
-          r.text().then(function (t) { console.warn('sdp GitHub PUT error:', t); });
+          r.text().then(function (t) { console.warn('sdp: GitHub PUT error:', t); });
         }
       })
       .catch(function (err) {

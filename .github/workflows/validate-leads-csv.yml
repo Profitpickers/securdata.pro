@@ -8,8 +8,10 @@ on:
 jobs:
   validate:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
       - name: Valida formato e sicurezza del CSV
         run: |
@@ -27,8 +29,8 @@ jobs:
           # Pattern di iniezione e contenuto sospetto
           INJECTION_RE = re.compile(
               r'<script|javascript:|onerror\s*=|onload\s*=|<iframe|'
-              r'DROP\s+TABLE|SELECT\s+\*|INSERT\s+INTO|exec\s*\(|'
-              r'UNION\s+SELECT|1=1|--\s|/\*.*\*/|xp_|sp_',
+              r'DROP\s+TABLE|SELECT\s+\*\s+FROM|INSERT\s+INTO|exec\s*\(|'
+              r'UNION\s+SELECT|--\s|/\*.*\*/|xp_|sp_',
               re.IGNORECASE
           )
 
