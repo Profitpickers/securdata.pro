@@ -155,7 +155,7 @@
 
   /** Invia la riga al CSV su GitHub via API */
   function saveToGitHub(row) {
-    if (!GITHUB_TOKEN || GITHUB_TOKEN === '(${{ secrets.LEADS_PAT }})') {
+    if (!GITHUB_TOKEN || GITHUB_TOKEN === '__INSERISCI_TOKEN_QUI__') {        
       console.warn('sdp: token GitHub non configurato – salvataggio solo locale.');
       return;
     }
