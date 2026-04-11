@@ -83,7 +83,24 @@
         <a href="#percorso" class="text-slate-300 hover:text-indigo-400 transition font-medium">Percorso</a>
         <a href="#vantaggi" class="text-slate-300 hover:text-indigo-400 transition font-medium">Vantaggi</a>
         <a href="#security" class="text-slate-300 hover:text-indigo-400 transition font-medium">Security</a>
-        <a href="./tempore/" class="px-3 py-1.5 rounded-lg text-sm font-bold text-indigo-300 border border-indigo-500/40 hover:bg-indigo-500/10 hover:text-indigo-200 transition">RISORSE GRATUITE</a>
+        <!-- Dropdown RISORSE GRATUITE -->
+        <div class="relative" id="risorse-dropdown-wrap">
+          <button id="risorse-btn" aria-haspopup="true" aria-expanded="false" class="flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-bold text-indigo-300 border border-indigo-500/40 hover:bg-indigo-500/10 hover:text-indigo-200 transition">
+            RISORSE GRATUITE
+            <svg id="risorse-chevron" class="w-3.5 h-3.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div id="risorse-menu" class="hidden absolute right-0 mt-2 w-56 rounded-xl bg-slate-900 border border-indigo-500/30 shadow-xl shadow-indigo-900/30 overflow-hidden z-50">
+            <a href="./tempore/" class="flex items-center gap-3 px-4 py-3 text-sm text-slate-300 hover:text-indigo-300 hover:bg-slate-800/60 transition">
+              <span class="text-lg">⏱</span>
+              <span><span class="font-semibold text-indigo-300">TEMPORE</span><br><span class="text-xs text-slate-400">Analisi Spazio-Temporale</span></span>
+            </a>
+            <div class="border-t border-slate-800"></div>
+            <a href="./vito_qrcode_contact.html" class="flex items-center gap-3 px-4 py-3 text-sm text-slate-300 hover:text-indigo-300 hover:bg-slate-800/60 transition">
+              <span class="text-lg">💳</span>
+              <span><span class="font-semibold text-indigo-300">Biglietto Digitale</span><br><span class="text-xs text-slate-400">Vito Iacobellis</span></span>
+            </a>
+          </div>
+        </div>
       </div>
       
       <!-- CTA Button -->
@@ -110,7 +127,8 @@
   <a href="#percorso" class="mobile-nav-link block px-3 py-2 rounded-lg text-slate-300 hover:text-indigo-400 hover:bg-slate-800/50 transition font-medium">Percorso</a>
   <a href="#vantaggi" class="mobile-nav-link block px-3 py-2 rounded-lg text-slate-300 hover:text-indigo-400 hover:bg-slate-800/50 transition font-medium">Vantaggi</a>
   <a href="#security" class="mobile-nav-link block px-3 py-2 rounded-lg text-slate-300 hover:text-indigo-400 hover:bg-slate-800/50 transition font-medium">Security</a>
-  <a href="./tempore/" class="block px-3 py-2 rounded-lg font-bold text-indigo-300 border border-indigo-500/30 hover:bg-indigo-500/10 transition text-sm">RISORSE GRATUITE</a>
+  <a href="./tempore/" class="mobile-nav-link block px-3 py-2 rounded-lg font-semibold text-indigo-300 hover:bg-slate-800/50 transition text-sm">⏱ TEMPORE – Analisi Spazio-Temporale</a>
+  <a href="./vito_qrcode_contact.html" class="mobile-nav-link block px-3 py-2 rounded-lg font-semibold text-indigo-300 hover:bg-slate-800/50 transition text-sm">💳 Biglietto Digitale – Vito Iacobellis</a>
   <button class="mt-1 px-6 py-2.5 bg-gradient-accent text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-indigo-500/50 transition">
     Contattaci
   </button>
@@ -142,6 +160,34 @@
       btn.setAttribute('aria-expanded', 'false');
     });
   });
+})();
+</script>
+<script>
+(function() {
+  var rBtn    = document.getElementById('risorse-btn');
+  var rMenu   = document.getElementById('risorse-menu');
+  var rChevron = document.getElementById('risorse-chevron');
+  if (!rBtn || !rMenu) return;
+
+  function openDropdown() {
+    rMenu.classList.remove('hidden');
+    rChevron.style.transform = 'rotate(180deg)';
+    rBtn.setAttribute('aria-expanded', 'true');
+  }
+  function closeDropdown() {
+    rMenu.classList.add('hidden');
+    rChevron.style.transform = '';
+    rBtn.setAttribute('aria-expanded', 'false');
+  }
+
+  rBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    rMenu.classList.contains('hidden') ? openDropdown() : closeDropdown();
+  });
+
+  // Chiudi cliccando fuori
+  document.addEventListener('click', function() { closeDropdown(); });
+  rMenu.addEventListener('click', function(e) { e.stopPropagation(); });
 })();
 </script>
 
