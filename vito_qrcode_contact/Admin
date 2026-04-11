@@ -136,6 +136,10 @@ input[type=file] { display:none; }
           <div id="previewCard"></div>
         </div>
       </div>
+      <div class="card">
+        <div class="card-title">🔗 Top Referrer – Passaparola</div>
+        <div id="dash-referral"><p style="color:#4a5568;font-size:0.85rem;">Nessun referral ancora.</p></div>
+      </div>
     </div>
 
     <!-- LEADS -->
@@ -152,7 +156,7 @@ input[type=file] { display:none; }
         <div class="table-wrap">
           <table>
             <thead><tr>
-              <th>#</th><th>Nome</th><th>Email</th><th>Telefono</th><th>Attività</th><th>Settore</th><th>Data</th><th>Stato</th><th>Azioni</th>
+              <th>#</th><th>Nome</th><th>Email</th><th>Telefono</th><th>Attività</th><th>Settore</th><th>Fonte</th><th>Data</th><th>Stato</th><th>Azioni</th>
             </tr></thead>
             <tbody id="leadsTableBody"></tbody>
           </table>
@@ -365,6 +369,18 @@ function renderDashboard(){
   var recent=leads.slice(-5).reverse();
   var html=recent.length?recent.map(l=>'<div style="padding:0.5rem 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:0.82rem;"><span style="color:#e2e8f0;font-weight:600;">'+l.nome+'</span> <span style="color:#4a5568;margin-left:8px;">'+l.attivita+'</span></div>').join(''):'<p style="color:#4a5568;font-size:0.85rem;">Nessun lead ancora.</p>';
   document.getElementById('dash-recent').innerHTML=html;
+
+  // Top Referrer
+  var referrals=leads.filter(l=>l.source&&l.source.startsWith('referral:'));
+  var refCounts={};
+  referrals.forEach(l=>{ var via=l.source.replace('referral:',''); refCounts[via]=(refCounts[via]||0)+1; });
+  var topRef=Object.entries(refCounts).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  var refHtml=topRef.length
+    ?'<div style="display:grid;grid-template-columns:1fr auto auto;gap:0.4rem 1rem;font-size:0.82rem;margin-bottom:0.5rem;color:#4a5568;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;font-size:0.7rem;padding-bottom:0.4rem;border-bottom:1px solid rgba(99,179,237,0.1);"><span>Referrer</span><span style="text-align:right;">Lead portati</span><span></span></div>'
+      +topRef.map(([via,count])=>'<div style="display:grid;grid-template-columns:1fr auto auto;gap:0.4rem 1rem;padding:0.4rem 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:0.82rem;align-items:center;"><span style="color:#e2e8f0;">'+via+'</span><span style="color:#f6ad55;font-weight:700;text-align:right;">+'+count+'</span><span style="color:#4a5568;font-size:0.72rem;">🔗 referral</span></div>').join('')
+      +'<div style="margin-top:0.6rem;font-size:0.78rem;color:#4a5568;">Totale lead da referral: '+referrals.length+' / '+leads.length+'</div>'
+    :'<p style="color:#4a5568;font-size:0.85rem;">Nessun referral ancora. Condividi il link <code style=\"color:#63b3ed;\">?via=tuonome</code> per tracciare i passaparola.</p>';
+  document.getElementById('dash-referral').innerHTML=refHtml;
   var pc=document.getElementById('previewCard');
   if(pc) pc.innerHTML='<div class="preview-card"><img class="logo-prev" style="width:48px;height:48px;border-radius:10px;object-fit:contain;margin-bottom:0.7rem;" src="data:image/png;base64,'+logoBase64+'"><img class="avatar" src="data:image/png;base64,'+fotoBase64+'"><div class="pname">'+profile.nome+'</div><div class="prole">'+profile.ruolo+'</div><div class="pcompany">'+profile.azienda+'</div></div>';
 }
@@ -374,10 +390,14 @@ function renderLeads(){
   var filtered=leads.filter(l=>JSON.stringify(l).toLowerCase().includes(q.toLowerCase()));
   var tbody=document.getElementById('leadsTableBody');
   if(!tbody) return;
-  if(!filtered.length){ tbody.innerHTML='<tr><td colspan="9" style="text-align:center;color:#4a5568;padding:2rem;">Nessun lead trovato</td></tr>'; return; }
+  if(!filtered.length){ tbody.innerHTML='<tr><td colspan="10" style="text-align:center;color:#4a5568;padding:2rem;">Nessun lead trovato</td></tr>'; return; }
   tbody.innerHTML=filtered.map((l,i)=>{
     var idx=leads.indexOf(l);
     var stTag=l.stato==='new'?'<span class="tag tag-new">Nuovo</span>':l.stato==='contact'?'<span class="tag tag-contact">Contattato</span>':'<span class="tag tag-converted">Convertito</span>';
+    var src=l.source||'';
+    var fonteCell=src.startsWith('referral:')
+      ?'<span style="color:#f6ad55;font-size:0.75rem;">👥 via '+src.replace('referral:','')+'</span>'
+      :'<span style="color:#4a5568;font-size:0.75rem;">'+(src||'—')+'</span>';
     return '<tr>'
       +'<td style="color:#4a5568;">'+(idx+1)+'</td>'
       +'<td style="font-weight:600;color:#e2e8f0;">'+l.nome+'</td>'
@@ -385,6 +405,7 @@ function renderLeads(){
       +'<td>'+l.tel+'</td>'
       +'<td>'+l.attivita+'</td>'
       +'<td style="color:#718096;">'+l.settore+'</td>'
+      +'<td>'+fonteCell+'</td>'
       +'<td style="color:#4a5568;">'+l.date+'</td>'
       +'<td>'+stTag+'</td>'
       +'<td><button class="upload-btn" style="margin-right:4px;" onclick="editLead('+idx+')">Modifica</button><button class="btn-danger" onclick="deleteLead('+idx+')">Elimina</button></td>'
@@ -428,7 +449,7 @@ function saveLead(){
     date:new Date().toLocaleDateString('it-IT')
   };
   var idx=parseInt(document.getElementById('editIndex').value);
-  if(idx>=0) leads[idx]=lead; else leads.push(lead);
+  if(idx>=0){ lead.source=leads[idx].source||''; leads[idx]=lead; } else { lead.source='admin'; leads.push(lead); }
   localStorage.setItem('sdp_leads',JSON.stringify(leads));
   closeModal(); renderLeads(); toast('Lead salvato!');
 }
@@ -444,8 +465,8 @@ function closeModal(){ document.getElementById('leadModal').classList.remove('op
 
 function exportCSV(){
   if(!leads.length){ toast('Nessun lead da esportare'); return; }
-  var headers=['Nome','Email','Telefono','Attività','Settore','Note','Stato','Data'];
-  var rows=leads.map(l=>[l.nome,l.email,l.tel,l.attivita,l.settore,l.note,l.stato,l.date].map(v=>'"'+(v||'').replace(/"/g,'""')+'"').join(','));
+  var headers=['Nome','Email','Telefono','Attività','Settore','Note','Stato','Fonte','Data'];
+  var rows=leads.map(l=>[l.nome,l.email,l.tel,l.attivita,l.settore,l.note,l.stato,l.source||'',l.date].map(v=>'"'+(v||'').replace(/"/g,'""')+'"').join(','));
   var csv=[headers.join(','),...rows].join('\n');
   var blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
   var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='leads_securdata.csv'; a.click();
