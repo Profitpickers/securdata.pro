@@ -16,7 +16,7 @@
  */
 (function () {
   /* ─── CONFIGURAZIONE ─────────────────────────────────────────── */
-  var GITHUB_TOKEN  = '__INSERISCI_TOKEN_QUI__';
+  var GITHUB_TOKEN  = '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';
   var GITHUB_OWNER  = 'Profitpickers';
   var GITHUB_REPO   = 'securdata.pro';
   var GITHUB_FILE   = 'data/leads.csv';
