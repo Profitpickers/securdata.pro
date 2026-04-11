@@ -26,6 +26,10 @@
   var LAST_SUBMIT_KEY  = 'sdp_last_submit';
   var RATE_LIMIT_MS    = 30000;  // 30 secondi tra un invio e l'altro
 
+  /* ─── REFERRAL: legge ?via= dall'URL ────────────────────────── */
+  var _rawVia = new URLSearchParams(window.location.search).get('via') || '';
+  var refVia  = _rawVia.replace(/[^a-zA-Z0-9._-]/g, '').substring(0, 50);
+
   if (document.getElementById('sdp-lead-overlay')) return;
 
   /* ─── STILI ──────────────────────────────────────────────────── */
@@ -99,6 +103,14 @@
     '  <div class="sdp-check">\u2705</div>',
     '  <p>Grazie, sei dentro!</p>',
     '  <span>Controlla la tua email nelle prossime ore.</span>',
+    '  <div id="sdp-share-block" style="display:none;margin-top:1.5rem;text-align:left;">',
+    '    <p style="color:#718096;font-size:0.82rem;margin-bottom:0.5rem;">\uD83D\uDD17 Condividi il tuo link invito:</p>',
+    '    <div id="sdp-share-link" style="background:rgba(255,255,255,0.05);border:1px solid rgba(99,179,237,0.2);border-radius:8px;padding:0.6rem 0.9rem;color:#63b3ed;font-size:0.78rem;word-break:break-all;margin-bottom:0.75rem;"></div>',
+    '    <div style="display:flex;gap:0.5rem;">',
+    '      <button id="sdp-copy-btn" style="flex:1;padding:0.55rem;background:rgba(99,179,237,0.15);border:1px solid rgba(99,179,237,0.3);border-radius:8px;color:#63b3ed;font-size:0.82rem;cursor:pointer;">\uD83D\uDCCB Copia</button>',
+    '      <button id="sdp-wa-btn" style="flex:1;padding:0.55rem;background:rgba(72,187,120,0.15);border:1px solid rgba(72,187,120,0.3);border-radius:8px;color:#68d391;font-size:0.82rem;cursor:pointer;">\uD83D\uDCAC WhatsApp</button>',
+    '    </div>',
+    '  </div>',
     '</div>',
     '</div></div>'
   ].join('');
@@ -238,7 +250,7 @@
       tel:       sanitize(document.getElementById('sdp-l-tel').value),
       attivita:  sanitize(document.getElementById('sdp-l-attivita').value),
       settore:   sanitize(document.getElementById('sdp-l-settore').value),
-      source:    'popup-sito'
+      source:    refVia ? 'referral:' + refVia : 'popup-sito'
     };
 
     var leads = [];
@@ -263,8 +275,37 @@
 
     document.getElementById('sdp-lead-form').style.display = 'none';
     document.getElementById('sdp-lead-success').style.display = 'block';
+
+    // Genera il link di invito personale dell'utente appena registrato
+    var refId     = nome.toLowerCase().replace(/\s+/g, '.').replace(/[^a-z0-9.]/g, '').substring(0, 30);
+    var shareUrl  = window.location.origin + window.location.pathname + '?via=' + refId;
+    var shareBlock = document.getElementById('sdp-share-block');
+    var shareLinkEl = document.getElementById('sdp-share-link');
+    if (shareBlock && shareLinkEl) {
+      shareLinkEl.textContent = shareUrl;
+      shareBlock.style.display = 'block';
+      document.getElementById('sdp-copy-btn').onclick = function () {
+        navigator.clipboard.writeText(shareUrl).then(function () {
+          document.getElementById('sdp-copy-btn').textContent = '\u2705 Copiato!';
+        }).catch(function () {
+          // fallback per browser senza clipboard API
+          var tmp = document.createElement('textarea');
+          tmp.value = shareUrl;
+          document.body.appendChild(tmp);
+          tmp.select();
+          document.execCommand('copy');
+          document.body.removeChild(tmp);
+          document.getElementById('sdp-copy-btn').textContent = '\u2705 Copiato!';
+        });
+      };
+      document.getElementById('sdp-wa-btn').onclick = function () {
+        var msg = 'Ciao! Ti invito a scoprire le risorse gratuite su sicurezza dati e AI aziendale: ' + shareUrl;
+        window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+      };
+    }
+
     setTimeout(function () {
       if (overlay.parentNode) overlay.remove();
-    }, 3000);
+    }, 15000);
   };
 })();
