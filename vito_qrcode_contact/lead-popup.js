@@ -153,9 +153,9 @@
     return new TextDecoder('utf-8').decode(bytes);
   }
 
-  /** Invia la riga al CSV su GitHub via API */
+  /** Invia la riga al CSV su GitHub via API | _INSERISCI_TOKEN_QUI__ */
   function saveToGitHub(row) {
-    if (!GITHUB_TOKEN || GITHUB_TOKEN === '__INSERISCI_TOKEN_QUI__') {
+    if (!GITHUB_TOKEN || GITHUB_TOKEN === '1BIGLIETTODIGITALEGRATIS') {
       console.warn('sdp: token GitHub non configurato – salvataggio solo locale.');
       return;
     }
