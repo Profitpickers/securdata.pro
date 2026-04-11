@@ -185,6 +185,25 @@ body::after{
   font-size:0.85rem;font-weight:600;opacity:0;transition:all 0.3s;pointer-events:none;z-index:100;white-space:nowrap;
 }
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+/* Viral CTA */
+.cta-viral{
+  margin:1.4rem 0 0.4rem;
+  padding:0.8rem 1.2rem;
+  background:rgba(26,86,219,0.08);
+  border:1px solid rgba(99,179,237,0.2);
+  border-radius:14px;
+  text-align:center;
+}
+.cta-viral a{
+  color:#63b3ed;
+  font-size:0.82rem;
+  font-weight:600;
+  text-decoration:none;
+  letter-spacing:0.02em;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.cta-viral a:hover{color:#90cdf4;}
+.cta-viral svg{flex-shrink:0;}
 </style>
 </head>
 <body>
@@ -240,6 +259,13 @@ body::after{
       </div>
       <div class="info-text"><a id="cardLinkedin" href="https://linkedin.com/in/vito-i-73bb14220" target="_blank">LinkedIn · Vito Iacobellis</a></div>
     </div>
+  </div>
+
+  <div class="cta-viral">
+    <a href="https://www.securdata.pro" target="_blank" rel="noopener">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      Vuoi anche tu un biglietto digitale? → SecurData.Pro
+    </a>
   </div>
 
   <div class="card-footer">
