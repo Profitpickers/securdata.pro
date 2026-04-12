@@ -45,7 +45,7 @@
   };
 
   /* ─── AUTO-APRI SE VISITA DA REFERRAL ────────────────────────── */
-  // Se l'URL contiene ?via=xxx l'utente è arrivato da un invito: mostria
+  // Se l'URL contiene ?via=xxx l'utente è arrivato da un invito: mostra
   // subito il popup così comprende cosa può ottenere.
   if (refVia) {
     document.addEventListener('DOMContentLoaded', function () {
@@ -330,9 +330,11 @@
       };
     }
 
-    // Reindirizza all'area admin per creare il proprio biglietto digitale
+    // Reindirizza all'area admin per creare il proprio biglietto digitale.
+    // Costruisce il percorso in modo robusto rispetto alla posizione del file corrente.
     setTimeout(function () {
-      window.location.href = 'vito_qrcode_contact/admin.html';
+      var base = window.location.href.replace(/[^/]*$/, '');
+      window.location.href = base + 'vito_qrcode_contact/admin.html';
     }, 5000);
   };
   } // fine _buildAndShowPopup
