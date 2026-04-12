@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Biglietto Digitale – SecurData.Pro</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha384-OLBgp1GsljhM2TJ+sbHjaiH9txEUvgdDTAzHv2P24donTt6/529l+9Ua0vFImLlb" crossorigin="anonymous"></script>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
 body {
@@ -314,7 +314,8 @@ var email    = getParam('email')    || '';
 var tel      = getParam('tel')      || '';
 var attivita = getParam('attivita') || '';
 var settore  = getParam('settore')  || '';
-var via      = getParam('via')      || nome.toLowerCase().replace(/\s+/g, '.').replace(/[^a-z0-9.]/g, '').substring(0, 30);
+// Sanitize via: allow only alphanumeric and dots (slug format)
+var via      = (getParam('via') || nome.toLowerCase().replace(/\s+/g, '.').replace(/[^a-z0-9.]/g, '').substring(0, 30)).replace(/[^a-z0-9.\-_]/gi, '').substring(0, 50);
 
 /* ── Iniziali per avatar ── */
 var nameParts = nome.trim().split(/\s+/);
@@ -335,8 +336,14 @@ if (tel) {
   document.getElementById('rowTel').style.display = 'flex';
 }
 if (email) {
-  document.getElementById('cardEmail').textContent = email;
-  document.getElementById('cardEmail').href = 'mailto:' + email;
+  // Validate email format before using in mailto: href to prevent URL injection
+  var emailClean = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? email : '';
+  document.getElementById('cardEmail').textContent = emailClean || email;
+  if (emailClean) {
+    document.getElementById('cardEmail').href = 'mailto:' + emailClean;
+  } else {
+    document.getElementById('cardEmail').removeAttribute('href');
+  }
   document.getElementById('rowEmail').style.display = 'flex';
 }
 if (attivita) {

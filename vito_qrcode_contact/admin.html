@@ -529,7 +529,7 @@ function buildMlmTree(){
     var kids=children[slug]||[];
     if(!kids.length) return '';
     var cls=depth===0?'':depth===1?'mlm-indent-1':'mlm-indent-2';
-    var badge=depth===0?'':'<span class="mlm-badge '+(depth===1?'mlm-d':'mlm-i')+'">'+('L'+depth)+'</span>';
+    var badge=depth===0?'':'<span class="mlm-badge '+(depth===1?'mlm-d':depth===2?'mlm-i':'mlm-i2')+'">'+('L'+depth)+'</span>';
     return kids.map(function(l){
       var childSlug=makeSlug(l.nome);
       var sub=depth<3?renderSubtree(childSlug,depth+1):'';
@@ -552,14 +552,6 @@ function buildMlmTree(){
   }
 
   var treeHtml=renderSubtree(ownerSlug,1);
-  // Aggiunge eventuali lead referenziati da altri lead non owner
-  var orphanHtml='';
-  Object.keys(children).forEach(function(ref){
-    if(ref===ownerSlug) return;
-    var refLead=bySlug[ref];
-    if(!refLead) return; // already shown as children of ownerSlug's subtree
-    // These are already included recursively in renderSubtree if depth < 3
-  });
 
   return statsHtml+'<div class="mlm-tree" style="margin-top:0.5rem;">'
     +'<div class="mlm-row" style="font-size:0.7rem;color:#4a5568;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;padding-bottom:0.4rem;border-bottom:1px solid rgba(99,179,237,0.1);">'
