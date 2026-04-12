@@ -226,7 +226,7 @@ body::after{
   </div>
   <p class="qr-hint">
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
-    Inquadra per aprire questa pagina
+    <span id="qrHint">Inquadra per aprire questa pagina</span>
   </p>
 
   <button class="btn-save" id="saveBtn">
@@ -383,8 +383,8 @@ if (_vcIsCard && _vcNome) {
     if (_vcRowEmail) _vcRowEmail.closest('.info-row').style.display = 'none';
   }
   // Hint del QR aggiornato
-  var _vcHint = document.querySelector('.qr-hint');
-  if (_vcHint) _vcHint.lastChild.textContent = 'Inquadra per condividere il tuo biglietto';
+  var _vcHintEl = document.getElementById('qrHint');
+  if (_vcHintEl) _vcHintEl.textContent = 'Inquadra per condividere il tuo biglietto';
 }
 
 // QR Code – in card mode punta al link di referral (senza card=1) così
@@ -420,9 +420,10 @@ if (_vcIsCard && _vcNome && _vcVia) {
     _vcShareEl.style.display = 'block';
     document.getElementById('vcCopyBtn').onclick = function() {
       var btn = this;
+      var origText = btn.textContent;
       navigator.clipboard.writeText(_vcQrUrl).then(function() {
         btn.textContent = '\u2705 Copiato!';
-        setTimeout(function(){ btn.textContent = '\uD83D\uDCCB Copia link'; }, 2000);
+        setTimeout(function(){ btn.textContent = origText; }, 2000);
       }).catch(function() {
         var tmp = document.createElement('textarea');
         tmp.value = _vcQrUrl;
@@ -430,7 +431,7 @@ if (_vcIsCard && _vcNome && _vcVia) {
         document.execCommand('copy');
         document.body.removeChild(tmp);
         btn.textContent = '\u2705 Copiato!';
-        setTimeout(function(){ btn.textContent = '\uD83D\uDCCB Copia link'; }, 2000);
+        setTimeout(function(){ btn.textContent = origText; }, 2000);
       });
     };
     document.getElementById('vcWaBtn').onclick = function() {
