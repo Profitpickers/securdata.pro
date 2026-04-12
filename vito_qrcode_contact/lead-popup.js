@@ -13,6 +13,13 @@
  *  · Le altre repo sono matematicamente inaccessibili.
  *  · In caso di abuso: revoca il token su github.com/settings/tokens
  *    e generane uno nuovo (30 secondi).
+ *
+ * UTILIZZO:
+ *  · Il popup NON appare automaticamente al caricamento della pagina.
+ *  · Si apre chiamando window.sdpOpenLeadPopup() oppure tramite il
+ *    pulsante CTA presente nel biglietto digitale.
+ *  · Se l'URL contiene il parametro ?via=xxx (link referral), il popup
+ *    si apre automaticamente per accogliere il visitatore invitato.
  */
 (function () {
   /* ─── CONFIGURAZIONE ─────────────────────────────────────────── */
@@ -30,7 +37,25 @@
   var _rawVia = new URLSearchParams(window.location.search).get('via') || '';
   var refVia  = _rawVia.replace(/[^a-zA-Z0-9._-]/g, '').substring(0, 50);
 
-  if (document.getElementById('sdp-lead-overlay')) return;
+  /* ─── FUNZIONE PUBBLICA PER APRIRE IL POPUP ──────────────────── */
+  // Esposta globalmente per essere chiamata dal pulsante CTA
+  window.sdpOpenLeadPopup = function () {
+    if (document.getElementById('sdp-lead-overlay')) return; // già aperto
+    _buildAndShowPopup();
+  };
+
+  /* ─── AUTO-APRI SE VISITA DA REFERRAL ────────────────────────── */
+  // Se l'URL contiene ?via=xxx l'utente è arrivato da un invito: mostria
+  // subito il popup così comprende cosa può ottenere.
+  if (refVia) {
+    document.addEventListener('DOMContentLoaded', function () {
+      window.sdpOpenLeadPopup();
+    });
+  }
+
+  /* ─── FUNZIONE INTERNA: costruisce e mostra il popup ─────────── */
+  function _buildAndShowPopup() {
+    if (document.getElementById('sdp-lead-overlay')) return;
 
   /* ─── STILI ──────────────────────────────────────────────────── */
   var style = document.createElement('style');
@@ -305,8 +330,10 @@
       };
     }
 
+    // Reindirizza all'area admin per creare il proprio biglietto digitale
     setTimeout(function () {
-      if (overlay.parentNode) overlay.remove();
-    }, 15000);
+      window.location.href = 'vito_qrcode_contact/admin.html';
+    }, 5000);
   };
+  } // fine _buildAndShowPopup
 })();
