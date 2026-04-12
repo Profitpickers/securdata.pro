@@ -276,7 +276,8 @@
       tel:       sanitize(document.getElementById('sdp-l-tel').value),
       attivita:  sanitize(document.getElementById('sdp-l-attivita').value),
       settore:   sanitize(document.getElementById('sdp-l-settore').value),
-      source:    refVia ? 'referral:' + refVia : 'popup-sito'
+      source:    refVia ? 'referral:' + refVia : 'popup-sito',
+      referrer:  refVia  // chi ha referenziato questo lead (vuoto se organico)
     };
 
     var leads = [];
@@ -292,7 +293,8 @@
       lead.tel,
       lead.attivita,
       lead.settore,
-      lead.source
+      lead.source,
+      lead.referrer
     ].map(function (v) {
       return '"' + String(v).replace(/"/g, '""') + '"';
     }).join(',');
@@ -330,12 +332,19 @@
       };
     }
 
-    // Reindirizza all'area admin per creare il proprio biglietto digitale.
-    // Costruisce il percorso in modo robusto rispetto alla posizione del file corrente.
+    // Reindirizza al biglietto digitale personalizzato del lead appena registrato.
+    // Passa tutti i dati via URL per popolare la pagina card.html.
     setTimeout(function () {
-      var base = window.location.href.replace(/[^/]*$/, '');
-      window.location.href = base + 'vito_qrcode_contact/admin.html';
-    }, 5000);
+      var params = new URLSearchParams({
+        nome:     lead.nome,
+        email:    lead.email,
+        tel:      lead.tel      || '',
+        attivita: lead.attivita || '',
+        settore:  lead.settore  || '',
+        via:      refId
+      });
+      window.location.href = window.location.origin + '/card.html?' + params.toString();
+    }, 4000);
   };
   } // fine _buildAndShowPopup
 })();
