@@ -176,6 +176,76 @@ input:focus { border-color: #63b3ed; }
   transition: background 0.18s;
 }
 .btn-qr-dl:hover { background: rgba(99,179,237,0.15); }
+.btn-view-card {
+  width: 100%;
+  background: linear-gradient(135deg, #0f766e, #0d9488);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 0.65rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  transition: transform 0.18s, box-shadow 0.18s;
+  margin-top: 0.5rem;
+}
+.btn-view-card:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(15,118,110,0.4); }
+
+/* ── Photo upload ── */
+.upload-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.8rem;
+}
+.upload-preview {
+  width: 52px; height: 52px; border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(99,179,237,0.4);
+  background: rgba(99,179,237,0.08);
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem;
+  overflow: hidden;
+}
+.upload-preview.logo-box { border-radius: 8px; }
+.upload-preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.upload-btn {
+  background: rgba(99,179,237,0.1);
+  border: 1px solid rgba(99,179,237,0.3);
+  color: #63b3ed;
+  padding: 0.45rem 0.9rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  transition: background 0.18s;
+  flex-shrink: 0;
+}
+.upload-btn:hover { background: rgba(99,179,237,0.2); }
+.upload-hint { font-size: 0.7rem; color: #4a5568; line-height: 1.4; }
+
+/* ── Avatar photo in preview ── */
+.av-photo {
+  position: absolute;
+  top: 0; left: 0;
+  width: 70px; height: 70px; border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(99,179,237,0.4);
+  display: none;
+}
+.pv-logo {
+  width: 36px; height: 36px;
+  border-radius: 6px;
+  object-fit: contain;
+  margin: 0 auto 0.4rem;
+  display: none;
+}
+.pv-nota { font-size: 0.78rem; color: #90cdf4; margin-top: 4px; font-style: italic; }
 
 /* ── Share section ── */
 .share-panel {
@@ -293,6 +363,29 @@ input:focus { border-color: #63b3ed; }
     <!-- Left: Form -->
     <div class="panel">
       <div class="panel-title">✏️ Personalizza il tuo biglietto</div>
+
+      <!-- Photo profile -->
+      <label>Foto Profilo</label>
+      <div class="upload-row">
+        <div class="upload-preview" id="photoPreviewWrap"><span>👤</span></div>
+        <div>
+          <button type="button" class="upload-btn" id="photoUploadBtn">📷 Carica foto</button>
+          <input type="file" id="photoFileInput" accept="image/*" style="display:none;">
+          <div class="upload-hint">JPG, PNG, WEBP – max 2MB</div>
+        </div>
+      </div>
+
+      <!-- Company logo -->
+      <label>Logo Aziendale</label>
+      <div class="upload-row">
+        <div class="upload-preview logo-box" id="logoPreviewWrap"><span>🏢</span></div>
+        <div>
+          <button type="button" class="upload-btn" id="logoUploadBtn">🖼️ Carica logo</button>
+          <input type="file" id="logoFileInput" accept="image/*" style="display:none;">
+          <div class="upload-hint">JPG, PNG, SVG – max 2MB</div>
+        </div>
+      </div>
+
       <label>Nome e Cognome *</label>
       <input type="text" id="f_nome" placeholder="Es. Mario Rossi" maxlength="80">
       <label>Ruolo / Qualifica</label>
@@ -303,6 +396,8 @@ input:focus { border-color: #63b3ed; }
       <input type="tel" id="f_tel" placeholder="+39 320 000 0000" maxlength="30">
       <label>Email</label>
       <input type="email" id="f_email" placeholder="mario@tuaazienda.it" maxlength="120">
+      <label>Nota / Testo libero</label>
+      <input type="text" id="f_nota" placeholder="Es. Disponibile per consulenza gratuita..." maxlength="140">
       <button class="btn-save-profile" id="saveProfileBtn">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></svg>
         Salva e Aggiorna
@@ -314,17 +409,24 @@ input:focus { border-color: #63b3ed; }
       <div class="panel" style="margin-bottom:0.75rem;">
         <div class="panel-title">🎴 Anteprima biglietto</div>
         <div class="card-preview">
+          <img class="pv-logo" id="pvLogo" alt="Logo aziendale">
           <div class="av-wrap">
             <div class="av-ring"></div>
             <div class="av-initial" id="pvInitial">?</div>
+            <img class="av-photo" id="pvPhoto" alt="Foto profilo">
           </div>
           <div class="pv-name"  id="pvName">Il tuo nome</div>
           <div class="pv-role"  id="pvRole">Ruolo</div>
           <div class="pv-co"    id="pvCo"   style="display:none;"></div>
+          <div class="pv-nota"  id="pvNota" style="display:none;"></div>
           <div class="pv-div"></div>
           <div class="pv-qr"><div id="previewQR"></div></div>
           <p class="pv-hint">📲 Il tuo QR personale</p>
         </div>
+        <button class="btn-view-card" id="viewCardBtn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+          Visualizza il tuo Biglietto
+        </button>
         <button class="btn-vcf" id="downloadVcfBtn">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v13m0 0l-4-4m4 4l4-4M3 17v2a2 2 0 002 2h14a2 2 0 002-2v-2"/></svg>
           Scarica la mia vCard
@@ -397,7 +499,9 @@ function makeRefId(nome) {
 var refId = urlVia || makeRefId(urlNome || 'utente');
 
 /* ── localStorage key per questo utente ── */
-var STORAGE_KEY = 'sdp_card_' + refId;
+var STORAGE_KEY      = 'sdp_card_' + refId;
+var PHOTO_KEY        = 'sdp_photo_' + refId;
+var LOGO_KEY         = 'sdp_logo_' + refId;
 
 /* ── Load persisted data (merge: localStorage > urlParams > defaults) ── */
 var saved = {};
@@ -408,7 +512,8 @@ var data = {
   ruolo:    saved.ruolo    || urlSettore  || urlAttivita || '',
   azienda:  saved.azienda  || urlAttivita || '',
   tel:      saved.tel      || urlTel      || '',
-  email:    saved.email    || urlEmail    || ''
+  email:    saved.email    || urlEmail    || '',
+  nota:     saved.nota     || ''
 };
 
 /* ── Fill form ── */
@@ -417,6 +522,83 @@ document.getElementById('f_ruolo').value   = data.ruolo;
 document.getElementById('f_azienda').value = data.azienda;
 document.getElementById('f_tel').value     = data.tel;
 document.getElementById('f_email').value   = data.email;
+document.getElementById('f_nota').value    = data.nota;
+
+/* ── Load saved photos ── */
+var photoData = '';
+var logoData  = '';
+try { photoData = localStorage.getItem(PHOTO_KEY) || ''; } catch (_) {}
+try { logoData  = localStorage.getItem(LOGO_KEY)  || ''; } catch (_) {}
+
+function applyPhoto(base64) {
+  var wrap = document.getElementById('photoPreviewWrap');
+  var pvPhoto = document.getElementById('pvPhoto');
+  var pvInitial = document.getElementById('pvInitial');
+  if (base64) {
+    wrap.innerHTML = '<img src="' + base64 + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="Foto">';
+    pvPhoto.src = base64;
+    pvPhoto.style.display = 'block';
+    pvInitial.style.display = 'none';
+  } else {
+    wrap.innerHTML = '<span>👤</span>';
+    pvPhoto.style.display = 'none';
+    pvInitial.style.display = 'flex';
+  }
+}
+
+function applyLogo(base64) {
+  var wrap = document.getElementById('logoPreviewWrap');
+  var pvLogo = document.getElementById('pvLogo');
+  if (base64) {
+    wrap.innerHTML = '<img src="' + base64 + '" style="width:100%;height:100%;object-fit:contain;border-radius:6px;" alt="Logo">';
+    pvLogo.src = base64;
+    pvLogo.style.display = 'block';
+  } else {
+    wrap.innerHTML = '<span>🏢</span>';
+    pvLogo.style.display = 'none';
+  }
+}
+
+applyPhoto(photoData);
+applyLogo(logoData);
+
+/* ── File upload handlers ── */
+function handleFileUpload(inputId, maxBytes, onSuccess) {
+  var input = document.getElementById(inputId);
+  input.onchange = function () {
+    var file = input.files[0];
+    if (!file) return;
+    if (file.size > maxBytes) {
+      showToast('⚠️ Immagine troppo grande (max 2MB)');
+      input.value = '';
+      return;
+    }
+    var reader = new FileReader();
+    reader.onload = function (e) { onSuccess(e.target.result); };
+    reader.readAsDataURL(file);
+  };
+}
+
+document.getElementById('photoUploadBtn').onclick = function () {
+  document.getElementById('photoFileInput').click();
+};
+document.getElementById('logoUploadBtn').onclick = function () {
+  document.getElementById('logoFileInput').click();
+};
+
+handleFileUpload('photoFileInput', 2 * 1024 * 1024, function (base64) {
+  photoData = base64;
+  try { localStorage.setItem(PHOTO_KEY, base64); } catch (_) { showToast('⚠️ Spazio insufficiente nel browser'); }
+  applyPhoto(base64);
+  showToast('✅ Foto caricata!');
+});
+
+handleFileUpload('logoFileInput', 2 * 1024 * 1024, function (base64) {
+  logoData = base64;
+  try { localStorage.setItem(LOGO_KEY, base64); } catch (_) { showToast('⚠️ Spazio insufficiente nel browser'); }
+  applyLogo(base64);
+  showToast('✅ Logo caricato!');
+});
 
 /* ── Build share URL ── */
 // The referral URL points to the owner's lead-capture page with via= set.
@@ -427,6 +609,7 @@ var basePath = (function () {
   return window.location.pathname.replace(/\/[^\/]*$/, '');
 })();
 var ownerPage = window.location.origin + basePath + '/vito_qrcode_contact.html';
+var cardPage  = window.location.origin + basePath + '/card.html';
 
 function buildShareUrl(d, via) {
   var p = new URLSearchParams({ via: via });
@@ -437,6 +620,18 @@ function buildShareUrl(d, via) {
   if (d.ruolo)   p.set('settore',  d.ruolo);
   return ownerPage + '?' + p.toString();
 }
+
+function buildCardUrl(d, via) {
+  var p = new URLSearchParams({ via: via });
+  if (d.nome)    p.set('nome',     d.nome);
+  if (d.email)   p.set('email',    d.email);
+  if (d.tel)     p.set('tel',      d.tel);
+  if (d.azienda) p.set('attivita', d.azienda);
+  if (d.ruolo)   p.set('settore',  d.ruolo);
+  if (d.nota)    p.set('nota',     d.nota);
+  return cardPage + '?' + p.toString();
+}
+
 var shareUrl = buildShareUrl(data, refId);
 
 /* ── QR code ── */
@@ -445,7 +640,7 @@ function renderQR(url) {
   var el = document.getElementById('previewQR');
   el.innerHTML = '';
   _qrInstance = new QRCode(el, {
-    text: url,
+    text: url || window.location.href,
     width: 140,
     height: 140,
     colorDark: '#0d1530',
@@ -465,6 +660,9 @@ function updatePreview(d) {
   var coEl = document.getElementById('pvCo');
   if (d.azienda) { coEl.textContent = d.azienda; coEl.style.display = 'block'; }
   else { coEl.style.display = 'none'; }
+  var notaEl = document.getElementById('pvNota');
+  if (d.nota) { notaEl.textContent = d.nota; notaEl.style.display = 'block'; }
+  else { notaEl.style.display = 'none'; }
 }
 updatePreview(data);
 
@@ -478,6 +676,7 @@ document.getElementById('saveProfileBtn').onclick = function () {
   data.azienda = sanitize(document.getElementById('f_azienda').value, 100);
   data.tel     = sanitize(document.getElementById('f_tel').value,     30);
   data.email   = sanitize(document.getElementById('f_email').value,   120);
+  data.nota    = sanitize(document.getElementById('f_nota').value,    140);
 
   if (!data.nome) { showToast('⚠️ Inserisci il tuo nome'); return; }
 
@@ -498,6 +697,12 @@ document.getElementById('saveProfileBtn').onclick = function () {
   showToast('✅ Dati salvati!');
 };
 
+/* ── Visualizza Biglietto ── */
+document.getElementById('viewCardBtn').onclick = function () {
+  var url = buildCardUrl(data, refId);
+  window.open(url, '_blank');
+};
+
 /* ── Download vCard ── */
 document.getElementById('downloadVcfBtn').onclick = function () {
   var parts  = (data.nome || '').trim().split(/\s+/);
@@ -513,6 +718,7 @@ document.getElementById('downloadVcfBtn').onclick = function () {
   if (data.email)   lines.push('EMAIL;TYPE=WORK:' + data.email);
   if (data.azienda) lines.push('ORG:' + data.azienda);
   if (data.ruolo)   lines.push('TITLE:' + data.ruolo);
+  if (data.nota)    lines.push('NOTE:' + data.nota);
   lines.push('URL:' + shareUrl);
   lines.push('END:VCARD');
 

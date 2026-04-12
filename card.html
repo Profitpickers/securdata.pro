@@ -40,6 +40,16 @@ body {
   text-decoration: none;
 }
 .badge-powered img { width: 14px; height: 14px; border-radius: 3px; opacity: 0.5; }
+/* Logo aziendale */
+.card-logo {
+  width: 52px; height: 52px;
+  border-radius: 10px;
+  object-fit: contain;
+  margin: 0 auto 0.75rem;
+  display: none;
+  border: 1px solid rgba(99,179,237,0.2);
+  background: rgba(99,179,237,0.04);
+}
 /* Avatar */
 .avatar-wrap {
   position: relative;
@@ -70,10 +80,20 @@ body {
   font-weight: 700;
   color: #fff;
 }
+.avatar-photo {
+  position: absolute;
+  top: 0; left: 0;
+  width: 90px; height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(99,179,237,0.4);
+  display: none;
+}
 /* Card text */
 .name { font-size: 1.4rem; font-weight: 700; color: #e8f4ff; letter-spacing: 0.01em; margin-bottom: 0.25rem; }
 .role { font-size: 0.75rem; color: #63b3ed; text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600; margin-bottom: 0.25rem; }
 .company { font-size: 1rem; color: #90cdf4; font-weight: 600; }
+.nota-row { font-size: 0.82rem; color: #90cdf4; font-style: italic; margin-top: 0.25rem; }
 .divider { width: 50px; height: 2px; background: linear-gradient(90deg, transparent, rgba(99,179,237,0.5), transparent); margin: 1rem auto; }
 /* QR */
 .qr-wrap { display: flex; justify-content: center; margin-bottom: 0.5rem; }
@@ -236,14 +256,18 @@ body {
     SecurData.Pro
   </a>
 
+  <img class="card-logo" id="cardLogo" alt="Logo aziendale">
+
   <div class="avatar-wrap">
     <div class="avatar-ring"></div>
     <div class="avatar-initial" id="cardInitial">?</div>
+    <img class="avatar-photo" id="cardPhoto" alt="Foto profilo">
   </div>
 
   <div class="name" id="cardNome">Nome Cognome</div>
   <div class="role" id="cardRuolo"></div>
   <div class="company" id="cardAzienda" style="display:none;"></div>
+  <div class="nota-row" id="cardNota" style="display:none;"></div>
 
   <div class="divider"></div>
 
@@ -316,6 +340,7 @@ var email    = getParam('email')    || '';
 var tel      = getParam('tel')      || '';
 var attivita = getParam('attivita') || '';
 var settore  = getParam('settore')  || '';
+var nota     = getParam('nota')     || '';
 // Sanitize via: allow only alphanumeric and dots (slug format)
 var via      = (getParam('via') || nome.toLowerCase().replace(/\s+/g, '.').replace(/[^a-z0-9.]/g, '').substring(0, 30)).replace(/[^a-z0-9.\-_]/gi, '').substring(0, 50);
 
@@ -323,15 +348,41 @@ var via      = (getParam('via') || nome.toLowerCase().replace(/\s+/g, '.').repla
 var nameParts = nome.trim().split(/\s+/);
 var initials  = nameParts.map(function(p) { return p.charAt(0).toUpperCase(); }).join('').substring(0, 2) || '?';
 
+/* ── Load photos from localStorage (if same browser as backoffice) ── */
+var photoKey = 'sdp_photo_' + via;
+var logoKey  = 'sdp_logo_'  + via;
+var photoB64 = '';
+var logoB64  = '';
+try { photoB64 = localStorage.getItem(photoKey) || ''; } catch (_) {}
+try { logoB64  = localStorage.getItem(logoKey)  || ''; } catch (_) {}
+
 /* ── Popola la UI ── */
-document.getElementById('cardInitial').textContent = initials;
-document.getElementById('cardNome').textContent    = nome;
-document.getElementById('cardRuolo').textContent   = settore || attivita || 'Membro · SecurData.Pro';
+if (photoB64) {
+  var photoEl = document.getElementById('cardPhoto');
+  photoEl.src = photoB64;
+  photoEl.style.display = 'block';
+  document.getElementById('cardInitial').style.display = 'none';
+} else {
+  document.getElementById('cardInitial').textContent = initials;
+}
+
+if (logoB64) {
+  var logoEl = document.getElementById('cardLogo');
+  logoEl.src = logoB64;
+  logoEl.style.display = 'block';
+}
+
+document.getElementById('cardNome').textContent  = nome;
+document.getElementById('cardRuolo').textContent = settore || attivita || 'Membro · SecurData.Pro';
 document.title = nome + ' – Biglietto Digitale';
 
 if (attivita) {
   document.getElementById('cardAzienda').textContent = attivita;
   document.getElementById('cardAzienda').style.display = 'block';
+}
+if (nota) {
+  document.getElementById('cardNota').textContent = nota;
+  document.getElementById('cardNota').style.display = 'block';
 }
 if (tel) {
   document.getElementById('cardTel').textContent = tel;
