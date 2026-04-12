@@ -352,9 +352,13 @@ if (attivita) {
 }
 
 /* ── QR Code ──
-   Il QR punta al biglietto del proprietario con il tag ?via=slug del lead:
-   chiunque scansioni il QR arriverà al biglietto con il referral attivo.    */
-var ownerCardBase = window.location.origin + '/vito_qrcode_contact.html';
+   ViralCard™ Loop – Passaparola Digitale Infinito a Cascata
+   Il QR punta alla pagina di registrazione con il ?via= del titolare del biglietto:
+   chiunque scansioni il QR arriverà al form con il referral già impostato.
+   Il percorso base viene derivato dall'URL corrente per supportare sia
+   profitpickers.github.io/securdata.pro/ sia domini custom (es. www.securdata.pro). */
+var basePath = window.location.pathname.replace(/\/[^\/]*$/, '');
+var ownerCardBase = window.location.origin + basePath + '/vito_qrcode_contact.html';
 var shareUrl = ownerCardBase + '?via=' + encodeURIComponent(via);
 
 new QRCode(document.getElementById('qrcode'), {
