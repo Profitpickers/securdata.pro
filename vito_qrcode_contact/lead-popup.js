@@ -348,16 +348,21 @@
       };
     }
 
-    // Reindirizza alla COPIA del profilo personalizzata del lead appena registrato.
-    // ViralCard™ Loop – stessa pagina ma con i dati dell'utente e card=1
-    // (card=1 impedisce al popup di riaprirsi automaticamente).
+    // Reindirizza al mini-backoffice personale dell'utente appena registrato.
+    // Il backoffice-utente.html permette all'utente di:
+    //  - personalizzare e visualizzare il proprio biglietto digitale
+    //  - scaricare il QR e la vCard
+    //  - condividere il proprio link referral con i pulsanti social
     setTimeout(function () {
-      var cardParams = new URLSearchParams({ nome: lead.nome, via: refId, card: '1' });
-      if (lead.email)    cardParams.set('email',    lead.email);
-      if (lead.tel)      cardParams.set('tel',       lead.tel);
-      if (lead.attivita) cardParams.set('attivita',  lead.attivita);
-      if (lead.settore)  cardParams.set('settore',   lead.settore);
-      window.location.href = window.location.origin + window.location.pathname + '?' + cardParams.toString();
+      var bkParams = new URLSearchParams({ nome: lead.nome, via: refId });
+      if (lead.email)    bkParams.set('email',    lead.email);
+      if (lead.tel)      bkParams.set('tel',       lead.tel);
+      if (lead.attivita) bkParams.set('attivita',  lead.attivita);
+      if (lead.settore)  bkParams.set('settore',   lead.settore);
+      // Remove the filename from the current pathname to obtain the directory base,
+      // so the redirect works both on subdirectory (github.io/repo/) and root domains.
+      var basePath = window.location.pathname.replace(/\/[^\/]*$/, '');
+      window.location.href = window.location.origin + basePath + '/backoffice-utente.html?' + bkParams.toString();
     }, 4000);
   };
   } // fine _buildAndShowPopup

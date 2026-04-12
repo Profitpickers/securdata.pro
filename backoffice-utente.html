@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Il mio Biglietto Digitale – SecurData.Pro</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha384-OLBgp1GsljhM2TJ+sbHjaiH9txEUvgdDTAzHv2P24donTt6/529l+9Ua0vFImLlb" crossorigin="anonymous"></script>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background: linear-gradient(135deg, #0a0e1a 0%, #0d1530 50%, #0a0e1a 100%);
+  min-height: 100vh;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  color: #e2e8f0;
+}
+
+/* ── Topbar ── */
+.topbar {
+  background: #0d1530;
+  border-bottom: 1px solid rgba(99,179,237,0.2);
+  padding: 0.9rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.topbar img { width: 32px; height: 32px; border-radius: 6px; }
+.topbar-title { font-size: 0.95rem; font-weight: 700; color: #90cdf4; }
+.topbar-badge {
+  margin-left: auto;
+  background: rgba(26,86,219,0.2);
+  color: #63b3ed;
+  font-size: 0.68rem;
+  padding: 3px 10px;
+  border-radius: 20px;
+  border: 1px solid rgba(99,179,237,0.3);
+}
+
+/* ── Layout ── */
+.main {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+}
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+@media (max-width: 640px) {
+  .grid2 { grid-template-columns: 1fr; }
+}
+
+/* ── Cards ── */
+.panel {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(99,179,237,0.15);
+  border-radius: 16px;
+  padding: 1.25rem;
+}
+.panel-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #63b3ed;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 1rem;
+}
+
+/* ── Form ── */
+label { display: block; font-size: 0.77rem; color: #718096; margin-bottom: 5px; margin-top: 0.8rem; }
+label:first-of-type { margin-top: 0; }
+input[type=text], input[type=email], input[type=tel] {
+  width: 100%;
+  background: rgba(0,0,0,0.25);
+  border: 1px solid rgba(99,179,237,0.25);
+  border-radius: 8px;
+  padding: 0.6rem 0.8rem;
+  color: #e2e8f0;
+  font-size: 0.875rem;
+  outline: none;
+  transition: border 0.2s;
+}
+input:focus { border-color: #63b3ed; }
+.btn-save-profile {
+  width: 100%;
+  margin-top: 1.1rem;
+  background: linear-gradient(135deg, #1a56db, #1e40af);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 0.75rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.18s, box-shadow 0.18s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.btn-save-profile:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(26,86,219,0.4); }
+
+/* ── Card Preview ── */
+.card-preview {
+  background: linear-gradient(135deg, #0a0e1a 0%, #0d1530 100%);
+  border: 1px solid rgba(99,179,237,0.25);
+  border-radius: 20px;
+  padding: 1.5rem 1.25rem;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+.av-wrap { position: relative; width: 70px; height: 70px; margin: 0 auto 0.8rem; }
+.av-ring {
+  position: absolute; inset: -3px; border-radius: 50%;
+  border: 2px solid transparent;
+  border-top-color: #63b3ed; border-right-color: rgba(99,179,237,0.3);
+  animation: spin 3s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.av-initial {
+  width: 70px; height: 70px; border-radius: 50%;
+  background: linear-gradient(135deg, #1a56db, #1e40af);
+  border: 2px solid rgba(99,179,237,0.4);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem; font-weight: 700; color: #fff;
+}
+.pv-name  { font-size: 1rem; font-weight: 700; color: #e8f4ff; margin-bottom: 2px; }
+.pv-role  { font-size: 0.7rem; color: #63b3ed; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; }
+.pv-co    { font-size: 0.85rem; color: #90cdf4; font-weight: 600; margin-top: 2px; }
+.pv-div   { width: 35px; height: 2px; background: linear-gradient(90deg, transparent, rgba(99,179,237,0.5), transparent); margin: 0.7rem auto; }
+
+/* ── QR in preview ── */
+.pv-qr { display: flex; justify-content: center; margin-bottom: 0.4rem; }
+#previewQR canvas, #previewQR img {
+  border-radius: 10px;
+  padding: 6px;
+  background: #fff;
+  display: block;
+}
+.pv-hint { font-size: 0.64rem; color: #4a5568; margin-bottom: 0.75rem; }
+
+/* ── Action buttons ── */
+.btn-vcf {
+  width: 100%;
+  background: linear-gradient(135deg, #1a56db, #1e40af);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 0.65rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  transition: transform 0.18s, box-shadow 0.18s;
+  margin-bottom: 0.5rem;
+}
+.btn-vcf:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(26,86,219,0.4); }
+.btn-qr-dl {
+  width: 100%;
+  background: rgba(99,179,237,0.08);
+  color: #63b3ed;
+  border: 1px solid rgba(99,179,237,0.3);
+  border-radius: 10px;
+  padding: 0.6rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  transition: background 0.18s;
+}
+.btn-qr-dl:hover { background: rgba(99,179,237,0.15); }
+
+/* ── Share section ── */
+.share-panel {
+  background: rgba(99,179,237,0.04);
+  border: 1px solid rgba(99,179,237,0.2);
+  border-radius: 16px;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+.share-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #63b3ed;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.4rem;
+}
+.share-desc {
+  font-size: 0.75rem;
+  color: #718096;
+  margin-bottom: 0.75rem;
+  line-height: 1.5;
+}
+.share-link-box {
+  background: rgba(0,0,0,0.2);
+  border: 1px solid rgba(99,179,237,0.15);
+  border-radius: 8px;
+  padding: 0.5rem 0.8rem;
+  font-size: 0.72rem;
+  color: #63b3ed;
+  word-break: break-all;
+  margin-bottom: 0.75rem;
+  user-select: all;
+}
+
+/* ── Social share grid ── */
+.share-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+@media (max-width: 400px) {
+  .share-grid { grid-template-columns: repeat(2, 1fr); }
+}
+.share-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 0.55rem 0.5rem;
+  border-radius: 9px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: opacity 0.18s, transform 0.18s;
+  text-decoration: none;
+  color: inherit;
+}
+.share-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+.share-btn:active { transform: translateY(0); }
+.btn-copy  { background: rgba(99,179,237,0.12); border-color: rgba(99,179,237,0.3); color: #63b3ed; }
+.btn-wa    { background: rgba(72,187,120,0.12);  border-color: rgba(72,187,120,0.3);  color: #68d391; }
+.btn-tg    { background: rgba(51,144,236,0.12);  border-color: rgba(51,144,236,0.3);  color: #5bc8f5; }
+.btn-tw    { background: rgba(29,161,242,0.12);  border-color: rgba(29,161,242,0.3);  color: #60c8ff; }
+.btn-fb    { background: rgba(66,103,178,0.12);  border-color: rgba(66,103,178,0.3);  color: #82a5e0; }
+.btn-email { background: rgba(246,173,85,0.12);  border-color: rgba(246,173,85,0.3);  color: #f6ad55; }
+
+/* ── Toast ── */
+.toast {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: #1a56db;
+  color: #fff;
+  padding: 0.65rem 1.4rem;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  opacity: 0;
+  transition: all 0.3s;
+  pointer-events: none;
+  z-index: 200;
+  white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── Footer ── */
+.page-footer {
+  text-align: center;
+  font-size: 0.65rem;
+  color: #4a5568;
+  margin-top: 1rem;
+  line-height: 1.6;
+}
+.page-footer a { color: #4a5568; }
+</style>
+</head>
+<body>
+
+<!-- Topbar -->
+<div class="topbar">
+  <img src="logo-00-securdata-pro.svg" alt="SecurData.Pro">
+  <span class="topbar-title">SecurData.Pro</span>
+  <span class="topbar-badge">Il mio Biglietto Digitale</span>
+</div>
+
+<!-- Main -->
+<div class="main">
+
+  <!-- Row 1: Form + Preview -->
+  <div class="grid2">
+
+    <!-- Left: Form -->
+    <div class="panel">
+      <div class="panel-title">✏️ Personalizza il tuo biglietto</div>
+      <label>Nome e Cognome *</label>
+      <input type="text" id="f_nome" placeholder="Es. Mario Rossi" maxlength="80">
+      <label>Ruolo / Qualifica</label>
+      <input type="text" id="f_ruolo" placeholder="Es. Consulente, Titolare..." maxlength="80">
+      <label>Azienda / Attività</label>
+      <input type="text" id="f_azienda" placeholder="Es. Studio Rossi & Associati" maxlength="100">
+      <label>Telefono / WhatsApp</label>
+      <input type="tel" id="f_tel" placeholder="+39 320 000 0000" maxlength="30">
+      <label>Email</label>
+      <input type="email" id="f_email" placeholder="mario@tuaazienda.it" maxlength="120">
+      <button class="btn-save-profile" id="saveProfileBtn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></svg>
+        Salva e Aggiorna
+      </button>
+    </div>
+
+    <!-- Right: Preview + actions -->
+    <div>
+      <div class="panel" style="margin-bottom:0.75rem;">
+        <div class="panel-title">🎴 Anteprima biglietto</div>
+        <div class="card-preview">
+          <div class="av-wrap">
+            <div class="av-ring"></div>
+            <div class="av-initial" id="pvInitial">?</div>
+          </div>
+          <div class="pv-name"  id="pvName">Il tuo nome</div>
+          <div class="pv-role"  id="pvRole">Ruolo</div>
+          <div class="pv-co"    id="pvCo"   style="display:none;"></div>
+          <div class="pv-div"></div>
+          <div class="pv-qr"><div id="previewQR"></div></div>
+          <p class="pv-hint">📲 Il tuo QR personale</p>
+        </div>
+        <button class="btn-vcf" id="downloadVcfBtn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v13m0 0l-4-4m4 4l4-4M3 17v2a2 2 0 002 2h14a2 2 0 002-2v-2"/></svg>
+          Scarica la mia vCard
+        </button>
+        <button class="btn-qr-dl" id="downloadQrBtn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="5" height="5"/><rect x="16" y="3" width="5" height="5"/><rect x="3" y="16" width="5" height="5"/><path d="M21 16h-3v3M21 21v-1M14 3h1v5h-1M14 10h1M14 13v5h3M19 13h2v2"/></svg>
+          Scarica immagine QR
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Row 2: Share section -->
+  <div class="share-panel">
+    <div class="share-title">🔗 Il tuo link di invito personale</div>
+    <div class="share-desc">Condividi questo link: chi lo visita può iscriversi e creare il proprio biglietto digitale, e tu accumuli contatti nella tua rete!</div>
+    <div class="share-link-box" id="shareLinkBox"></div>
+    <div class="share-grid">
+      <button class="share-btn btn-copy" id="copyBtn">📋 Copia link</button>
+      <button class="share-btn btn-wa"   id="waBtn">💬 WhatsApp</button>
+      <button class="share-btn btn-tg"   id="tgBtn">✈️ Telegram</button>
+      <button class="share-btn btn-tw"   id="twBtn">🐦 Twitter / X</button>
+      <button class="share-btn btn-fb"   id="fbBtn">👍 Facebook</button>
+      <button class="share-btn btn-email" id="emailBtn">📧 Email</button>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="page-footer">
+    Biglietto digitale creato con <a href="https://www.securdata.pro" target="_blank">SecurData.Pro</a> –
+    Sicurezza Dati &amp; AI Integration<br>
+    <a href="privacy-policy.html">Privacy Policy</a> &middot;
+    <a href="termini-di-servizio.html">Termini di Servizio</a>
+  </div>
+
+</div><!-- /main -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ── Utilities ── */
+function getParam(name) {
+  return decodeURIComponent(new URLSearchParams(window.location.search).get(name) || '');
+}
+function sanitize(val, maxLen) {
+  // Strip HTML tags (complete and incomplete like <script), control chars,
+  // and characters that break CSV/HTML to prevent injection.
+  return String(val || '').replace(/<[^>]*>/gm, '').replace(/</g, '').replace(/[>"']/g, '').trim().substring(0, maxLen || 150);
+}
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function () { t.classList.remove('show'); }, 2500);
+}
+
+/* ── Read URL params ── */
+var urlNome     = sanitize(getParam('nome'),     80);
+var urlEmail    = sanitize(getParam('email'),    120);
+var urlTel      = sanitize(getParam('tel'),      30);
+var urlAttivita = sanitize(getParam('attivita'), 100);
+var urlSettore  = sanitize(getParam('settore'),  100);
+var urlVia      = (getParam('via') || '').replace(/[^a-zA-Z0-9._-]/g, '').substring(0, 50);
+
+/* ── Derive the via/refId ── */
+function makeRefId(nome) {
+  return nome.toLowerCase().replace(/\s+/g, '.').replace(/[^a-z0-9.]/g, '').substring(0, 30);
+}
+var refId = urlVia || makeRefId(urlNome || 'utente');
+
+/* ── localStorage key per questo utente ── */
+var STORAGE_KEY = 'sdp_card_' + refId;
+
+/* ── Load persisted data (merge: localStorage > urlParams > defaults) ── */
+var saved = {};
+try { saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch (_) {}
+
+var data = {
+  nome:     saved.nome     || urlNome     || '',
+  ruolo:    saved.ruolo    || urlSettore  || urlAttivita || '',
+  azienda:  saved.azienda  || urlAttivita || '',
+  tel:      saved.tel      || urlTel      || '',
+  email:    saved.email    || urlEmail    || ''
+};
+
+/* ── Fill form ── */
+document.getElementById('f_nome').value    = data.nome;
+document.getElementById('f_ruolo').value   = data.ruolo;
+document.getElementById('f_azienda').value = data.azienda;
+document.getElementById('f_tel').value     = data.tel;
+document.getElementById('f_email').value   = data.email;
+
+/* ── Build share URL ── */
+// The referral URL points to the owner's lead-capture page with via= set.
+// Visiting this URL shows the owner's card and auto-opens the registration popup.
+var basePath = (function () {
+  // Remove the filename from the current pathname to obtain the directory base,
+  // so referral links work on both subdirectory (github.io/repo/) and root domains.
+  return window.location.pathname.replace(/\/[^\/]*$/, '');
+})();
+var ownerPage = window.location.origin + basePath + '/vito_qrcode_contact.html';
+
+function buildShareUrl(d, via) {
+  var p = new URLSearchParams({ via: via });
+  if (d.nome)    p.set('nome',     d.nome);
+  if (d.email)   p.set('email',    d.email);
+  if (d.tel)     p.set('tel',      d.tel);
+  if (d.azienda) p.set('attivita', d.azienda);
+  if (d.ruolo)   p.set('settore',  d.ruolo);
+  return ownerPage + '?' + p.toString();
+}
+var shareUrl = buildShareUrl(data, refId);
+
+/* ── QR code ── */
+var _qrInstance = null;
+function renderQR(url) {
+  var el = document.getElementById('previewQR');
+  el.innerHTML = '';
+  _qrInstance = new QRCode(el, {
+    text: url,
+    width: 140,
+    height: 140,
+    colorDark: '#0d1530',
+    colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.M
+  });
+}
+renderQR(shareUrl);
+
+/* ── Card preview ── */
+function updatePreview(d) {
+  var parts    = (d.nome || '?').trim().split(/\s+/);
+  var initials = parts.map(function (p) { return p.charAt(0).toUpperCase(); }).join('').substring(0, 2) || '?';
+  document.getElementById('pvInitial').textContent = initials;
+  document.getElementById('pvName').textContent    = d.nome    || 'Il tuo nome';
+  document.getElementById('pvRole').textContent    = d.ruolo   || 'Ruolo';
+  var coEl = document.getElementById('pvCo');
+  if (d.azienda) { coEl.textContent = d.azienda; coEl.style.display = 'block'; }
+  else { coEl.style.display = 'none'; }
+}
+updatePreview(data);
+
+/* ── Share link display ── */
+document.getElementById('shareLinkBox').textContent = shareUrl;
+
+/* ── Save profile ── */
+document.getElementById('saveProfileBtn').onclick = function () {
+  data.nome    = sanitize(document.getElementById('f_nome').value,    80);
+  data.ruolo   = sanitize(document.getElementById('f_ruolo').value,   80);
+  data.azienda = sanitize(document.getElementById('f_azienda').value, 100);
+  data.tel     = sanitize(document.getElementById('f_tel').value,     30);
+  data.email   = sanitize(document.getElementById('f_email').value,   120);
+
+  if (!data.nome) { showToast('⚠️ Inserisci il tuo nome'); return; }
+
+  // Ricalcola refId se il nome è cambiato e non c'era un via in URL
+  if (!urlVia) {
+    refId = makeRefId(data.nome);
+    STORAGE_KEY = 'sdp_card_' + refId;
+  }
+
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch (_) {}
+
+  // Rigenera share URL e QR
+  shareUrl = buildShareUrl(data, refId);
+  document.getElementById('shareLinkBox').textContent = shareUrl;
+  renderQR(shareUrl);
+  updatePreview(data);
+
+  showToast('✅ Dati salvati!');
+};
+
+/* ── Download vCard ── */
+document.getElementById('downloadVcfBtn').onclick = function () {
+  var parts  = (data.nome || '').trim().split(/\s+/);
+  var primo  = parts.length > 1 ? parts.slice(0, -1).join(' ') : parts[0];
+  var cognome = parts.length > 1 ? parts[parts.length - 1] : '';
+  var lines = [
+    'BEGIN:VCARD',
+    'VERSION:3.0',
+    'FN:' + data.nome,
+    'N:' + cognome + ';' + primo + ';;;'
+  ];
+  if (data.tel)     lines.push('TEL;TYPE=CELL,VOICE:' + data.tel.replace(/\s/g, ''));
+  if (data.email)   lines.push('EMAIL;TYPE=WORK:' + data.email);
+  if (data.azienda) lines.push('ORG:' + data.azienda);
+  if (data.ruolo)   lines.push('TITLE:' + data.ruolo);
+  lines.push('URL:' + shareUrl);
+  lines.push('END:VCARD');
+
+  var blob = new Blob([lines.join('\r\n')], { type: 'text/vcard;charset=utf-8' });
+  var url  = URL.createObjectURL(blob);
+  var a    = document.createElement('a');
+  a.href     = url;
+  a.download = (data.nome || 'contatto').replace(/\s+/g, '_') + '.vcf';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('✓ vCard scaricata!');
+};
+
+/* ── Download QR as image ── */
+document.getElementById('downloadQrBtn').onclick = function () {
+  var qrCanvas = document.querySelector('#previewQR canvas');
+  if (!qrCanvas) { showToast('⚠️ Genera prima il QR'); return; }
+  var link = document.createElement('a');
+  link.download = 'qr_' + (data.nome || 'biglietto').replace(/\s+/g, '_') + '.png';
+  link.href = qrCanvas.toDataURL('image/png');
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  showToast('✓ QR scaricato!');
+};
+
+/* ── Share buttons ── */
+document.getElementById('copyBtn').onclick = function () {
+  var btn = this;
+  navigator.clipboard.writeText(shareUrl).then(function () {
+    showToast('✅ Link copiato!');
+    btn.textContent = '✅ Copiato!';
+    setTimeout(function () { btn.textContent = '📋 Copia link'; }, 2000);
+  }).catch(function () {
+    var tmp = document.createElement('textarea');
+    tmp.value = shareUrl;
+    document.body.appendChild(tmp);
+    tmp.select();
+    document.execCommand('copy');
+    document.body.removeChild(tmp);
+    showToast('✅ Link copiato!');
+    btn.textContent = '✅ Copiato!';
+    setTimeout(function () { btn.textContent = '📋 Copia link'; }, 2000);
+  });
+};
+
+document.getElementById('waBtn').onclick = function () {
+  var msg = 'Ciao! Ho appena creato il mio biglietto digitale con SecurData.Pro 🎴\nTi invito a scoprire le risorse gratuite su sicurezza dati e AI. Crea anche tu il tuo biglietto digitale gratuito: ' + shareUrl;
+  window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+};
+
+document.getElementById('tgBtn').onclick = function () {
+  var msg = 'Ciao! Ho creato il mio biglietto digitale con SecurData.Pro 🎴 Crea anche tu il tuo biglietto gratuito: ' + shareUrl;
+  window.open('https://t.me/share/url?url=' + encodeURIComponent(shareUrl) + '&text=' + encodeURIComponent(msg), '_blank');
+};
+
+document.getElementById('twBtn').onclick = function () {
+  var msg = 'Ho appena creato il mio biglietto digitale gratuito con @SecurDataPro 🎴 Crea anche tu il tuo! #SecurData #BigliettoDigitale #AI #CyberSecurity';
+  window.open('https://x.com/intent/tweet?text=' + encodeURIComponent(msg) + '&url=' + encodeURIComponent(shareUrl), '_blank');
+};
+
+document.getElementById('fbBtn').onclick = function () {
+  window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(shareUrl), '_blank');
+};
+
+document.getElementById('emailBtn').onclick = function () {
+  var subject = 'Scopri il mio biglietto digitale con SecurData.Pro';
+  var body    = 'Ciao,\n\nho appena creato il mio biglietto digitale gratuito con SecurData.Pro!\n\nPuoi vederlo e creare il tuo qui: ' + shareUrl + '\n\nA presto!';
+  window.open('mailto:?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body));
+};
+</script>
+</body>
+</html>
