@@ -169,29 +169,27 @@ body {
   margin-bottom: 0.6rem;
   text-align: left;
 }
-.share-btns { display: flex; gap: 0.5rem; }
-.btn-copy {
-  flex: 1;
-  padding: 0.55rem;
-  background: rgba(99,179,237,0.1);
-  border: 1px solid rgba(99,179,237,0.3);
+.share-btns {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.4rem;
+}
+@media (max-width: 360px) { .share-btns { grid-template-columns: repeat(2, 1fr); } }
+.share-btns button {
+  padding: 0.52rem 0.3rem;
   border-radius: 8px;
-  color: #63b3ed;
-  font-size: 0.8rem;
+  font-size: 0.74rem;
   cursor: pointer;
   font-weight: 600;
+  transition: opacity 0.18s;
 }
-.btn-wa {
-  flex: 1;
-  padding: 0.55rem;
-  background: rgba(72,187,120,0.1);
-  border: 1px solid rgba(72,187,120,0.3);
-  border-radius: 8px;
-  color: #68d391;
-  font-size: 0.8rem;
-  cursor: pointer;
-  font-weight: 600;
-}
+.share-btns button:hover { opacity: 0.85; }
+.btn-copy  { background: rgba(99,179,237,0.1);  border: 1px solid rgba(99,179,237,0.3);  color: #63b3ed; }
+.btn-wa    { background: rgba(72,187,120,0.1);  border: 1px solid rgba(72,187,120,0.3);  color: #68d391; }
+.btn-tg    { background: rgba(51,144,236,0.1);  border: 1px solid rgba(51,144,236,0.3);  color: #5bc8f5; }
+.btn-tw    { background: rgba(29,161,242,0.1);  border: 1px solid rgba(29,161,242,0.3);  color: #60c8ff; }
+.btn-fb    { background: rgba(66,103,178,0.1);  border: 1px solid rgba(66,103,178,0.3);  color: #82a5e0; }
+.btn-em    { background: rgba(246,173,85,0.1);  border: 1px solid rgba(246,173,85,0.3);  color: #f6ad55; }
 /* Footer */
 .card-footer {
   margin-top: 1rem;
@@ -290,7 +288,11 @@ body {
     <div class="share-link-box" id="shareLink"></div>
     <div class="share-btns">
       <button class="btn-copy" id="copyBtn">📋 Copia link</button>
-      <button class="btn-wa" id="waBtn">💬 WhatsApp</button>
+      <button class="btn-wa"   id="waBtn">💬 WhatsApp</button>
+      <button class="btn-tg"   id="tgBtn">✈️ Telegram</button>
+      <button class="btn-tw"   id="twBtn">🐦 Twitter / X</button>
+      <button class="btn-fb"   id="fbBtn">👍 Facebook</button>
+      <button class="btn-em"   id="emailBtn">📧 Email</button>
     </div>
   </div>
 
@@ -395,6 +397,26 @@ document.getElementById('copyBtn').onclick = function() {
 document.getElementById('waBtn').onclick = function() {
   var msg = 'Ciao! Ho appena creato il mio biglietto digitale con SecurData.Pro 🎴\nTi invito a scoprire le risorse gratuite su sicurezza dati e AI: ' + shareUrl;
   window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+};
+
+document.getElementById('tgBtn').onclick = function() {
+  var msg = 'Ciao! Ho creato il mio biglietto digitale con SecurData.Pro 🎴 Crea anche tu il tuo biglietto gratuito: ';
+  window.open('https://t.me/share/url?url=' + encodeURIComponent(shareUrl) + '&text=' + encodeURIComponent(msg), '_blank');
+};
+
+document.getElementById('twBtn').onclick = function() {
+  var msg = 'Ho appena creato il mio biglietto digitale gratuito con @SecurDataPro 🎴 Crea anche tu il tuo! #SecurData #BigliettoDigitale #AI #CyberSecurity';
+  window.open('https://x.com/intent/tweet?text=' + encodeURIComponent(msg) + '&url=' + encodeURIComponent(shareUrl), '_blank');
+};
+
+document.getElementById('fbBtn').onclick = function() {
+  window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(shareUrl), '_blank');
+};
+
+document.getElementById('emailBtn').onclick = function() {
+  var subject = 'Scopri il mio biglietto digitale con SecurData.Pro';
+  var body = 'Ciao,\n\nho appena creato il mio biglietto digitale gratuito con SecurData.Pro!\n\nPuoi vederlo e creare il tuo qui: ' + shareUrl + '\n\nA presto!';
+  window.open('mailto:?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body));
 };
 
 /* ── Salva contatto (vCard) ── */

@@ -285,6 +285,13 @@ body::after{
     <span id="footerLabel">© SecurData.Pro – Sicurezza Dati &amp; AI Integration</span>
   </div>
 
+  <!-- Accesso admin proprietario (PIN-protetto) -->
+  <div style="margin-top:0.75rem;text-align:center;">
+    <button id="adminAccessBtn" title="Accesso proprietario" style="background:none;border:none;cursor:pointer;color:#2d3748;font-size:0.62rem;opacity:0.35;padding:4px 8px;border-radius:6px;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.75'" onmouseout="this.style.opacity='0.35'">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:3px;"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>Admin
+    </button>
+  </div>
+
 </div>
 
 <div class="toast" id="toast">✓ Contatto salvato!</div>
@@ -487,6 +494,25 @@ document.getElementById('saveBtn').addEventListener('click', function() {
   t.classList.add('show');
   setTimeout(function(){ t.classList.remove('show'); }, 2500);
 });
+
+// ── Admin access ──
+(function() {
+  var btn = document.getElementById('adminAccessBtn');
+  if (!btn) return;
+  // PIN hardcoded (client-side, scopo: impedire accessi casuali)
+  // NOTE: This PIN is intentionally client-side — it prevents casual access, not determined attackers.
+  // Since admin.html has no server-side auth, this is a UX guard only. Change the PIN below as needed.
+  var ADMIN_PIN = 'sdp2025';
+  btn.addEventListener('click', function() {
+    var pin = window.prompt('🔑 Inserisci il PIN proprietario:');
+    if (pin === null) return; // annullato
+    if (pin === ADMIN_PIN) {
+      window.location.href = 'vito_qrcode_contact/admin.html';
+    } else {
+      alert('PIN errato. Accesso negato.');
+    }
+  });
+})();
 </script>
 <script src="vito_qrcode_contact/lead-popup.js"></script>
 </body>
