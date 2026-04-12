@@ -334,6 +334,7 @@
 
     // Reindirizza al biglietto digitale personalizzato del lead appena registrato.
     // Passa tutti i dati via URL per popolare la pagina card.html.
+    // ViralCard™ Loop – Passaparola Digitale Infinito a Cascata
     setTimeout(function () {
       var params = new URLSearchParams({
         nome:     lead.nome,
@@ -343,7 +344,10 @@
         settore:  lead.settore  || '',
         via:      refId
       });
-      window.location.href = window.location.origin + '/card.html?' + params.toString();
+      // Deriva il percorso base dalla pagina corrente per supportare
+      // sia profitpickers.github.io/securdata.pro/ sia domini custom.
+      var basePath = window.location.pathname.replace(/\/[^\/]*$/, '');
+      window.location.href = window.location.origin + basePath + '/card.html?' + params.toString();
     }, 4000);
   };
   } // fine _buildAndShowPopup
