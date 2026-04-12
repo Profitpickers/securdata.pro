@@ -37,6 +37,11 @@
   var _rawVia = new URLSearchParams(window.location.search).get('via') || '';
   var refVia  = _rawVia.replace(/[^a-zA-Z0-9._-]/g, '').substring(0, 50);
 
+  /* ─── CARD MODE: quando l'utente ha appena completato la registrazione ── */
+  // ?card=1 indica che l'utente sta visualizzando il proprio biglietto digitale
+  // e NON deve riaprire il popup (altrimenti si creerebbe un loop infinito).
+  var isCardMode = new URLSearchParams(window.location.search).get('card') === '1';
+
   /* ─── FUNZIONE PUBBLICA PER APRIRE IL POPUP ──────────────────── */
   // Esposta globalmente per essere chiamata dal pulsante CTA
   window.sdpOpenLeadPopup = function () {
@@ -47,7 +52,8 @@
   /* ─── AUTO-APRI SE VISITA DA REFERRAL ────────────────────────── */
   // Se l'URL contiene ?via=xxx l'utente è arrivato da un invito: mostra
   // subito il popup così comprende cosa può ottenere.
-  if (refVia) {
+  // NON aprire il popup in card mode (l'utente ha appena registrato).
+  if (refVia && !isCardMode) {
     document.addEventListener('DOMContentLoaded', function () {
       window.sdpOpenLeadPopup();
     });
@@ -304,9 +310,19 @@
     document.getElementById('sdp-lead-form').style.display = 'none';
     document.getElementById('sdp-lead-success').style.display = 'block';
 
-    // Genera il link di invito personale dell'utente appena registrato
-    var refId     = nome.toLowerCase().replace(/\s+/g, '.').replace(/[^a-z0-9.]/g, '').substring(0, 30);
-    var shareUrl  = window.location.origin + window.location.pathname + '?via=' + refId;
+    // Genera il link di invito personale dell'utente appena registrato.
+    // ViralCard™ Loop – Passaparola Digitale Infinito a Cascata:
+    // Il link di condivisione punta a questa stessa pagina ma con i dati
+    // dell'utente nell'URL (senza card=1) così chi lo visita vede il
+    // profilo dell'utente e il popup si apre automaticamente.
+    var refId = nome.toLowerCase().replace(/\s+/g, '.').replace(/[^a-z0-9.]/g, '').substring(0, 30);
+    var shareParams = new URLSearchParams({ nome: lead.nome, via: refId });
+    if (lead.email)    shareParams.set('email',    lead.email);
+    if (lead.tel)      shareParams.set('tel',       lead.tel);
+    if (lead.attivita) shareParams.set('attivita',  lead.attivita);
+    if (lead.settore)  shareParams.set('settore',   lead.settore);
+    var shareUrl = window.location.origin + window.location.pathname + '?' + shareParams.toString();
+
     var shareBlock = document.getElementById('sdp-share-block');
     var shareLinkEl = document.getElementById('sdp-share-link');
     if (shareBlock && shareLinkEl) {
@@ -332,22 +348,16 @@
       };
     }
 
-    // Reindirizza al biglietto digitale personalizzato del lead appena registrato.
-    // Passa tutti i dati via URL per popolare la pagina card.html.
-    // ViralCard™ Loop – Passaparola Digitale Infinito a Cascata
+    // Reindirizza alla COPIA del profilo personalizzata del lead appena registrato.
+    // ViralCard™ Loop – stessa pagina ma con i dati dell'utente e card=1
+    // (card=1 impedisce al popup di riaprirsi automaticamente).
     setTimeout(function () {
-      var params = new URLSearchParams({
-        nome:     lead.nome,
-        email:    lead.email,
-        tel:      lead.tel      || '',
-        attivita: lead.attivita || '',
-        settore:  lead.settore  || '',
-        via:      refId
-      });
-      // Deriva il percorso base dalla pagina corrente per supportare
-      // sia profitpickers.github.io/securdata.pro/ sia domini custom.
-      var basePath = window.location.pathname.replace(/\/[^\/]*$/, '');
-      window.location.href = window.location.origin + basePath + '/card.html?' + params.toString();
+      var cardParams = new URLSearchParams({ nome: lead.nome, via: refId, card: '1' });
+      if (lead.email)    cardParams.set('email',    lead.email);
+      if (lead.tel)      cardParams.set('tel',       lead.tel);
+      if (lead.attivita) cardParams.set('attivita',  lead.attivita);
+      if (lead.settore)  cardParams.set('settore',   lead.settore);
+      window.location.href = window.location.origin + window.location.pathname + '?' + cardParams.toString();
     }, 4000);
   };
   } // fine _buildAndShowPopup
