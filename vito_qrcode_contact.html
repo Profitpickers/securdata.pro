@@ -351,7 +351,7 @@ if (_vcIsCard && _vcNome) {
 
 // Popola UI
 document.getElementById('cardNome').textContent    = profile.nome;
-document.getElementById('cardRuolo').innerHTML     = profile.ruolo;
+document.getElementById('cardRuolo').textContent    = profile.ruolo;
 document.getElementById('cardAzienda').textContent = profile.azienda;
 document.getElementById('cardTel').textContent     = profile.tel;
 var _emailForHref = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profile.email) ? profile.email : '';
