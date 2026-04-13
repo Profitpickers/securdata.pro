@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Il mio Biglietto Digitale – SecurData.Pro</title>
+<title>Dashboard Utente – SecurData.Pro</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha384-OLBgp1GsljhM2TJ+sbHjaiH9txEUvgdDTAzHv2P24donTt6/529l+9Ua0vFImLlb" crossorigin="anonymous"></script>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -362,21 +362,366 @@ input:focus { border-color: #63b3ed; }
   line-height: 1.6;
 }
 .page-footer a { color: #4a5568; }
+
+/* ── Sidebar layout ── */
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ── Sidebar ── */
+.sidebar {
+  width: 230px;
+  flex-shrink: 0;
+  background: #070b18;
+  border-right: 1px solid rgba(99,179,237,0.12);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  z-index: 100;
+  transition: transform 0.3s ease;
+  overflow-y: auto;
+}
+.sidebar-brand {
+  padding: 1.25rem 1.2rem 1rem;
+  border-bottom: 1px solid rgba(99,179,237,0.1);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+.sidebar-brand img { width: 32px; height: 32px; border-radius: 7px; }
+.sidebar-brand-name { font-size: 0.85rem; font-weight: 800; color: #90cdf4; letter-spacing: 0.06em; }
+
+/* Sidebar user info */
+.sidebar-user {
+  padding: 1rem 1.2rem;
+  border-bottom: 1px solid rgba(99,179,237,0.08);
+}
+.sidebar-user-avatar {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: linear-gradient(135deg,#1a56db,#1e40af);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem; font-weight: 700; color: #fff;
+  margin-bottom: 0.5rem;
+}
+.sidebar-user-name { font-size: 0.82rem; font-weight: 700; color: #e2e8f0; margin-bottom: 2px; }
+.sidebar-user-type {
+  display: inline-block;
+  font-size: 0.6rem; font-weight: 700;
+  padding: 2px 7px; border-radius: 20px;
+  background: rgba(26,86,219,0.18);
+  color: #63b3ed;
+  border: 1px solid rgba(99,179,237,0.25);
+  text-transform: uppercase; letter-spacing: 0.06em;
+}
+
+/* Sidebar nav */
+.sidebar-nav {
+  flex: 1;
+  padding: 0.75rem 0;
+}
+.nav-section-label {
+  padding: 0.6rem 1.2rem 0.3rem;
+  font-size: 0.58rem; font-weight: 700;
+  color: #2d3748; text-transform: uppercase; letter-spacing: 0.1em;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 9px;
+  padding: 0.65rem 1.2rem;
+  color: #64748b;
+  text-decoration: none;
+  font-size: 0.82rem; font-weight: 600;
+  border-left: 3px solid transparent;
+  transition: all 0.18s;
+  cursor: pointer;
+  background: none; border-right: none; border-top: none; border-bottom: none;
+  width: 100%; text-align: left;
+  font-family: inherit;
+}
+.nav-item svg { flex-shrink: 0; width: 15px; height: 15px; }
+.nav-item:hover { color: #90cdf4; background: rgba(99,179,237,0.05); border-left-color: rgba(99,179,237,0.3); }
+.nav-item.active { color: #63b3ed; background: rgba(26,86,219,0.12); border-left-color: #3b82f6; }
+.nav-item.coming-soon { opacity: 0.4; cursor: not-allowed; }
+.nav-badge {
+  margin-left: auto;
+  font-size: 0.55rem; padding: 2px 6px; border-radius: 20px;
+  background: rgba(99,179,237,0.12); color: #63b3ed;
+  border: 1px solid rgba(99,179,237,0.2);
+}
+.nav-item.danger:hover { color: #fca5a5; background: rgba(239,68,68,0.06); border-left-color: rgba(239,68,68,0.3); }
+
+/* Sidebar footer */
+.sidebar-footer {
+  padding: 0.9rem 1.2rem;
+  border-top: 1px solid rgba(99,179,237,0.08);
+  font-size: 0.62rem; color: #1e3a5f; line-height: 1.6;
+  text-align: center;
+}
+.sidebar-footer a { color: #1e3a5f; text-decoration: none; }
+
+/* Mobile sidebar toggle */
+.sidebar-overlay {
+  display: none;
+  position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+  z-index: 99; backdrop-filter: blur(2px);
+}
+.sidebar-overlay.show { display: block; }
+
+/* Mobile menu button */
+.menu-toggle {
+  display: none;
+  background: none; border: none; color: #63b3ed;
+  cursor: pointer; padding: 4px; margin-right: 6px;
+}
+@media (max-width: 768px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .menu-toggle { display: flex; }
+  .content-area { margin-left: 0 !important; }
+}
+
+/* ── Content area (shifts right of sidebar) ── */
+.content-area {
+  flex: 1;
+  margin-left: 230px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ── Topbar (inside content area) ── */
+.topbar {
+  background: #0d1530;
+  border-bottom: 1px solid rgba(99,179,237,0.2);
+  padding: 0.9rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: sticky; top: 0; z-index: 40;
+}
+
+/* Section panels */
+.dash-section { display: none; }
+.dash-section.active { display: block; }
+
+/* Section header */
+.section-header {
+  margin-bottom: 1.25rem;
+}
+.section-title {
+  font-size: 1.1rem; font-weight: 700; color: #e8f4ff;
+  margin-bottom: 3px;
+}
+.section-sub { font-size: 0.75rem; color: #4a5568; }
+
+/* Dashboard welcome cards */
+.dash-welcome-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+.dash-stat-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(99,179,237,0.12);
+  border-radius: 14px;
+  padding: 1.1rem;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+.dash-stat-card:hover {
+  border-color: rgba(99,179,237,0.3);
+  background: rgba(99,179,237,0.05);
+}
+.dash-stat-icon { font-size: 1.6rem; margin-bottom: 0.5rem; }
+.dash-stat-label { font-size: 0.7rem; color: #4a5568; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 3px; }
+.dash-stat-value { font-size: 1rem; font-weight: 700; color: #90cdf4; }
+
+/* Newsletter section */
+.newsletter-panel {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(99,179,237,0.12);
+  border-radius: 14px;
+  padding: 1.4rem;
+  margin-bottom: 1.25rem;
+}
+.newsletter-title { font-size: 0.85rem; font-weight: 700; color: #63b3ed; margin-bottom: 0.4rem; }
+.newsletter-desc { font-size: 0.75rem; color: #718096; line-height: 1.55; margin-bottom: 1rem; }
+.newsletter-topics { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+.topic-btn {
+  padding: 0.4rem 0.85rem; border-radius: 20px;
+  border: 1px solid rgba(99,179,237,0.25);
+  background: rgba(99,179,237,0.06);
+  color: #63b3ed; font-size: 0.75rem; font-weight: 600;
+  cursor: pointer; transition: all 0.18s; font-family: inherit;
+}
+.topic-btn.selected { background: rgba(26,86,219,0.2); border-color: rgba(99,179,237,0.5); color: #90cdf4; }
+.topic-btn:hover { background: rgba(99,179,237,0.1); }
+.newsletter-status {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 0.75rem; font-weight: 700;
+  padding: 0.4rem 0.9rem; border-radius: 20px;
+}
+.newsletter-status.subscribed { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); color: #6ee7b7; }
+.newsletter-status.unsubscribed { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); color: #fca5a5; }
+
+/* Blog teaser */
+.blog-teaser {
+  background: rgba(255,255,255,0.02);
+  border: 1px dashed rgba(99,179,237,0.15);
+  border-radius: 14px;
+  padding: 2rem;
+  text-align: center;
+}
+.blog-teaser-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+.blog-teaser-title { font-size: 0.9rem; font-weight: 700; color: #63b3ed; margin-bottom: 0.4rem; }
+.blog-teaser-sub { font-size: 0.75rem; color: #4a5568; line-height: 1.5; }
 </style>
 </head>
 <body>
 
+<!-- Sidebar overlay (mobile) -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- App layout -->
+<div class="app-layout">
+
+<!-- ═══ SIDEBAR ═══ -->
+<aside class="sidebar" id="sidebar">
+
+  <a href="index.html" class="sidebar-brand">
+    <img src="logo-00-securdata-pro.svg" alt="SecurData.Pro">
+    <span class="sidebar-brand-name">SECURDATA</span>
+  </a>
+
+  <div class="sidebar-user">
+    <div class="sidebar-user-avatar" id="sidebarAvatar">?</div>
+    <div class="sidebar-user-name" id="sidebarName">—</div>
+    <span class="sidebar-user-type" id="sidebarType">utente</span>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Menu</div>
+
+    <button class="nav-item active" id="navDashboard" onclick="showSection('dashboard')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </button>
+
+    <button class="nav-item" id="navProfilo" onclick="showSection('profilo')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Profilo
+    </button>
+
+    <button class="nav-item" id="navBiglietto" onclick="showSection('biglietto')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+      Biglietto Digitale
+    </button>
+
+    <button class="nav-item" id="navNewsletter" onclick="showSection('newsletter')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      Newsletter
+    </button>
+
+    <button class="nav-item coming-soon" title="In lavorazione" disabled>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+      Blog Premium
+      <span class="nav-badge">Presto</span>
+    </button>
+
+    <div class="nav-section-label" style="margin-top:0.5rem;">Account</div>
+
+    <a href="login-utente.html" class="nav-item" id="navLogout" onclick="logout(event)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Esci (Logout)
+    </a>
+
+  </nav>
+
+  <div class="sidebar-footer">
+    <a href="privacy-policy.html">Privacy</a> ·
+    <a href="termini-di-servizio.html">Termini</a><br>
+    © 2026 SecurData.Pro
+  </div>
+
+</aside>
+<!-- /SIDEBAR -->
+
+<!-- ═══ CONTENT AREA ═══ -->
+<div class="content-area">
+
 <!-- Topbar -->
 <div class="topbar">
-  <a href="index.html" class="topbar-home">
+  <button class="menu-toggle" onclick="toggleSidebar()" title="Menu">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+  <a href="index.html" class="topbar-home" style="text-decoration:none;">
     <img src="logo-00-securdata-pro.svg" alt="SecurData.Pro">
     <span class="topbar-title">SecurData.Pro</span>
   </a>
-  <span class="topbar-badge">Il mio Biglietto Digitale</span>
+  <span class="topbar-badge" id="topbarSection">Dashboard</span>
 </div>
 
 <!-- Main -->
 <div class="main">
+
+  <!-- ═══ SECTION: DASHBOARD ═══ -->
+  <div class="dash-section active" id="sectionDashboard">
+    <div class="section-header">
+      <div class="section-title">👋 Bentornato, <span id="welcomeName">Utente</span></div>
+      <div class="section-sub">Gestisci il tuo profilo e i tuoi strumenti SecurData.Pro</div>
+    </div>
+    <div class="dash-welcome-grid">
+      <div class="dash-stat-card" onclick="showSection('biglietto')">
+        <div class="dash-stat-icon">🎴</div>
+        <div class="dash-stat-label">Biglietto Digitale</div>
+        <div class="dash-stat-value">Gestisci →</div>
+      </div>
+      <div class="dash-stat-card" onclick="showSection('profilo')">
+        <div class="dash-stat-icon">👤</div>
+        <div class="dash-stat-label">Il tuo Profilo</div>
+        <div class="dash-stat-value">Modifica →</div>
+      </div>
+      <div class="dash-stat-card" onclick="showSection('newsletter')">
+        <div class="dash-stat-icon">📧</div>
+        <div class="dash-stat-label">Newsletter</div>
+        <div class="dash-stat-value" id="dashNewsletterStatus">Gestisci →</div>
+      </div>
+      <div class="dash-stat-card" style="cursor:default;">
+        <div class="dash-stat-icon">🔒</div>
+        <div class="dash-stat-label">Blog Premium</div>
+        <div class="dash-stat-value" style="font-size:0.78rem;color:#4a5568;">In arrivo</div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">ℹ️ Il tuo account</div>
+      <div id="dashAccountInfo" style="font-size:0.82rem;color:#718096;line-height:1.8;"></div>
+    </div>
+  </div>
+
+  <!-- ═══ SECTION: PROFILO ═══ -->
+  <div class="dash-section" id="sectionProfilo">
+    <div class="section-header">
+      <div class="section-title">👤 Il tuo Profilo</div>
+      <div class="section-sub">Visualizza e aggiorna i dati del tuo account SecurData.Pro</div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">📋 Dati account</div>
+      <div id="profiloAccountInfo" style="font-size:0.84rem;color:#cbd5e0;line-height:2;"></div>
+      <div style="margin-top:1rem;padding:0.7rem 1rem;background:rgba(59,130,246,0.07);border:1px solid rgba(59,130,246,0.2);border-radius:10px;font-size:0.75rem;color:#93c5fd;line-height:1.5;">
+        💡 Per modificare email o password contatta il supporto: <a href="mailto:info@securdata.pro" style="color:#60a5fa;font-weight:700;">info@securdata.pro</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SECTION: BIGLIETTO DIGITALE ═══ -->
+  <div class="dash-section" id="sectionBiglietto">
+    <div class="section-header">
+      <div class="section-title">🎴 Biglietto Digitale</div>
+      <div class="section-sub">Personalizza e condividi il tuo biglietto da visita digitale</div>
+    </div>
 
   <!-- Row 1: Form + Preview -->
   <div class="grid2">
@@ -494,11 +839,195 @@ input:focus { border-color: #63b3ed; }
     <a href="termini-di-servizio.html">Termini di Servizio</a>
   </div>
 
+  </div><!-- /sectionBiglietto -->
+
+  <!-- ═══ SECTION: NEWSLETTER ═══ -->
+  <div class="dash-section" id="sectionNewsletter">
+    <div class="section-header">
+      <div class="section-title">📧 Newsletter</div>
+      <div class="section-sub">Resta aggiornato su cybersecurity, AI e novità di SecurData.Pro</div>
+    </div>
+    <div class="newsletter-panel">
+      <div class="newsletter-title">📰 Iscriviti alla Newsletter SecurData.Pro</div>
+      <div class="newsletter-desc">Ricevi aggiornamenti settimanali su sicurezza dei dati, intelligenza artificiale, guide pratiche e contenuti esclusivi riservati agli iscritti.</div>
+      <div class="newsletter-topics" id="newsletterTopics">
+        <button type="button" class="topic-btn selected" data-topic="cybersecurity">🔒 Cybersecurity</button>
+        <button type="button" class="topic-btn selected" data-topic="ai">🤖 AI & Automazione</button>
+        <button type="button" class="topic-btn" data-topic="privacy">🛡️ Privacy & GDPR</button>
+        <button type="button" class="topic-btn" data-topic="business">💼 Business Digitale</button>
+        <button type="button" class="topic-btn" data-topic="tools">🛠️ Strumenti & Guide</button>
+      </div>
+      <div style="margin-bottom:0.85rem;" id="newsletterStatusWrap">
+        <span class="newsletter-status unsubscribed" id="newsletterStatusBadge">
+          ⭕ Non iscritto
+        </span>
+      </div>
+      <button class="btn-save-profile" id="newsletterToggleBtn" onclick="toggleNewsletter()" style="max-width:260px;margin-top:0;">
+        ✉️ Iscriviti alla Newsletter
+      </button>
+    </div>
+    <div class="newsletter-panel" style="background:rgba(99,179,237,0.03);">
+      <div class="newsletter-title">📬 La tua email di ricezione</div>
+      <div style="font-size:0.8rem;color:#718096;margin-bottom:0.5rem;">Le newsletter vengono inviate all'email del tuo account:</div>
+      <div style="font-size:0.88rem;color:#90cdf4;font-weight:700;" id="newsletterEmailDisplay">—</div>
+    </div>
+  </div>
+
+  <!-- ═══ SECTION: BLOG ═══ -->
+  <div class="dash-section" id="sectionBlog">
+    <div class="section-header">
+      <div class="section-title">📖 Blog Premium</div>
+      <div class="section-sub">Contenuti esclusivi riservati agli iscritti</div>
+    </div>
+    <div class="blog-teaser">
+      <div class="blog-teaser-icon">🔐</div>
+      <div class="blog-teaser-title">Contenuti in fase di lavorazione</div>
+      <div class="blog-teaser-sub">
+        Il Blog Premium con contenuti esclusivi su cybersecurity, AI, e guide avanzate è in fase di sviluppo.<br><br>
+        Iscriviti alla newsletter per essere tra i primi a ricevere accesso anticipato!
+      </div>
+      <button onclick="showSection('newsletter')" class="btn-save-profile" style="max-width:240px;margin:1.5rem auto 0;display:flex;">
+        📧 Iscriviti alla Newsletter
+      </button>
+    </div>
+  </div>
+
 </div><!-- /main -->
+
+</div><!-- /content-area -->
+</div><!-- /app-layout -->
 
 <div class="toast" id="toast"></div>
 
 <script>
+/* ── Session & Sidebar ── */
+var SESSION_KEY = 'sdp_user_session';
+var NL_KEY      = 'sdp_newsletter_';
+
+function getSession() {
+  try { return JSON.parse(sessionStorage.getItem(SESSION_KEY) || 'null'); } catch(_){ return null; }
+}
+
+// Sidebar navigation
+function showSection(name) {
+  var sections = ['dashboard','profilo','biglietto','newsletter','blog'];
+  sections.forEach(function(s){
+    var el = document.getElementById('section' + s.charAt(0).toUpperCase() + s.slice(1));
+    if (el) el.classList[s === name ? 'add' : 'remove']('active');
+    var nav = document.getElementById('nav' + s.charAt(0).toUpperCase() + s.slice(1));
+    if (nav) nav.classList[s === name ? 'add' : 'remove']('active');
+  });
+  var labels = { dashboard:'Dashboard', profilo:'Profilo', biglietto:'Biglietto Digitale', newsletter:'Newsletter', blog:'Blog Premium' };
+  var tb = document.getElementById('topbarSection');
+  if (tb) tb.textContent = labels[name] || name;
+  closeSidebar();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('show');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('show');
+}
+
+function logout(e) {
+  e.preventDefault();
+  try { sessionStorage.removeItem(SESSION_KEY); } catch(_){}
+  window.location.href = 'login-utente.html';
+}
+
+// ── Newsletter ──
+var newsletterSubscribed = false;
+function toggleNewsletter() {
+  var session = getSession();
+  if (!session) return;
+  var nlKey = NL_KEY + (session.userId || session.username);
+  newsletterSubscribed = !newsletterSubscribed;
+  var selected = [];
+  document.querySelectorAll('.topic-btn.selected').forEach(function(b){ selected.push(b.getAttribute('data-topic')); });
+  try {
+    localStorage.setItem(nlKey, JSON.stringify({ subscribed: newsletterSubscribed, topics: selected, updatedAt: new Date().toISOString() }));
+  } catch(_){}
+  updateNewsletterUI();
+}
+
+function updateNewsletterUI() {
+  var badge = document.getElementById('newsletterStatusBadge');
+  var btn   = document.getElementById('newsletterToggleBtn');
+  var dash  = document.getElementById('dashNewsletterStatus');
+  if (newsletterSubscribed) {
+    badge.className = 'newsletter-status subscribed';
+    badge.textContent = '✅ Iscritto';
+    if (btn) btn.textContent = '🔕 Annulla iscrizione';
+    if (dash) dash.textContent = '✅ Iscritto';
+  } else {
+    badge.className = 'newsletter-status unsubscribed';
+    badge.textContent = '⭕ Non iscritto';
+    if (btn) btn.textContent = '✉️ Iscriviti alla Newsletter';
+    if (dash) dash.textContent = 'Gestisci →';
+  }
+}
+
+document.getElementById('newsletterTopics').addEventListener('click', function(e) {
+  var btn = e.target.closest('.topic-btn');
+  if (btn) btn.classList.toggle('selected');
+});
+
+// ── Init ──
+(function initDashboard() {
+  var session = getSession();
+
+  // Populate sidebar user info
+  if (session) {
+    var initials = (session.nome || session.username || '?').trim().split(/\s+/).map(function(w){ return w[0] ? w[0].toUpperCase() : ''; }).join('').substring(0,2) || '?';
+    var avatarEl = document.getElementById('sidebarAvatar');
+    if (avatarEl) avatarEl.textContent = initials;
+    var nameEl = document.getElementById('sidebarName');
+    if (nameEl) nameEl.textContent = session.nome || session.username;
+    var typeEl = document.getElementById('sidebarType');
+    if (typeEl) typeEl.textContent = session.type || 'utente';
+    var welcomeEl = document.getElementById('welcomeName');
+    if (welcomeEl) welcomeEl.textContent = (session.nome || session.username || 'Utente').split(' ')[0];
+
+    var accountHtml = '<b style="color:#90cdf4;">Username:</b> ' + (session.username || '—') + '<br>' +
+      '<b style="color:#90cdf4;">Email:</b> ' + (session.email || '—') + '<br>' +
+      '<b style="color:#90cdf4;">Piano:</b> ' + (session.type || 'freemium') + '<br>' +
+      '<b style="color:#90cdf4;">Accesso:</b> ' + (session.loginAt ? new Date(session.loginAt).toLocaleString('it-IT') : '—');
+    var dashInfo = document.getElementById('dashAccountInfo');
+    if (dashInfo) dashInfo.innerHTML = accountHtml;
+    var profiloInfo = document.getElementById('profiloAccountInfo');
+    if (profiloInfo) profiloInfo.innerHTML = accountHtml;
+    var nlEmail = document.getElementById('newsletterEmailDisplay');
+    if (nlEmail) nlEmail.textContent = session.email || '—';
+
+    // Load newsletter state
+    var nlKey = NL_KEY + (session.userId || session.username);
+    try {
+      var nlData = JSON.parse(localStorage.getItem(nlKey) || 'null');
+      if (nlData) {
+        newsletterSubscribed = !!nlData.subscribed;
+        if (nlData.topics && nlData.topics.length) {
+          document.querySelectorAll('.topic-btn').forEach(function(b){
+            b.classList[nlData.topics.indexOf(b.getAttribute('data-topic')) >= 0 ? 'add' : 'remove']('selected');
+          });
+        }
+        updateNewsletterUI();
+      }
+    } catch(_){}
+  } else {
+    // Not logged in: populate with defaults (allow access without login for backward compatibility)
+    var avatarEl = document.getElementById('sidebarAvatar');
+    if (avatarEl) avatarEl.textContent = '👤';
+    var nameEl = document.getElementById('sidebarName');
+    if (nameEl) nameEl.textContent = 'Ospite';
+    var typeEl = document.getElementById('sidebarType');
+    if (typeEl) typeEl.textContent = 'non loggato';
+  }
+})();
+
 /* ── Utilities ── */
 function getParam(name) {
   return decodeURIComponent(new URLSearchParams(window.location.search).get(name) || '');

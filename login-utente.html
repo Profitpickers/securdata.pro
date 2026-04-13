@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Accedi / Registrati – SecurData.Pro</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0e1a;
+  --card:rgba(13,21,48,0.96);
+  --border:rgba(99,179,237,0.2);
+  --accent:#3b82f6;
+  --accent2:#63b3ed;
+  --success:#10b981;
+  --danger:#ef4444;
+  --text:#e2e8f0;
+  --muted:#64748b;
+  --dim:#334155;
+}
+body{
+  font-family:'Segoe UI',system-ui,sans-serif;
+  background:var(--bg);
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:1rem;
+  position:relative;
+  overflow-x:hidden;
+  color:var(--text);
+}
+/* Animated grid */
+.bg-grid{
+  position:fixed;inset:0;
+  background-image:
+    linear-gradient(rgba(59,130,246,0.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(59,130,246,0.04) 1px,transparent 1px);
+  background-size:44px 44px;
+  z-index:0;pointer-events:none;
+}
+.bg-glow{
+  position:fixed;top:-20%;left:50%;transform:translateX(-50%);
+  width:700px;height:700px;
+  background:radial-gradient(circle,rgba(59,130,246,0.07) 0%,transparent 65%);
+  z-index:0;pointer-events:none;
+}
+/* Topbar */
+.topbar{
+  position:fixed;top:0;left:0;right:0;
+  background:rgba(10,14,26,0.95);
+  border-bottom:1px solid var(--border);
+  padding:0.8rem 1.5rem;
+  display:flex;align-items:center;gap:10px;
+  z-index:50;
+  backdrop-filter:blur(12px);
+}
+.topbar-home{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.topbar img{width:30px;height:30px;border-radius:6px;}
+.topbar-title{font-size:0.9rem;font-weight:700;color:#90cdf4;}
+.topbar-back{
+  margin-left:auto;font-size:0.75rem;color:var(--muted);
+  text-decoration:none;display:flex;align-items:center;gap:5px;
+  transition:color 0.2s;
+}
+.topbar-back:hover{color:var(--accent2);}
+
+/* Wrapper */
+.wrapper{
+  position:relative;z-index:10;
+  width:100%;max-width:460px;
+  margin-top:60px;
+}
+
+/* Tabs */
+.tabs{
+  display:flex;
+  background:rgba(10,14,26,0.8);
+  border:1px solid var(--border);
+  border-radius:14px 14px 0 0;
+  overflow:hidden;
+}
+.tab-btn{
+  flex:1;padding:0.85rem;
+  font-size:0.85rem;font-weight:700;letter-spacing:0.05em;
+  background:transparent;border:none;cursor:pointer;
+  color:var(--muted);transition:all 0.2s;font-family:inherit;
+}
+.tab-btn.active{
+  background:rgba(59,130,246,0.12);
+  color:var(--accent2);
+  border-bottom:2px solid var(--accent);
+}
+.tab-btn:hover:not(.active){color:#94a3b8;}
+
+/* Card */
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-top:none;
+  border-radius:0 0 20px 20px;
+  padding:2rem 2rem 1.75rem;
+  backdrop-filter:blur(20px);
+  box-shadow:0 30px 60px rgba(0,0,0,0.6),inset 0 1px 0 rgba(255,255,255,0.04);
+}
+
+/* Brand */
+.brand-row{text-align:center;margin-bottom:1.5rem;}
+.brand-logo{
+  width:56px;height:56px;border-radius:14px;
+  object-fit:contain;margin:0 auto 0.75rem;display:block;
+  filter:drop-shadow(0 0 12px rgba(99,179,237,0.35));
+}
+.brand-name{font-size:0.95rem;font-weight:800;color:#90cdf4;letter-spacing:0.1em;}
+.brand-sub{font-size:0.62rem;color:#1e3a5f;letter-spacing:0.08em;text-transform:uppercase;margin-top:2px;}
+
+/* Form */
+.form-section{display:none;}
+.form-section.active{display:block;}
+.form-group{margin-bottom:1rem;}
+.form-label{
+  display:block;font-size:0.68rem;font-weight:700;
+  color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.4rem;
+}
+.input-wrap{position:relative;}
+.input-icon{
+  position:absolute;left:12px;top:50%;transform:translateY(-50%);
+  width:15px;height:15px;color:#475569;pointer-events:none;
+}
+.form-input{
+  width:100%;padding:0.75rem 0.75rem 0.75rem 2.4rem;
+  background:rgba(10,14,26,0.9);
+  border:1px solid rgba(51,65,85,0.6);
+  border-radius:10px;color:var(--text);font-size:0.88rem;
+  outline:none;transition:all 0.2s;font-family:inherit;
+}
+.form-input:focus{
+  border-color:rgba(59,130,246,0.5);
+  box-shadow:0 0 0 3px rgba(59,130,246,0.08);
+  background:rgba(10,14,26,1);
+}
+.form-input::placeholder{color:#1e293b;}
+.form-input.error-field{border-color:rgba(239,68,68,0.5);}
+.form-input.ok-field{border-color:rgba(16,185,129,0.4);}
+
+/* Password toggle */
+.pwd-toggle{
+  position:absolute;right:10px;top:50%;transform:translateY(-50%);
+  background:none;border:none;cursor:pointer;color:#475569;
+  padding:4px;transition:color 0.2s;
+}
+.pwd-toggle:hover{color:var(--accent2);}
+
+/* Submit btn */
+.btn-submit{
+  width:100%;padding:0.85rem;margin-top:0.5rem;
+  background:linear-gradient(135deg,#1d4ed8,#1e40af);
+  border:1px solid rgba(59,130,246,0.4);
+  border-radius:10px;color:#fff;
+  font-size:0.92rem;font-weight:700;letter-spacing:0.04em;
+  cursor:pointer;transition:all 0.2s;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  font-family:inherit;
+}
+.btn-submit:hover:not(:disabled){
+  background:linear-gradient(135deg,#2563eb,#1d4ed8);
+  box-shadow:0 0 24px rgba(59,130,246,0.3);
+  transform:translateY(-1px);
+}
+.btn-submit:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+
+/* Messages */
+.msg{
+  margin-top:0.9rem;padding:0.7rem 1rem;border-radius:8px;
+  font-size:0.78rem;font-weight:600;
+  display:none;align-items:flex-start;gap:7px;
+  line-height:1.45;
+}
+.msg.show{display:flex;}
+.msg.error{background:rgba(239,68,68,0.09);border:1px solid rgba(239,68,68,0.3);color:#fca5a5;}
+.msg.success{background:rgba(16,185,129,0.09);border:1px solid rgba(16,185,129,0.3);color:#6ee7b7;}
+.msg.info{background:rgba(59,130,246,0.09);border:1px solid rgba(59,130,246,0.25);color:#93c5fd;}
+
+/* Forgot password link */
+.forgot-link{
+  display:block;text-align:right;font-size:0.72rem;
+  color:var(--muted);text-decoration:none;margin-top:-0.5rem;
+  margin-bottom:0.8rem;transition:color 0.2s;cursor:pointer;
+  background:none;border:none;font-family:inherit;
+}
+.forgot-link:hover{color:var(--accent2);}
+
+/* Forgot panel */
+.forgot-panel{
+  display:none;
+  background:rgba(59,130,246,0.06);
+  border:1px solid rgba(59,130,246,0.2);
+  border-radius:10px;
+  padding:1rem 1.1rem;
+  margin-bottom:1rem;
+  font-size:0.79rem;
+  color:#93c5fd;
+  line-height:1.55;
+}
+.forgot-panel.show{display:block;}
+.forgot-panel strong{color:var(--accent2);}
+.forgot-panel .fp-email{
+  display:inline-flex;align-items:center;gap:5px;
+  color:#60a5fa;font-weight:700;text-decoration:none;
+}
+.forgot-panel .fp-email:hover{text-decoration:underline;}
+.fp-close{
+  float:right;background:none;border:none;color:var(--muted);
+  cursor:pointer;font-size:0.8rem;margin-left:6px;font-family:inherit;
+}
+.fp-close:hover{color:var(--accent2);}
+
+/* Divider */
+hr.divider{border:none;border-top:1px solid rgba(99,179,237,0.08);margin:1.2rem 0;}
+
+/* Terms */
+.terms-row{
+  display:flex;align-items:flex-start;gap:8px;
+  font-size:0.72rem;color:var(--muted);line-height:1.4;
+  margin-bottom:1rem;
+}
+.terms-row input[type=checkbox]{
+  width:15px;height:15px;flex-shrink:0;margin-top:1px;
+  accent-color:var(--accent);
+}
+.terms-row a{color:var(--accent2);text-decoration:none;}
+.terms-row a:hover{text-decoration:underline;}
+
+/* User type selector */
+.type-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;
+  margin-bottom:1rem;
+}
+@media(max-width:400px){.type-grid{grid-template-columns:1fr;}}
+.type-btn{
+  padding:0.55rem 0.5rem;border-radius:9px;
+  border:1px solid rgba(51,65,85,0.5);
+  background:rgba(10,14,26,0.7);
+  color:var(--muted);font-size:0.72rem;font-weight:600;
+  cursor:pointer;transition:all 0.18s;text-align:center;font-family:inherit;
+}
+.type-btn:hover{border-color:rgba(99,179,237,0.35);color:#94a3b8;}
+.type-btn.selected{
+  background:rgba(59,130,246,0.12);
+  border-color:rgba(59,130,246,0.45);
+  color:var(--accent2);
+}
+
+/* Strength bar */
+.pwd-strength{
+  display:flex;gap:3px;margin-top:5px;
+}
+.pwd-strength-bar{
+  height:3px;flex:1;border-radius:3px;
+  background:rgba(255,255,255,0.06);
+  transition:background 0.25s;
+}
+.strength-label{font-size:0.62rem;color:var(--muted);margin-top:3px;text-align:right;}
+
+/* Spinner */
+.spinner{width:15px;height:15px;border:2px solid rgba(255,255,255,0.25);border-top-color:#fff;border-radius:50%;animation:spin 0.65s linear infinite;flex-shrink:0;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* Badges */
+.sec-badges{display:flex;gap:5px;justify-content:center;margin-top:1.25rem;flex-wrap:wrap;}
+.sec-badge{
+  display:flex;align-items:center;gap:3px;
+  padding:3px 8px;background:rgba(10,14,26,0.9);
+  border:1px solid rgba(51,65,85,0.4);border-radius:20px;
+  font-size:0.58rem;color:#475569;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;
+}
+.dot-g{width:5px;height:5px;background:#10b981;border-radius:50%;}
+.dot-b{width:5px;height:5px;background:#3b82f6;border-radius:50%;}
+
+/* Footer */
+.page-footer{
+  margin-top:1.4rem;text-align:center;
+  font-size:0.64rem;color:#1e293b;line-height:1.8;
+}
+.page-footer a{color:#1e3a5f;text-decoration:none;}
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+
+<!-- Topbar -->
+<div class="topbar">
+  <a href="index.html" class="topbar-home">
+    <img src="logo-00-securdata-pro.svg" alt="SecurData.Pro">
+    <span class="topbar-title">SecurData.Pro</span>
+  </a>
+  <a href="index.html" class="topbar-back">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    Torna alla Home
+  </a>
+</div>
+
+<div class="wrapper">
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" id="tabLogin" onclick="switchTab('login')">🔐 Accedi</button>
+    <button class="tab-btn" id="tabRegister" onclick="switchTab('register')">✨ Registrati</button>
+  </div>
+
+  <div class="card">
+
+    <div class="brand-row">
+      <img class="brand-logo" src="logo-00-securdata-pro.svg" alt="SecurData.Pro">
+      <div class="brand-name">SECURDATA.PRO</div>
+      <div class="brand-sub">Area Utente</div>
+    </div>
+
+    <!-- ═══ LOGIN FORM ═══ -->
+    <div class="form-section active" id="loginSection">
+
+      <form id="loginForm" onsubmit="handleLogin(event)" autocomplete="off" novalidate>
+
+        <div class="form-group">
+          <label class="form-label" for="loginEmail">Email / Username</label>
+          <div class="input-wrap">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
+            </svg>
+            <input id="loginEmail" type="text" class="form-input" placeholder="la-tua@email.it" autocomplete="off" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="loginPassword">Password</label>
+          <div class="input-wrap">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>
+            </svg>
+            <input id="loginPassword" type="password" class="form-input" placeholder="••••••••" required>
+            <button type="button" class="pwd-toggle" onclick="togglePwd('loginPassword',this)" title="Mostra/nascondi password">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <button type="button" class="forgot-link" onclick="toggleForgot()">Password dimenticata?</button>
+
+        <!-- Forgot password panel -->
+        <div class="forgot-panel" id="forgotPanel">
+          <button type="button" class="fp-close" onclick="toggleForgot()">✕</button>
+          <strong>🔑 Recupero Password</strong><br><br>
+          Per reimpostare la tua password, contatta il nostro supporto indicando il tuo <strong>username o email</strong> e riceverai le istruzioni per il ripristino.<br><br>
+          📧 <a href="mailto:info@securdata.pro" class="fp-email">info@securdata.pro</a><br><br>
+          <span style="font-size:0.68rem;color:#475569;">In alternativa, puoi registrare un nuovo account con una nuova email.</span>
+        </div>
+
+        <button type="submit" class="btn-submit" id="loginBtn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+          Accedi
+        </button>
+
+      </form>
+
+      <div class="msg error" id="loginError">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+        <span id="loginErrorText">Credenziali non valide.</span>
+      </div>
+      <div class="msg success" id="loginSuccess">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;margin-top:1px"><path d="M20 6L9 17l-5-5"/></svg>
+        Accesso effettuato — Reindirizzamento in corso…
+      </div>
+
+      <hr class="divider">
+      <p style="text-align:center;font-size:0.73rem;color:var(--muted);">
+        Non hai ancora un account?
+        <button onclick="switchTab('register')" style="background:none;border:none;color:var(--accent2);cursor:pointer;font-weight:700;font-size:0.73rem;font-family:inherit;">Registrati gratis →</button>
+      </p>
+
+    </div><!-- /loginSection -->
+
+    <!-- ═══ REGISTER FORM ═══ -->
+    <div class="form-section" id="registerSection">
+
+      <form id="registerForm" onsubmit="handleRegister(event)" autocomplete="off" novalidate>
+
+        <div class="form-group">
+          <label class="form-label">Tipo di iscrizione</label>
+          <div class="type-grid" id="typeGrid">
+            <button type="button" class="type-btn selected" data-type="freemium" onclick="selectType(this)">🆓 Freemium</button>
+            <button type="button" class="type-btn" data-type="biglietto" onclick="selectType(this)">🎴 Biglietto Digitale</button>
+            <button type="button" class="type-btn" data-type="tempore" onclick="selectType(this)">⏱️ Tempore</button>
+            <button type="button" class="type-btn" data-type="premium" onclick="selectType(this)">⭐ Premium</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="regNome">Nome e Cognome *</label>
+          <div class="input-wrap">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
+            </svg>
+            <input id="regNome" type="text" class="form-input" placeholder="Mario Rossi" maxlength="80" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="regUsername">Username *</label>
+          <div class="input-wrap">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
+            </svg>
+            <input id="regUsername" type="text" class="form-input" placeholder="mariorossi" maxlength="30" required>
+          </div>
+          <div class="msg info" id="usernameCheck" style="margin-top:5px;padding:5px 8px;font-size:0.72rem;"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="regEmail">Email *</label>
+          <div class="input-wrap">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
+            </svg>
+            <input id="regEmail" type="email" class="form-input" placeholder="mario@esempio.it" maxlength="120" required>
+          </div>
+          <div class="msg info" id="emailCheck" style="margin-top:5px;padding:5px 8px;font-size:0.72rem;"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="regPassword">Password *</label>
+          <div class="input-wrap">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>
+            </svg>
+            <input id="regPassword" type="password" class="form-input" placeholder="Min. 8 caratteri" maxlength="128" required oninput="checkPasswordStrength(this.value)">
+            <button type="button" class="pwd-toggle" onclick="togglePwd('regPassword',this)" title="Mostra/nascondi password">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+          <div class="pwd-strength" id="pwdStrength">
+            <div class="pwd-strength-bar" id="sb1"></div>
+            <div class="pwd-strength-bar" id="sb2"></div>
+            <div class="pwd-strength-bar" id="sb3"></div>
+            <div class="pwd-strength-bar" id="sb4"></div>
+          </div>
+          <div class="strength-label" id="strengthLabel"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="regConfirm">Conferma Password *</label>
+          <div class="input-wrap">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>
+            </svg>
+            <input id="regConfirm" type="password" class="form-input" placeholder="Ripeti la password" maxlength="128" required>
+            <button type="button" class="pwd-toggle" onclick="togglePwd('regConfirm',this)" title="Mostra/nascondi password">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="terms-row">
+          <input type="checkbox" id="acceptTerms" required>
+          <label for="acceptTerms">
+            Ho letto e accetto la <a href="privacy-policy.html" target="_blank">Privacy Policy</a> e i <a href="termini-di-servizio.html" target="_blank">Termini di Servizio</a> di SecurData.Pro.
+          </label>
+        </div>
+
+        <button type="submit" class="btn-submit" id="registerBtn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+          Crea Account Gratuito
+        </button>
+
+      </form>
+
+      <div class="msg error" id="regError">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+        <span id="regErrorText">Errore di registrazione.</span>
+      </div>
+      <div class="msg success" id="regSuccess">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;margin-top:1px"><path d="M20 6L9 17l-5-5"/></svg>
+        Account creato con successo! Reindirizzamento in corso…
+      </div>
+
+      <hr class="divider">
+      <p style="text-align:center;font-size:0.73rem;color:var(--muted);">
+        Hai già un account?
+        <button onclick="switchTab('login')" style="background:none;border:none;color:var(--accent2);cursor:pointer;font-weight:700;font-size:0.73rem;font-family:inherit;">Accedi →</button>
+      </p>
+
+    </div><!-- /registerSection -->
+
+    <div class="sec-badges">
+      <div class="sec-badge"><div class="dot-g"></div> Dati locali sicuri</div>
+      <div class="sec-badge"><div class="dot-b"></div> SHA-256</div>
+      <div class="sec-badge"><div class="dot-b"></div> HTTPS</div>
+    </div>
+
+  </div><!-- /card -->
+
+  <div class="page-footer">
+    © 2026 SECURDATA.PRO &nbsp;·&nbsp; Tutti i diritti riservati<br>
+    <a href="privacy-policy.html">Privacy Policy</a> &nbsp;·&nbsp;
+    <a href="termini-di-servizio.html">Termini di Servizio</a>
+  </div>
+
+</div><!-- /wrapper -->
+
+<script>
+// ── SHA-256 via Web Crypto API ──
+async function sha256(str) {
+  var data = new TextEncoder().encode(str);
+  var buf  = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(buf)).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
+}
+
+// ── Storage keys ──
+var USERS_KEY   = 'sdp_users_v1';
+var SESSION_KEY = 'sdp_user_session';
+
+// ── Load users list from localStorage ──
+function getUsers() {
+  try { return JSON.parse(localStorage.getItem(USERS_KEY) || '[]'); } catch(_){ return []; }
+}
+function saveUsers(users) {
+  localStorage.setItem(USERS_KEY, JSON.stringify(users));
+}
+
+// ── Tab switching ──
+function switchTab(tab) {
+  var isLogin = (tab === 'login');
+  document.getElementById('tabLogin').className    = 'tab-btn' + (isLogin ? ' active' : '');
+  document.getElementById('tabRegister').className = 'tab-btn' + (!isLogin ? ' active' : '');
+  document.getElementById('loginSection').className    = 'form-section' + (isLogin ? ' active' : '');
+  document.getElementById('registerSection').className = 'form-section' + (!isLogin ? ' active' : '');
+  hideAllMessages();
+}
+
+function hideAllMessages() {
+  ['loginError','loginSuccess','regError','regSuccess'].forEach(function(id){
+    document.getElementById(id).classList.remove('show');
+  });
+}
+
+// ── Forgot password ──
+function toggleForgot() {
+  var panel = document.getElementById('forgotPanel');
+  panel.classList.toggle('show');
+}
+
+// ── Password toggle ──
+function togglePwd(inputId, btn) {
+  var input = document.getElementById(inputId);
+  var show  = input.type === 'password';
+  input.type = show ? 'text' : 'password';
+  btn.innerHTML = show
+    ? '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'
+    : '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+}
+
+// ── User type selector ──
+var selectedType = 'freemium';
+function selectType(btn) {
+  document.querySelectorAll('.type-btn').forEach(function(b){ b.classList.remove('selected'); });
+  btn.classList.add('selected');
+  selectedType = btn.getAttribute('data-type');
+}
+
+// ── Password strength ──
+function checkPasswordStrength(pwd) {
+  var score = 0;
+  if (pwd.length >= 8)  score++;
+  if (pwd.length >= 12) score++;
+  if (/[A-Z]/.test(pwd) && /[a-z]/.test(pwd)) score++;
+  if (/[0-9]/.test(pwd) && /[^A-Za-z0-9]/.test(pwd)) score++;
+  var bars   = ['sb1','sb2','sb3','sb4'];
+  var colors = ['#ef4444','#f97316','#eab308','#10b981'];
+  var labels = ['','Debole','Media','Buona','Ottima'];
+  bars.forEach(function(id, i) {
+    document.getElementById(id).style.background = (i < score) ? colors[score - 1] : 'rgba(255,255,255,0.06)';
+  });
+  document.getElementById('strengthLabel').textContent = labels[score] || '';
+}
+
+// ── Username duplicate check (debounced) ──
+var usernameTimer;
+document.getElementById('regUsername').addEventListener('input', function() {
+  clearTimeout(usernameTimer);
+  var val = this.value.trim().toLowerCase();
+  var el  = document.getElementById('usernameCheck');
+  el.textContent = '';
+  el.className   = 'msg info';
+  if (!val) return;
+  usernameTimer = setTimeout(function() {
+    var users = getUsers();
+    var exists = users.some(function(u){ return u.username === val; });
+    if (exists) {
+      el.textContent = '⚠️ Username già in uso. Scegline un altro.';
+      el.className   = 'msg error show';
+    } else if (val.length >= 3) {
+      el.textContent = '✓ Username disponibile!';
+      el.className   = 'msg success show';
+    }
+  }, 400);
+});
+
+// ── Email duplicate check (debounced) ──
+var emailTimer;
+document.getElementById('regEmail').addEventListener('input', function() {
+  clearTimeout(emailTimer);
+  var val = this.value.trim().toLowerCase();
+  var el  = document.getElementById('emailCheck');
+  el.textContent = '';
+  el.className   = 'msg info';
+  if (!val) return;
+  emailTimer = setTimeout(function() {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) return;
+    var users  = getUsers();
+    var exists = users.some(function(u){ return u.email === val; });
+    if (exists) {
+      el.textContent = '⚠️ Email già registrata. Prova ad accedere.';
+      el.className   = 'msg error show';
+    }
+  }, 400);
+});
+
+// ── LOGIN HANDLER ──
+async function handleLogin(e) {
+  e.preventDefault();
+  hideAllMessages();
+  var btn = document.getElementById('loginBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div>';
+
+  try {
+    var identifier = document.getElementById('loginEmail').value.trim().toLowerCase();
+    var rawPwd     = document.getElementById('loginPassword').value;
+
+    if (!identifier || !rawPwd) {
+      showMsg('loginError','loginErrorText','Inserisci email/username e password.');
+      resetBtn(btn,'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg> Accedi');
+      return;
+    }
+
+    var hash  = await sha256(rawPwd);
+    var users = getUsers();
+    var user  = users.find(function(u){
+      return (u.email === identifier || u.username === identifier) && u.passwordHash === hash;
+    });
+
+    if (user) {
+      var session = { userId: user.id, username: user.username, nome: user.nome, email: user.email, type: user.type, loginAt: Date.now() };
+      try { sessionStorage.setItem(SESSION_KEY, JSON.stringify(session)); } catch(_){}
+      document.getElementById('loginSuccess').classList.add('show');
+      // Redirect to dashboard after short delay
+      var redirect = new URLSearchParams(window.location.search).get('redirect') || 'backoffice-utente.html';
+      // Allow only relative paths (no protocol, no external domains)
+      if (/^https?:|^\/\/|^javascript:/i.test(redirect)) { redirect = 'backoffice-utente.html'; }
+      setTimeout(function(){ window.location.href = redirect; }, 1200);
+    } else {
+      // Check if user exists but wrong password
+      var userExists = users.some(function(u){ return u.email === identifier || u.username === identifier; });
+      showMsg('loginError','loginErrorText', userExists
+        ? 'Password errata. Hai dimenticato la password? Clicca "Password dimenticata?".'
+        : 'Account non trovato. Controlla email/username o registrati.');
+      resetBtn(btn,'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg> Accedi');
+    }
+  } catch(err) {
+    showMsg('loginError','loginErrorText','Errore di sistema. Aggiorna la pagina e riprova.');
+    resetBtn(btn,'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg> Accedi');
+  }
+}
+
+// ── REGISTER HANDLER ──
+async function handleRegister(e) {
+  e.preventDefault();
+  hideAllMessages();
+  var btn = document.getElementById('registerBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div>';
+
+  try {
+    var nome     = document.getElementById('regNome').value.trim();
+    var username = document.getElementById('regUsername').value.trim().toLowerCase().replace(/[^a-z0-9._-]/g,'');
+    var email    = document.getElementById('regEmail').value.trim().toLowerCase();
+    var pwd      = document.getElementById('regPassword').value;
+    var confirm  = document.getElementById('regConfirm').value;
+    var accepted = document.getElementById('acceptTerms').checked;
+
+    // Validations
+    if (!nome || !username || !email || !pwd || !confirm) {
+      showMsg('regError','regErrorText','Compila tutti i campi obbligatori (*).');
+      resetBtn(btn,'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg> Crea Account Gratuito');
+      return;
+    }
+    if (username.length < 3) {
+      showMsg('regError','regErrorText','Lo username deve avere almeno 3 caratteri.');
+      resetBtn(btn,'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg> Crea Account Gratuito');
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      showMsg('regError','regErrorText','Inserisci un indirizzo email valido.');
+      resetBtn(btn,'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg> Crea Account Gratuito');
+      return;
+    }
+    if (pwd.length < 8) {
+      showMsg('regError','regErrorText','La password deve essere di almeno 8 caratteri.');
+      resetBtn(btn,'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg> Crea Account Gratuito');
+      return;
+    }
+    if (pwd !== confirm) {
+      showMsg('regError','regErrorText','Le password non coincidono.');
+      resetBtn(btn,'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg> Crea Account Gratuito');
+      return;
+    }
+    if (!accepted) {
+      showMsg('regError','regErrorText','Devi accettare la Privacy Policy e i Termini di Servizio.');
+      resetBtn(btn,'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg> Crea Account Gratuito');
+      return;
+    }
+
+    var users = getUsers();
+
+    // Duplicate checks
+    if (users.some(function(u){ return u.username === username; })) {
+      showMsg('regError','regErrorText','Username già in uso. Scegline un altro.');
+      resetBtn(btn,'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg> Crea Account Gratuito');
+      return;
+    }
+    if (users.some(function(u){ return u.email === email; })) {
+      showMsg('regError','regErrorText','Email già registrata. Prova ad accedere.');
+      resetBtn(btn,'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg> Crea Account Gratuito');
+      return;
+    }
+
+    var hash = await sha256(pwd);
+    var newUser = {
+      id:           Date.now().toString(36) + Math.random().toString(36).slice(2,7),
+      nome:         nome,
+      username:     username,
+      email:        email,
+      passwordHash: hash,
+      type:         selectedType,
+      createdAt:    new Date().toISOString()
+    };
+    users.push(newUser);
+    saveUsers(users);
+
+    // Auto-login after registration
+    var session = { userId: newUser.id, username: newUser.username, nome: newUser.nome, email: newUser.email, type: newUser.type, loginAt: Date.now() };
+    try { sessionStorage.setItem(SESSION_KEY, JSON.stringify(session)); } catch(_){}
+
+    document.getElementById('regSuccess').classList.add('show');
+    var redirect = new URLSearchParams(window.location.search).get('redirect') || 'backoffice-utente.html';
+    if (/^https?:|^\/\/|^javascript:/i.test(redirect)) { redirect = 'backoffice-utente.html'; }
+    setTimeout(function(){ window.location.href = redirect + '?nome=' + encodeURIComponent(nome) + '&email=' + encodeURIComponent(email); }, 1500);
+
+  } catch(err) {
+    showMsg('regError','regErrorText','Errore di sistema. Riprova.');
+    resetBtn(btn,'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg> Crea Account Gratuito');
+  }
+}
+
+function showMsg(containerId, textId, text) {
+  var el = document.getElementById(containerId);
+  document.getElementById(textId).textContent = text;
+  el.classList.add('show');
+}
+
+function resetBtn(btn, html) {
+  btn.disabled   = false;
+  btn.innerHTML  = html;
+}
+
+// ── Auto-redirect if already logged in ──
+(function(){
+  try {
+    var session = JSON.parse(sessionStorage.getItem(SESSION_KEY) || 'null');
+    if (session && session.userId) {
+      var redirect = new URLSearchParams(window.location.search).get('redirect') || 'backoffice-utente.html';
+      if (/^https?:|^\/\/|^javascript:/i.test(redirect)) { redirect = 'backoffice-utente.html'; }
+      window.location.href = redirect;
+    }
+  } catch(_){}
+
+  // Pre-fill tab from URL param
+  var tab = new URLSearchParams(window.location.search).get('tab');
+  if (tab === 'register') switchTab('register');
+})();
+</script>
+</body>
+</html>
