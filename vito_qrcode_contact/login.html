@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SECURDATA.PRO — Area Riservata</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg-deep:#020814;
+  --bg-card:rgba(10,18,40,0.97);
+  --border:rgba(99,179,237,0.18);
+  --accent:#3b82f6;
+  --accent-glow:rgba(59,130,246,0.35);
+  --danger:#ef4444;
+  --success:#10b981;
+  --text:#e2e8f0;
+  --text-dim:#64748b;
+}
+body{
+  font-family:'Segoe UI',system-ui,sans-serif;
+  background:var(--bg-deep);
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:1rem;
+  position:relative;
+  overflow:hidden;
+  color:var(--text);
+}
+/* Grid background */
+.bg-grid{
+  position:fixed;inset:0;
+  background-image:
+    linear-gradient(rgba(59,130,246,0.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(59,130,246,0.04) 1px,transparent 1px);
+  background-size:44px 44px;
+  z-index:0;
+}
+.bg-glow{
+  position:fixed;top:-15%;left:50%;
+  transform:translateX(-50%);
+  width:700px;height:700px;
+  background:radial-gradient(circle,rgba(59,130,246,0.07) 0%,transparent 65%);
+  z-index:0;
+}
+.bg-glow2{
+  position:fixed;bottom:-20%;right:-10%;
+  width:500px;height:500px;
+  background:radial-gradient(circle,rgba(99,102,241,0.05) 0%,transparent 65%);
+  z-index:0;
+}
+/* Particles */
+.particles{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.particle{
+  position:absolute;border-radius:50%;
+  background:rgba(59,130,246,0.18);
+  animation:float linear infinite;
+}
+@keyframes float{
+  0%{transform:translateY(100vh) scale(0);opacity:0;}
+  10%{opacity:1;}
+  90%{opacity:1;}
+  100%{transform:translateY(-15vh) scale(1);opacity:0;}
+}
+/* Warning banner */
+.warning-banner{
+  position:fixed;top:0;left:0;right:0;
+  background:linear-gradient(90deg,#7f1d1d,#991b1b,#7f1d1d);
+  border-bottom:1px solid rgba(239,68,68,0.4);
+  padding:7px 16px;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  z-index:100;
+  animation:pulse-banner 4s ease-in-out infinite;
+}
+@keyframes pulse-banner{
+  0%,100%{background:linear-gradient(90deg,#7f1d1d,#991b1b,#7f1d1d)}
+  50%{background:linear-gradient(90deg,#991b1b,#b91c1c,#991b1b)}
+}
+.warning-banner span{font-size:0.72rem;color:#fca5a5;font-weight:600;letter-spacing:0.06em;text-transform:uppercase}
+.blink{animation:blink 1.2s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* Main wrapper */
+.login-wrapper{
+  position:relative;z-index:10;
+  width:100%;max-width:430px;
+  margin-top:44px;
+}
+/* Security bar */
+.security-bar{
+  display:flex;align-items:center;gap:8px;
+  padding:9px 16px;
+  background:rgba(16,185,129,0.08);
+  border:1px solid rgba(16,185,129,0.25);
+  border-radius:10px 10px 0 0;
+  font-size:0.7rem;color:#6ee7b7;font-weight:600;letter-spacing:0.08em;
+}
+.security-bar .dot{
+  width:7px;height:7px;background:#10b981;border-radius:50%;flex-shrink:0;
+  animation:pulse-dot 2s ease-in-out infinite;
+}
+@keyframes pulse-dot{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.6);opacity:0.6}}
+
+/* Card */
+.card{
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-top:none;
+  border-radius:0 0 20px 20px;
+  padding:2.5rem 2.2rem 2rem;
+  backdrop-filter:blur(24px);
+  box-shadow:
+    0 30px 60px rgba(0,0,0,0.7),
+    0 0 100px rgba(59,130,246,0.04),
+    inset 0 1px 0 rgba(255,255,255,0.04);
+}
+
+/* Brand */
+.brand-row{text-align:center;margin-bottom:1.75rem}
+.brand-name{font-size:1rem;font-weight:800;color:#90cdf4;letter-spacing:0.12em;margin-bottom:0.25rem}
+.brand-tagline{font-size:0.65rem;color:#334155;letter-spacing:0.08em;text-transform:uppercase}
+
+/* Shield */
+.shield-wrap{position:relative;width:84px;height:84px;margin:0 auto 1.5rem}
+.ring1{
+  position:absolute;inset:-12px;border-radius:50%;
+  border:1px solid rgba(59,130,246,0.25);
+  animation:spin-ring 10s linear infinite;
+}
+.ring2{
+  position:absolute;inset:-22px;border-radius:50%;
+  border:1px dashed rgba(59,130,246,0.12);
+  animation:spin-ring 16s linear infinite reverse;
+}
+@keyframes spin-ring{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.ring1::before{
+  content:'';position:absolute;width:6px;height:6px;
+  background:#3b82f6;border-radius:50%;
+  top:-3px;left:50%;transform:translateX(-50%);
+  box-shadow:0 0 8px #3b82f6;
+}
+.shield-icon{
+  width:84px;height:84px;
+  background:linear-gradient(135deg,rgba(59,130,246,0.18),rgba(99,102,241,0.18));
+  border:1px solid rgba(59,130,246,0.35);
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 35px rgba(59,130,246,0.18),inset 0 1px 0 rgba(255,255,255,0.06);
+  position:relative;z-index:1;
+}
+.shield-icon svg{width:42px;height:42px;color:#60a5fa}
+
+.card-title{
+  text-align:center;font-size:1.3rem;font-weight:800;
+  color:#f1f5f9;letter-spacing:0.1em;margin-bottom:0.35rem;
+}
+.card-subtitle{
+  text-align:center;font-size:0.7rem;color:#475569;
+  letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.3rem;
+}
+hr.divider{border:none;border-top:1px solid rgba(99,179,237,0.08);margin:1.4rem 0 1.2rem}
+
+/* Form */
+.form-group{margin-bottom:1rem}
+.form-label{
+  display:block;font-size:0.68rem;font-weight:700;
+  color:#64748b;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.4rem;
+}
+.input-wrap{position:relative}
+.input-icon{
+  position:absolute;left:12px;top:50%;transform:translateY(-50%);
+  width:15px;height:15px;color:#475569;pointer-events:none;
+}
+.form-input{
+  width:100%;padding:0.78rem 0.78rem 0.78rem 2.5rem;
+  background:rgba(10,14,26,0.9);
+  border:1px solid rgba(51,65,85,0.6);
+  border-radius:10px;color:#e2e8f0;font-size:0.88rem;
+  outline:none;transition:all 0.2s;font-family:inherit;
+}
+.form-input:focus{
+  border-color:rgba(59,130,246,0.55);
+  box-shadow:0 0 0 3px rgba(59,130,246,0.09);
+  background:rgba(10,14,26,1);
+}
+.form-input::placeholder{color:#1e293b}
+.totp-wrap .form-input{
+  font-family:'Courier New',monospace;font-size:1.35rem;
+  letter-spacing:0.45em;text-align:center;padding-left:0.78rem;color:#60a5fa;
+}
+.totp-hint{
+  font-size:0.62rem;color:#334155;margin-top:0.35rem;text-align:center;
+}
+
+/* Button */
+.btn-submit{
+  width:100%;padding:0.9rem;margin-top:1.2rem;
+  background:linear-gradient(135deg,#1d4ed8,#1e40af);
+  border:1px solid rgba(59,130,246,0.45);
+  border-radius:10px;color:#fff;
+  font-size:0.93rem;font-weight:700;letter-spacing:0.05em;
+  cursor:pointer;transition:all 0.2s;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  font-family:inherit;
+}
+.btn-submit:hover:not(:disabled){
+  background:linear-gradient(135deg,#2563eb,#1d4ed8);
+  box-shadow:0 0 25px rgba(59,130,246,0.28);
+  transform:translateY(-1px);
+}
+.btn-submit:disabled{opacity:0.5;cursor:not-allowed;transform:none}
+
+/* Messages */
+.msg{
+  margin-top:0.9rem;padding:0.72rem 1rem;border-radius:8px;
+  font-size:0.78rem;font-weight:600;text-align:center;
+  display:none;align-items:center;justify-content:center;gap:7px;
+  letter-spacing:0.02em;line-height:1.4;
+}
+.msg.error{background:rgba(239,68,68,0.09);border:1px solid rgba(239,68,68,0.28);color:#fca5a5}
+.msg.success{background:rgba(16,185,129,0.09);border:1px solid rgba(16,185,129,0.28);color:#6ee7b7}
+
+/* Lockout notice */
+.lockout-notice{
+  margin-top:1rem;padding:0.65rem 0.85rem;
+  background:rgba(251,191,36,0.04);
+  border:1px solid rgba(251,191,36,0.15);
+  border-radius:8px;font-size:0.65rem;color:#57534e;
+  text-align:center;line-height:1.7;
+}
+
+/* Badges */
+.badges{display:flex;gap:6px;justify-content:center;margin-top:1.4rem;flex-wrap:wrap}
+.badge{
+  display:flex;align-items:center;gap:4px;
+  padding:3px 9px;background:rgba(10,14,26,0.9);
+  border:1px solid rgba(51,65,85,0.4);border-radius:20px;
+  font-size:0.6rem;color:#475569;font-weight:600;
+  letter-spacing:0.06em;text-transform:uppercase;
+}
+.dot-g{width:5px;height:5px;background:#10b981;border-radius:50%}
+.dot-b{width:5px;height:5px;background:#3b82f6;border-radius:50%}
+.dot-p{width:5px;height:5px;background:#8b5cf6;border-radius:50%}
+.dot-r{width:5px;height:5px;background:#f59e0b;border-radius:50%}
+
+/* Footer */
+.login-footer{
+  margin-top:1.6rem;text-align:center;
+  font-size:0.65rem;color:#1e293b;letter-spacing:0.04em;line-height:1.9;
+}
+.login-footer a{color:#1e3a5f;text-decoration:none}
+
+/* Spinner */
+.spinner{
+  width:15px;height:15px;
+  border:2px solid rgba(255,255,255,0.25);border-top-color:#fff;
+  border-radius:50%;animation:spin 0.65s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+<div class="bg-glow2"></div>
+<div class="particles" id="particles"></div>
+
+<!-- Warning banner -->
+<div class="warning-banner">
+  <span class="blink">⚠</span>
+  <span>Accesso riservato — Ogni tentativo non autorizzato è monitorato, registrato e perseguibile per legge</span>
+  <span class="blink">⚠</span>
+</div>
+
+<!-- Login card -->
+<div class="login-wrapper">
+
+  <div class="security-bar">
+    <div class="dot"></div>
+    <span>Connessione sicura &mdash; Crittografia AES-256 · TLS 1.3 attivi</span>
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#6ee7b7" stroke-width="2.5" style="margin-left:auto;flex-shrink:0"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+  </div>
+
+  <div class="card">
+
+    <div class="brand-row">
+      <div class="brand-name">SECURDATA.PRO</div>
+      <div class="brand-tagline">Cybersecurity &amp; AI Intelligence</div>
+    </div>
+
+    <!-- Animated shield -->
+    <div class="shield-wrap">
+      <div class="ring1"></div>
+      <div class="ring2"></div>
+      <div class="shield-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <path d="M9 12l2 2 4-4"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="card-title">AREA RISERVATA</div>
+    <div class="card-subtitle">Accesso protetto a doppio fattore di autenticazione</div>
+
+    <hr class="divider">
+
+    <form id="loginForm" autocomplete="off" onsubmit="handleLogin(event)">
+
+      <div class="form-group">
+        <label class="form-label" for="username">Identificativo operatore</label>
+        <div class="input-wrap">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
+          </svg>
+          <input id="username" type="text" class="form-input" placeholder="ID operatore" autocomplete="off" spellcheck="false" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password">Passphrase di accesso</label>
+        <div class="input-wrap">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>
+          </svg>
+          <input id="password" type="password" class="form-input" placeholder="••••••••••••" autocomplete="new-password" required>
+        </div>
+      </div>
+
+      <div class="form-group totp-wrap">
+        <label class="form-label" for="totp">Codice 2FA — App autenticatore</label>
+        <div class="input-wrap">
+          <input id="totp" type="text" class="form-input" placeholder="000000" maxlength="6" pattern="[0-9]{6}" inputmode="numeric" autocomplete="one-time-code" required>
+        </div>
+        <div class="totp-hint">⚙ Codice a 6 cifre generato dall'app autenticatore (Google Authenticator / Authy)</div>
+      </div>
+
+      <button type="submit" class="btn-submit" id="submitBtn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        Accesso Sicuro
+      </button>
+
+    </form>
+
+    <div id="errorMsg" class="msg error" style="display:none">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+      <span id="errorText">Credenziali non valide</span>
+    </div>
+
+    <div id="successMsg" class="msg success" style="display:none">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+      Autenticazione completata — Accesso in corso…
+    </div>
+
+    <div class="lockout-notice">
+      🔒 Protezione anti-brute-force attiva &nbsp;·&nbsp; Max 3 tentativi per sessione<br>
+      Ogni accesso viene registrato con timestamp, IP e impronta del dispositivo
+    </div>
+
+    <div class="badges">
+      <div class="badge"><div class="dot-g"></div> 2FA Attivo</div>
+      <div class="badge"><div class="dot-b"></div> TLS 1.3</div>
+      <div class="badge"><div class="dot-b"></div> AES-256</div>
+      <div class="badge"><div class="dot-p"></div> SHA-256</div>
+      <div class="badge"><div class="dot-r"></div> TOTP RFC 6238</div>
+    </div>
+
+  </div>
+
+  <div class="login-footer">
+    © 2026 SECURDATA.PRO &nbsp;·&nbsp; Tutti i diritti riservati<br>
+    Accesso non autorizzato è reato ai sensi del D.Lgs.&nbsp;231/2001 e art.&nbsp;615-ter C.P.<br>
+    <a href="../index.html">← Torna alla Home</a>
+  </div>
+
+</div><!-- /login-wrapper -->
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// CONFIGURAZIONE CREDENZIALI DI ACCESSO
+// Per modificare le credenziali aggiornare questi valori:
+//
+// USERNAME: modificare VALID_USER (stringa in chiaro)
+// PASSWORD: calcolare SHA-256 della nuova password e aggiornare VALID_HASH
+//           Strumento online: https://emn178.github.io/online-tools/sha256.html
+//           Valore attuale corrisponde alla password: SecurData2026!
+//
+// CODICE 2FA: aggiungere TOTP_SECRET a Google Authenticator scansionando:
+//   otpauth://totp/SECURDATA.PRO:admin?secret=JBSWY3DPEHPK3PXP&issuer=SECURDATA.PRO
+//   oppure incollare manualmente il secret nell'app.
+// ═══════════════════════════════════════════════════════════════
+var VALID_USER    = 'admin';
+var VALID_HASH    = 'd75e5a7ab4d547daaa799247055caddd181fbb598700e65d7c1fe219453ef501';
+var TOTP_SECRET   = 'JBSWY3DPEHPK3PXP';
+var MAX_ATTEMPTS  = 3;
+var LOCKOUT_MS    = 5 * 60 * 1000; // 5 minuti
+var REDIRECT_MS   = 1200;          // ms prima del redirect dopo login
+var UINT32_MAX    = 0x100000000;   // 2^32 per gestione counter TOTP a 64-bit
+// ═══════════════════════════════════════════════════════════════
+
+// SHA-256 via Web Crypto API
+async function sha256(str) {
+  var data = new TextEncoder().encode(str);
+  var buf  = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(buf)).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
+}
+
+// Base32 decode (RFC 4648)
+function base32decode(b32) {
+  var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+  var clean = b32.toUpperCase().replace(/=+$/,'').replace(/\s/g,'');
+  var bits  = '';
+  for (var i = 0; i < clean.length; i++) {
+    var v = chars.indexOf(clean[i]);
+    if (v >= 0) bits += v.toString(2).padStart(5,'0');
+  }
+  var bytes = new Uint8Array(Math.floor(bits.length / 8));
+  for (var j = 0; j < bytes.length; j++) bytes[j] = parseInt(bits.slice(j*8, j*8+8), 2);
+  return bytes;
+}
+
+// TOTP — RFC 6238 / HMAC-SHA1
+async function totp(secret, offset) {
+  offset = offset || 0;
+  var key    = await crypto.subtle.importKey('raw', base32decode(secret), {name:'HMAC',hash:'SHA-1'}, false, ['sign']);
+  var step   = 30;
+  var ctr    = Math.floor(Date.now() / 1000 / step) + offset;
+  var buf    = new ArrayBuffer(8);
+  var view   = new DataView(buf);
+  var hi     = Math.floor(ctr / UINT32_MAX);
+  if (hi > 0) view.setUint32(0, hi >>> 0, false);
+  view.setUint32(4, ctr >>> 0, false);
+  var sig    = new Uint8Array(await crypto.subtle.sign('HMAC', key, buf));
+  var off2   = sig[19] & 0xf;
+  var code   = (((sig[off2]&0x7f)<<24)|((sig[off2+1]&0xff)<<16)|((sig[off2+2]&0xff)<<8)|(sig[off2+3]&0xff)) % 1000000;
+  return code.toString().padStart(6,'0');
+}
+
+// Validate TOTP allowing ±1 time window
+async function validateTOTP(secret, userCode) {
+  for (var w = -1; w <= 1; w++) {
+    if (await totp(secret, w) === userCode) return true;
+  }
+  return false;
+}
+
+// Brute-force lock state stored in sessionStorage
+function getLock() {
+  try { return JSON.parse(sessionStorage.getItem('sd_lock')||'{}'); } catch(e) { return {}; }
+}
+function saveLock(s) { sessionStorage.setItem('sd_lock', JSON.stringify(s)); }
+
+// UI helpers
+function showError(msg) {
+  document.getElementById('errorText').textContent = msg;
+  document.getElementById('errorMsg').style.display  = 'flex';
+  document.getElementById('successMsg').style.display = 'none';
+}
+function showSuccess() {
+  document.getElementById('errorMsg').style.display   = 'none';
+  document.getElementById('successMsg').style.display = 'flex';
+}
+function resetBtn() {
+  var b = document.getElementById('submitBtn');
+  b.disabled = false;
+  b.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Accesso Sicuro';
+}
+
+// Main login handler
+async function handleLogin(e) {
+  e.preventDefault();
+
+  var lock = getLock();
+  if (lock.until && lock.until > Date.now()) {
+    var secs = Math.ceil((lock.until - Date.now()) / 1000);
+    showError('Accesso bloccato. Riprova tra ' + secs + ' secondi.');
+    return;
+  }
+
+  var btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div>';
+  document.getElementById('errorMsg').style.display   = 'none';
+  document.getElementById('successMsg').style.display = 'none';
+
+  try {
+    var user = document.getElementById('username').value.trim();
+    var pass = document.getElementById('password').value;
+    var code = document.getElementById('totp').value.trim().replace(/\s/g,'');
+    var hash = await sha256(pass);
+    var ok2fa = await validateTOTP(TOTP_SECRET, code);
+
+    if (user === VALID_USER && hash === VALID_HASH && ok2fa) {
+      // Success — store auth token and go to admin
+      sessionStorage.setItem('sd_auth_token', 'authenticated');
+      sessionStorage.removeItem('sd_lock');
+      showSuccess();
+      setTimeout(function(){ window.location.replace('./admin.html'); }, REDIRECT_MS);
+    } else {
+      lock.attempts = (lock.attempts || 0) + 1;
+      var rem = MAX_ATTEMPTS - lock.attempts;
+      if (lock.attempts >= MAX_ATTEMPTS) {
+        lock.until = Date.now() + LOCKOUT_MS;
+        saveLock(lock);
+        showError('Troppi tentativi falliti. Accesso bloccato per 5 minuti.');
+      } else {
+        saveLock(lock);
+        showError('Credenziali non valide. Tentativi rimanenti: ' + rem + '.');
+      }
+      resetBtn();
+    }
+  } catch(err) {
+    showError('Errore di sistema. Aggiorna la pagina e riprova.');
+    resetBtn();
+  }
+}
+
+// Allow only digits in TOTP field
+document.getElementById('totp').addEventListener('input', function(){
+  this.value = this.value.replace(/[^0-9]/g,'');
+});
+
+// Check lockout on load
+(function(){
+  var lock = getLock();
+  if (lock.until && lock.until > Date.now()) {
+    var secs = Math.ceil((lock.until - Date.now()) / 1000);
+    showError('Accesso bloccato. Riprova tra ' + secs + ' secondi.');
+    document.getElementById('submitBtn').disabled = true;
+  }
+})();
+
+// Animated background particles
+(function(){
+  var c = document.getElementById('particles');
+  for (var i = 0; i < 18; i++) {
+    var p = document.createElement('div');
+    p.className = 'particle';
+    var sz = Math.random()*4+2;
+    p.style.cssText = 'width:'+sz+'px;height:'+sz+'px;left:'+Math.random()*100+'%;animation-duration:'+(Math.random()*16+10)+'s;animation-delay:'+(Math.random()*12)+'s';
+    c.appendChild(p);
+  }
+})();
+</script>
+
+</body>
+</html>
