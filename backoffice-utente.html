@@ -25,6 +25,7 @@ body {
 }
 .topbar img { width: 32px; height: 32px; border-radius: 6px; }
 .topbar-title { font-size: 0.95rem; font-weight: 700; color: #90cdf4; }
+.topbar-home { display: flex; align-items: center; gap: 10px; text-decoration: none; }
 .topbar-badge {
   margin-left: auto;
   background: rgba(26,86,219,0.2);
@@ -129,6 +130,24 @@ input:focus { border-color: #63b3ed; }
 .pv-role  { font-size: 0.7rem; color: #63b3ed; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; }
 .pv-co    { font-size: 0.85rem; color: #90cdf4; font-weight: 600; margin-top: 2px; }
 .pv-div   { width: 35px; height: 2px; background: linear-gradient(90deg, transparent, rgba(99,179,237,0.5), transparent); margin: 0.7rem auto; }
+
+/* ── Info rows in preview ── */
+.pv-info-list { width: 100%; text-align: left; margin-top: 0.5rem; }
+.pv-info-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.pv-info-row:last-child { border-bottom: none; }
+.pv-info-icon {
+  width: 26px; height: 26px; flex-shrink: 0;
+  background: rgba(99,179,237,0.1);
+  border: 1px solid rgba(99,179,237,0.2);
+  border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem;
+}
+.pv-info-text { font-size: 0.75rem; color: #cbd5e0; word-break: break-all; }
 
 /* ── QR in preview ── */
 .pv-qr { display: flex; justify-content: center; margin-bottom: 0.4rem; }
@@ -349,8 +368,10 @@ input:focus { border-color: #63b3ed; }
 
 <!-- Topbar -->
 <div class="topbar">
-  <img src="logo-00-securdata-pro.svg" alt="SecurData.Pro">
-  <span class="topbar-title">SecurData.Pro</span>
+  <a href="index.html" class="topbar-home">
+    <img src="logo-00-securdata-pro.svg" alt="SecurData.Pro">
+    <span class="topbar-title">SecurData.Pro</span>
+  </a>
   <span class="topbar-badge">Il mio Biglietto Digitale</span>
 </div>
 
@@ -420,6 +441,16 @@ input:focus { border-color: #63b3ed; }
           <div class="pv-co"    id="pvCo"   style="display:none;"></div>
           <div class="pv-nota"  id="pvNota" style="display:none;"></div>
           <div class="pv-div"></div>
+          <div class="pv-info-list">
+            <div class="pv-info-row" id="pvRowTel" style="display:none;">
+              <div class="pv-info-icon">📞</div>
+              <div class="pv-info-text" id="pvTel"></div>
+            </div>
+            <div class="pv-info-row" id="pvRowEmail" style="display:none;">
+              <div class="pv-info-icon">✉️</div>
+              <div class="pv-info-text" id="pvEmail"></div>
+            </div>
+          </div>
           <div class="pv-qr"><div id="previewQR"></div></div>
           <p class="pv-hint">📲 Il tuo QR personale</p>
         </div>
@@ -649,16 +680,20 @@ var _qrInstance = null;
 function renderQR(url) {
   var el = document.getElementById('previewQR');
   el.innerHTML = '';
-  _qrInstance = new QRCode(el, {
-    text: url || ownerPage,
-    width: 140,
-    height: 140,
-    colorDark: '#0d1530',
-    colorLight: '#ffffff',
-    correctLevel: QRCode.CorrectLevel.M
-  });
+  try {
+    _qrInstance = new QRCode(el, {
+      text: url || ownerPage,
+      width: 140,
+      height: 140,
+      colorDark: '#0d1530',
+      colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.M
+    });
+  } catch (e) {
+    el.innerHTML = '<p style="font-size:0.7rem;color:#4a5568;padding:0.5rem;">QR non disponibile</p>';
+  }
 }
-renderQR(shareUrl);
+try { renderQR(shareUrl); } catch (e) { console.error('QRCode library unavailable:', e); }
 
 /* ── Card preview ── */
 function updatePreview(d) {
@@ -673,6 +708,12 @@ function updatePreview(d) {
   var notaEl = document.getElementById('pvNota');
   if (d.nota) { notaEl.textContent = d.nota; notaEl.style.display = 'block'; }
   else { notaEl.style.display = 'none'; }
+  var telRowEl = document.getElementById('pvRowTel');
+  if (d.tel) { document.getElementById('pvTel').textContent = d.tel; telRowEl.style.display = 'flex'; }
+  else { telRowEl.style.display = 'none'; }
+  var emailRowEl = document.getElementById('pvRowEmail');
+  if (d.email) { document.getElementById('pvEmail').textContent = d.email; emailRowEl.style.display = 'flex'; }
+  else { emailRowEl.style.display = 'none'; }
 }
 updatePreview(data);
 
@@ -701,7 +742,7 @@ document.getElementById('saveProfileBtn').onclick = function () {
   // Rigenera share URL e QR
   shareUrl = buildShareUrl(data, refId);
   document.getElementById('shareLinkBox').textContent = shareUrl;
-  renderQR(shareUrl);
+  try { renderQR(shareUrl); } catch (e) { console.error('QRCode render error:', e); }
   updatePreview(data);
 
   showToast('✅ Dati salvati!');
