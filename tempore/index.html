@@ -948,6 +948,8 @@ function submitForm(e){
 /* ══ ZOOM & CAROUSEL ══ */
 const ZOV = $('zoom-ov');
 const ALL_CARDS = Array.from(document.querySelectorAll('#widget-grid .card'));
+const PAUSE_ICO = '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
+const PLAY_ICO  = '<polygon points="5 3 19 12 5 21 5 3"/>';
 
 /* Add expand button to every card */
 ALL_CARDS.forEach(card => {
@@ -1036,9 +1038,9 @@ function toggleCarousel() {
   if (_cPaused) {
     clearTimeout(_cTimer);
     $('crl-prog-fill').style.transition = 'none';
-    ico.innerHTML = '<polygon points="5 3 19 12 5 21 5 3"/>';
+    ico.innerHTML = PLAY_ICO;
   } else {
-    ico.innerHTML = '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
+    ico.innerHTML = PAUSE_ICO;
     _scheduleTick();
   }
 }
@@ -1046,21 +1048,21 @@ function toggleCarousel() {
 function carouselNext() {
   clearTimeout(_cTimer);
   _cIdx = (_cIdx + 1) % ALL_CARDS.length;
-  if (_cPaused) { _cPaused = false; $('crl-play-ico').innerHTML = '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>'; }
+  if (_cPaused) { _cPaused = false; $('crl-play-ico').innerHTML = PAUSE_ICO; }
   _showCurrent();
 }
 
 function carouselPrev() {
   clearTimeout(_cTimer);
   _cIdx = (_cIdx - 1 + ALL_CARDS.length) % ALL_CARDS.length;
-  if (_cPaused) { _cPaused = false; $('crl-play-ico').innerHTML = '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>'; }
+  if (_cPaused) { _cPaused = false; $('crl-play-ico').innerHTML = PAUSE_ICO; }
   _showCurrent();
 }
 
 function carouselJump(i) {
   clearTimeout(_cTimer);
   _cIdx = i;
-  if (_cPaused) { _cPaused = false; $('crl-play-ico').innerHTML = '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>'; }
+  if (_cPaused) { _cPaused = false; $('crl-play-ico').innerHTML = PAUSE_ICO; }
   _showCurrent();
 }
 
