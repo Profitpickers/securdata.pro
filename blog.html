@@ -339,11 +339,25 @@ function loadPosts() {
     try {
       var parsed = JSON.parse(stored);
       if (Array.isArray(parsed) && parsed.length > 0) {
-        return Promise.resolve(parsed);
+        // Filter out draft posts (published === false)
+        return Promise.resolve(parsed.filter(function(p) { return p.published !== false; }));
       }
     } catch(e) {}
   }
   return fetch('./data/blog-posts.json').then(function(r) { return r.json(); });
+}
+
+// ── Get post cover image ───────────────────────────────────────
+function getPostImage(post) {
+  // Local upload stored in localStorage takes priority
+  try {
+    var local = localStorage.getItem('blog_img_' + post.id);
+    if (local) return local;
+  } catch(e) {}
+  // Fall back to imageUrl field or legacy image field
+  if (post.imageUrl && (post.imageUrl.startsWith('http://') || post.imageUrl.startsWith('https://'))) return post.imageUrl;
+  if (post.image && (post.image.startsWith('http://') || post.image.startsWith('https://'))) return post.image;
+  return '';
 }
 
 // ── Rendering helpers ─────────────────────────────────────────
@@ -375,7 +389,12 @@ function renderFeatured(posts) {
     var icon = post.category === 'Normativa' ? '⚖️' :
                post.category === 'Sicurezza' ? '🛡️' :
                post.category === 'Minacce'   ? '⚠️' : '🤖';
+    var coverImg = getPostImage(post);
+    var coverHtml = coverImg
+      ? '<div class="w-full rounded-xl overflow-hidden mb-4" style="height:160px;"><img src="' + escapeHtml(coverImg) + '" alt="' + escapeHtml(post.title) + '" class="w-full h-full object-cover"></div>'
+      : '';
     html += '<a href="' + postUrl(post) + '" class="featured-card-bg rounded-2xl p-6 hover-lift cursor-pointer block hover:no-underline animate-fade-in" style="animation-delay:' + (i*0.08) + 's">' +
+      coverHtml +
       '<div class="flex items-start gap-3 mb-4">' +
         '<span class="text-3xl">' + icon + '</span>' +
         '<div class="flex-1 min-w-0">' +
@@ -405,7 +424,12 @@ function renderArticleCard(post, delay) {
   var tagsHtml = (post.tags || []).slice(0, 3).map(function(t) {
     return '<span class="tag-btn text-xs px-2 py-0.5 rounded cursor-pointer" onclick="filterByTag(\'' + escapeAttr(t) + '\')">' + escapeHtml(t) + '</span>';
   }).join('');
+  var coverImg = getPostImage(post);
+  var coverHtml = coverImg
+    ? '<div class="w-full rounded-lg overflow-hidden mb-3" style="height:130px;"><img src="' + escapeHtml(coverImg) + '" alt="' + escapeHtml(post.title) + '" class="w-full h-full object-cover"></div>'
+    : '';
   return '<a href="' + postUrl(post) + '" class="card-glass rounded-xl p-5 hover-lift cursor-pointer flex flex-col block hover:no-underline animate-fade-in" style="animation-delay:' + delay + 's" data-post-id="' + post.id + '">' +
+    coverHtml +
     '<div class="flex items-start gap-2 mb-3">' +
       '<span class="text-2xl mt-0.5">' + icon + '</span>' +
       '<div class="flex-1 min-w-0">' +

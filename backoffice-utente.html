@@ -578,6 +578,53 @@ input:focus { border-color: #63b3ed; }
 .blog-teaser-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
 .blog-teaser-title { font-size: 0.9rem; font-weight: 700; color: #63b3ed; margin-bottom: 0.4rem; }
 .blog-teaser-sub { font-size: 0.75rem; color: #4a5568; line-height: 1.5; }
+
+/* ── Blog image upload in editor */
+.be-img-preview {
+  width: 100%; height: 160px; border-radius: 10px;
+  background: rgba(0,0,0,0.2); border: 1px dashed rgba(99,179,237,0.3);
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden; margin-bottom: 0.65rem; position: relative;
+}
+.be-img-preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.be-img-empty { font-size: 0.78rem; color: #4a5568; text-align: center; pointer-events: none; }
+.be-img-btn-row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.85rem; }
+.be-img-btn {
+  padding: 0.4rem 0.85rem; border-radius: 8px; font-size: 0.78rem; font-weight: 600;
+  cursor: pointer; background: rgba(99,179,237,0.1); border: 1px solid rgba(99,179,237,0.3);
+  color: #63b3ed; transition: background 0.18s; font-family: inherit;
+}
+.be-img-btn:hover { background: rgba(99,179,237,0.2); }
+.be-img-btn.danger { background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.2); color: #fca5a5; }
+.be-img-btn.danger:hover { background: rgba(239,68,68,0.15); }
+
+/* ── Blog post thumbnail in list */
+.blog-post-thumb {
+  width: 52px; height: 40px; border-radius: 6px; object-fit: cover;
+  border: 1px solid rgba(99,179,237,0.15); flex-shrink: 0;
+}
+.blog-post-thumb-empty {
+  width: 52px; height: 40px; border-radius: 6px; flex-shrink: 0;
+  background: rgba(99,179,237,0.05); border: 1px solid rgba(99,179,237,0.1);
+  display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
+}
+
+/* ── Draft badge */
+.draft-badge {
+  font-size: 0.6rem; font-weight: 700; padding: 2px 6px;
+  background: rgba(246,173,85,0.15); color: #f6ad55;
+  border: 1px solid rgba(246,173,85,0.3); border-radius: 4px;
+}
+
+/* ── Export / Import buttons */
+.btn-io {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 0.45rem 0.85rem; font-size: 0.78rem; font-weight: 700;
+  border-radius: 9px; cursor: pointer; transition: background 0.18s;
+  background: rgba(99,179,237,0.06); border: 1px solid rgba(99,179,237,0.18);
+  color: #63b3ed; font-family: inherit;
+}
+.btn-io:hover { background: rgba(99,179,237,0.14); }
 </style>
 </head>
 <body>
@@ -688,10 +735,10 @@ input:focus { border-color: #63b3ed; }
         <div class="dash-stat-label">Newsletter</div>
         <div class="dash-stat-value" id="dashNewsletterStatus">Gestisci →</div>
       </div>
-      <div class="dash-stat-card" style="cursor:default;">
-        <div class="dash-stat-icon">🔒</div>
-        <div class="dash-stat-label">Blog Premium</div>
-        <div class="dash-stat-value" style="font-size:0.78rem;color:#4a5568;">In arrivo</div>
+      <div class="dash-stat-card" onclick="showSection('blog')">
+        <div class="dash-stat-icon">📖</div>
+        <div class="dash-stat-label">Gestione Blog</div>
+        <div class="dash-stat-value" id="dashBlogStatus">Gestisci →</div>
       </div>
     </div>
     <div class="panel">
@@ -888,6 +935,9 @@ input:focus { border-color: #63b3ed; }
         <a href="blog.html" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:0.55rem 1rem;font-size:0.8rem;font-weight:700;color:#63b3ed;background:rgba(99,179,237,0.08);border:1px solid rgba(99,179,237,0.25);border-radius:10px;text-decoration:none;transition:background 0.2s;">
           🌐 Vedi Blog Pubblico
         </a>
+        <button onclick="exportBlogPosts()" class="btn-io">📥 Esporta JSON</button>
+        <button onclick="triggerBlogImport()" class="btn-io">📤 Importa JSON</button>
+        <input type="file" id="blogImportInput" accept=".json,application/json" style="display:none;" onchange="importBlogFile(this)">
       </div>
       <div style="font-size:0.75rem;color:#4a5568;" id="blogPostCount">0 articoli</div>
     </div>
@@ -909,11 +959,30 @@ input:focus { border-color: #63b3ed; }
 
         <label style="display:block;font-size:0.77rem;color:#718096;margin-bottom:4px;">Titolo *</label>
         <input type="text" id="be_title" placeholder="Titolo dell'articolo" maxlength="200"
-          style="width:100%;background:rgba(0,0,0,0.3);border:1px solid rgba(99,179,237,0.25);border-radius:8px;padding:0.6rem 0.8rem;color:#e2e8f0;font-size:0.875rem;outline:none;margin-bottom:0.85rem;">
+          style="width:100%;background:rgba(0,0,0,0.3);border:1px solid rgba(99,179,237,0.25);border-radius:8px;padding:0.6rem 0.8rem;color:#e2e8f0;font-size:0.875rem;outline:none;margin-bottom:0.85rem;"
+          oninput="autoSlugFromTitle()">
+
+        <label style="display:block;font-size:0.77rem;color:#718096;margin-bottom:4px;">Slug URL <span style="font-weight:400;color:#4a5568;">(auto-generato, modificabile)</span></label>
+        <input type="text" id="be_slug" placeholder="es. titolo-articolo-gdpr" maxlength="120"
+          style="width:100%;background:rgba(0,0,0,0.3);border:1px solid rgba(99,179,237,0.25);border-radius:8px;padding:0.6rem 0.8rem;color:#90cdf4;font-size:0.8rem;outline:none;margin-bottom:0.85rem;font-family:monospace;">
 
         <label style="display:block;font-size:0.77rem;color:#718096;margin-bottom:4px;">Estratto (anteprima)</label>
         <textarea id="be_excerpt" rows="2" placeholder="Breve descrizione dell'articolo (max 300 caratteri)" maxlength="300"
           style="width:100%;background:rgba(0,0,0,0.3);border:1px solid rgba(99,179,237,0.25);border-radius:8px;padding:0.6rem 0.8rem;color:#e2e8f0;font-size:0.875rem;outline:none;resize:vertical;margin-bottom:0.85rem;"></textarea>
+
+        <label style="display:block;font-size:0.77rem;color:#718096;margin-bottom:4px;">Immagine di copertina</label>
+        <div class="be-img-preview" id="beImgPreview">
+          <span class="be-img-empty">🖼️<br>Nessuna immagine</span>
+        </div>
+        <div class="be-img-btn-row">
+          <button type="button" class="be-img-btn" onclick="document.getElementById('beImgFileInput').click()">📷 Carica immagine</button>
+          <input type="file" id="beImgFileInput" accept="image/*" style="display:none;" onchange="handleBeImageUpload(this)">
+          <button type="button" class="be-img-btn danger" id="beImgRemoveBtn" onclick="removeBeImage()" style="display:none;">🗑 Rimuovi</button>
+        </div>
+        <label style="display:block;font-size:0.77rem;color:#718096;margin-bottom:4px;">…oppure URL immagine esterna</label>
+        <input type="text" id="be_imageurl" placeholder="https://esempio.com/immagine.jpg"
+          style="width:100%;background:rgba(0,0,0,0.3);border:1px solid rgba(99,179,237,0.25);border-radius:8px;padding:0.6rem 0.8rem;color:#e2e8f0;font-size:0.85rem;outline:none;margin-bottom:0.85rem;"
+          oninput="previewBeImageUrl(this.value)">
 
         <label style="display:block;font-size:0.77rem;color:#718096;margin-bottom:4px;">Contenuto * <span style="font-weight:400;color:#4a5568;">(usa ## per h2, ### per h3, - per lista, **grassetto**)</span></label>
         <textarea id="be_content" rows="10" placeholder="Scrivi qui il contenuto completo dell'articolo..."
@@ -957,10 +1026,14 @@ input:focus { border-color: #63b3ed; }
             style="width:100%;background:rgba(0,0,0,0.3);border:1px solid rgba(99,179,237,0.25);border-radius:8px;padding:0.6rem 0.8rem;color:#e2e8f0;font-size:0.875rem;outline:none;">
         </div>
 
-        <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1.25rem;">
+        <div style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;margin-bottom:1.25rem;">
           <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:0.8rem;color:#90cdf4;">
             <input type="checkbox" id="be_featured" style="width:16px;height:16px;accent-color:#3b82f6;">
             In primo piano (featured)
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:0.8rem;color:#f6ad55;">
+            <input type="checkbox" id="be_draft" style="width:16px;height:16px;accent-color:#f6ad55;">
+            Salva come bozza (non pubblicato)
           </label>
         </div>
 
@@ -1464,6 +1537,9 @@ document.getElementById('emailBtn').onclick = function () {
 
 /* ── Blog Management ── */
 var BLOG_KEY = 'blog_posts';
+var BLOG_IMG_PREFIX = 'blog_img_';
+var _beImageData = null;   // base64 of image currently in editor
+var _beImageDirty = false; // whether image was changed during this editor session
 
 function getBlogPosts() {
   try { return JSON.parse(localStorage.getItem(BLOG_KEY) || '[]'); } catch(_){ return []; }
@@ -1478,14 +1554,89 @@ function escBlog(s) {
   if (!s) return '';
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
+function getBlogImage(postId) {
+  try { return localStorage.getItem(BLOG_IMG_PREFIX + postId) || ''; } catch(_){ return ''; }
+}
+function setBlogImage(postId, data) {
+  if (!data) {
+    try { localStorage.removeItem(BLOG_IMG_PREFIX + postId); } catch(_){}
+  } else {
+    try { localStorage.setItem(BLOG_IMG_PREFIX + postId, data); } catch(_){ showToast('⚠️ Impossibile salvare l\'immagine (dimensione eccessiva?)'); }
+  }
+}
+
+/* ── Image helpers in editor ── */
+function setBeImagePreview(src) {
+  var preview = document.getElementById('beImgPreview');
+  var removeBtn = document.getElementById('beImgRemoveBtn');
+  if (src) {
+    preview.innerHTML = '<img src="' + escBlog(src) + '" alt="Anteprima immagine articolo" style="width:100%;height:100%;object-fit:cover;">';
+    if (removeBtn) removeBtn.style.display = 'inline-flex';
+  } else {
+    preview.innerHTML = '<span class="be-img-empty">🖼️<br>Nessuna immagine</span>';
+    if (removeBtn) removeBtn.style.display = 'none';
+  }
+}
+
+function handleBeImageUpload(input) {
+  var file = input.files[0];
+  if (!file) return;
+  if (file.size > 3 * 1024 * 1024) { showToast('⚠️ Immagine troppo grande (max 3MB)'); input.value = ''; return; }
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    _beImageData = e.target.result;
+    _beImageDirty = true;
+    document.getElementById('be_imageurl').value = '';
+    setBeImagePreview(_beImageData);
+  };
+  reader.readAsDataURL(file);
+  input.value = '';
+}
+
+function previewBeImageUrl(url) {
+  if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
+    _beImageData = null;
+    _beImageDirty = true;
+    setBeImagePreview(url);
+  } else if (!url) {
+    if (!_beImageData) setBeImagePreview(null);
+  }
+}
+
+function removeBeImage() {
+  _beImageData = null;
+  _beImageDirty = true;
+  document.getElementById('be_imageurl').value = '';
+  var fi = document.getElementById('beImgFileInput');
+  if (fi) fi.value = '';
+  setBeImagePreview(null);
+}
+
+function makeSlug(str) {
+  return (str || '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').substring(0, 80);
+}
+
+function autoSlugFromTitle() {
+  var titleVal = document.getElementById('be_title').value;
+  // Only auto-update slug if user hasn't manually edited it (or if it's a new post)
+  var slugEl = document.getElementById('be_slug');
+  if (!slugEl._userEdited) slugEl.value = makeSlug(titleVal);
+}
 
 function renderBlogPostsList() {
   var posts = getBlogPosts();
   var container = document.getElementById('blogPostsList');
   var countEl = document.getElementById('blogPostCount');
-  if (countEl) countEl.textContent = posts.length + (posts.length === 1 ? ' articolo' : ' articoli');
+  var dashEl  = document.getElementById('dashBlogStatus');
+  var total   = posts.length;
+  var published = posts.filter(function(p){ return p.published !== false; }).length;
+  var drafts  = total - published;
+  var countStr = total + (total === 1 ? ' articolo' : ' articoli');
+  if (drafts > 0) countStr += ' (' + drafts + ' bozz' + (drafts === 1 ? 'a' : 'e') + ')';
+  if (countEl) countEl.textContent = countStr;
+  if (dashEl)  dashEl.textContent  = total + (total === 1 ? ' articolo →' : ' articoli →');
   if (!posts.length) {
-    container.innerHTML = '<div style="padding:2rem;text-align:center;color:#4a5568;font-size:0.85rem;">Nessun articolo ancora. Clicca <strong style="color:#63b3ed;">Nuovo Articolo</strong> per iniziare.</div>';
+    container.innerHTML = '<div style="padding:2rem;text-align:center;color:#4a5568;font-size:0.85rem;">Nessun articolo ancora. Clicca <strong style="color:#63b3ed;">✏️ Nuovo Articolo</strong> per iniziare.</div>';
     return;
   }
   // Sort newest first
@@ -1499,9 +1650,16 @@ function renderBlogPostsList() {
       'AI & Innovazione':'color:#7c3aed'
     };
     var catStyle = catColors[p.category] || 'color:#3b82f6';
+    var imgSrc = getBlogImage(p.id) || (p.imageUrl || '');
+    var thumbHtml = imgSrc
+      ? '<img src="' + escBlog(imgSrc) + '" alt="" class="blog-post-thumb">'
+      : '<div class="blog-post-thumb-empty">📄</div>';
+    var isDraft = p.published === false;
     html += '<div style="display:flex;align-items:center;gap:0.75rem;padding:0.85rem 1rem;border-bottom:1px solid rgba(99,179,237,0.08);">' +
+      thumbHtml +
       '<div style="flex:1;min-width:0;">' +
-        '<div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;margin-bottom:2px;">' +
+        '<div style="display:flex;align-items:center;gap:0.4rem;flex-wrap:wrap;margin-bottom:2px;">' +
+          (isDraft ? '<span class="draft-badge">BOZZA</span>' : '') +
           (p.featured ? '<span style="font-size:0.65rem;font-weight:700;padding:2px 6px;background:rgba(99,102,241,0.2);color:#a5b4fc;border-radius:4px;">★ Featured</span>' : '') +
           '<span style="font-size:0.7rem;font-weight:700;' + catStyle + '">' + escBlog(p.category || '') + '</span>' +
           '<span style="font-size:0.7rem;color:#4a5568;">' + (p.date || '') + '</span>' +
@@ -1533,6 +1691,7 @@ function openBlogEditor(postId) {
 
   document.getElementById('be_id').value       = post ? post.id : '';
   document.getElementById('be_title').value    = post ? (post.title || '') : '';
+  document.getElementById('be_slug').value     = post ? (post.slug || '') : '';
   document.getElementById('be_excerpt').value  = post ? (post.excerpt || '') : '';
   document.getElementById('be_content').value  = post ? (post.content || '') : '';
   document.getElementById('be_category').value = post ? (post.category || 'Sicurezza') : 'Sicurezza';
@@ -1541,14 +1700,34 @@ function openBlogEditor(postId) {
   document.getElementById('be_author').value   = post ? (post.author || '') : 'Vito Iacobellis';
   document.getElementById('be_tags').value     = post ? ((post.tags || []).join(', ')) : '';
   document.getElementById('be_featured').checked = post ? !!post.featured : false;
+  document.getElementById('be_draft').checked  = post ? (post.published === false) : false;
+  document.getElementById('be_imageurl').value = post ? (post.imageUrl || '') : '';
+
+  // Reset slug user-edited flag
+  var slugEl = document.getElementById('be_slug');
+  slugEl._userEdited = !!(post && post.slug);
+
+  // Load image: local upload takes priority, then imageUrl
+  _beImageDirty = false;
+  var localImg = post ? getBlogImage(post.id) : '';
+  _beImageData = localImg || null;
+  var previewSrc = localImg || (post ? (post.imageUrl || '') : '');
+  setBeImagePreview(previewSrc || null);
 
   document.getElementById('blogEditorOverlay').style.display = 'block';
   document.body.style.overflow = 'hidden';
 }
 
+// Allow user to mark slug as manually edited
+document.getElementById('be_slug').addEventListener('input', function() {
+  this._userEdited = true;
+});
+
 function closeBlogEditor() {
   document.getElementById('blogEditorOverlay').style.display = 'none';
   document.body.style.overflow = '';
+  _beImageData = null;
+  _beImageDirty = false;
 }
 
 function saveBlogPost() {
@@ -1560,20 +1739,37 @@ function saveBlogPost() {
   var existingId = document.getElementById('be_id').value;
   var posts = getBlogPosts();
   var tagsRaw = (document.getElementById('be_tags').value || '').split(',').map(function(t){ return t.trim(); }).filter(Boolean);
+  var slugVal = (document.getElementById('be_slug').value || '').trim();
+  var imageUrlVal = (document.getElementById('be_imageurl').value || '').trim();
+
+  // Auto-generate slug if empty
+  if (!slugVal) {
+    slugVal = makeSlug(title);
+  }
+
+  var postId = existingId || generateBlogId();
+
+  // Save local image if dirty
+  if (_beImageDirty) {
+    setBlogImage(postId, _beImageData || null);
+    if (_beImageData) imageUrlVal = ''; // local image takes priority — clear URL
+  }
 
   var post = {
-    id:       existingId || generateBlogId(),
-    slug:     title.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').substring(0, 80),
-    title:    title,
-    excerpt:  (document.getElementById('be_excerpt').value || '').trim(),
-    content:  content,
-    category: document.getElementById('be_category').value || 'Sicurezza',
-    readTime: (document.getElementById('be_readtime').value || '5 min').trim(),
-    date:     document.getElementById('be_date').value || new Date().toISOString().slice(0,10),
-    author:   (document.getElementById('be_author').value || 'SecurData.Pro').trim(),
-    tags:     tagsRaw,
-    featured: document.getElementById('be_featured').checked,
-    image:    ''
+    id:        postId,
+    slug:      slugVal,
+    title:     title,
+    excerpt:   (document.getElementById('be_excerpt').value || '').trim(),
+    content:   content,
+    category:  document.getElementById('be_category').value || 'Sicurezza',
+    readTime:  (document.getElementById('be_readtime').value || '5 min').trim(),
+    date:      document.getElementById('be_date').value || new Date().toISOString().slice(0,10),
+    author:    (document.getElementById('be_author').value || 'SecurData.Pro').trim(),
+    tags:      tagsRaw,
+    featured:  document.getElementById('be_featured').checked,
+    published: !document.getElementById('be_draft').checked,
+    image:     '',
+    imageUrl:  imageUrlVal
   };
 
   if (existingId) {
@@ -1586,15 +1782,76 @@ function saveBlogPost() {
   saveBlogPosts(posts);
   closeBlogEditor();
   renderBlogPostsList();
-  showToast('✅ Articolo salvato!');
+  showToast(post.published ? '✅ Articolo salvato!' : '💾 Bozza salvata!');
 }
 
 function deleteBlogPost(postId) {
   if (!confirm('Eliminare questo articolo? L\'operazione non può essere annullata.')) return;
   var posts = getBlogPosts().filter(function(p){ return p.id !== postId; });
   saveBlogPosts(posts);
+  setBlogImage(postId, null); // clean up stored image
   renderBlogPostsList();
   showToast('🗑 Articolo eliminato');
+}
+
+/* ── Export / Import ── */
+function exportBlogPosts() {
+  var posts = getBlogPosts();
+  if (!posts.length) { showToast('⚠️ Nessun articolo da esportare'); return; }
+  // Embed local images into export
+  var exported = posts.map(function(p) {
+    var clone = Object.assign({}, p);
+    var localImg = getBlogImage(p.id);
+    if (localImg) clone.imageEmbedded = localImg;
+    return clone;
+  });
+  var json = JSON.stringify(exported, null, 2);
+  var blob = new Blob([json], { type: 'application/json;charset=utf-8' });
+  var url  = URL.createObjectURL(blob);
+  var a    = document.createElement('a');
+  a.href = url;
+  a.download = 'blog-posts-' + new Date().toISOString().slice(0,10) + '.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('✅ Esportazione completata!');
+}
+
+function triggerBlogImport() {
+  document.getElementById('blogImportInput').click();
+}
+
+function importBlogFile(input) {
+  var file = input.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      var imported = JSON.parse(e.target.result);
+      if (!Array.isArray(imported)) { showToast('⚠️ Formato JSON non valido'); return; }
+      var existing = getBlogPosts();
+      var added = 0, updated = 0;
+      imported.forEach(function(p) {
+        if (!p.id || !p.title) return;
+        // Restore embedded image if present
+        if (p.imageEmbedded) {
+          setBlogImage(p.id, p.imageEmbedded);
+          delete p.imageEmbedded;
+        }
+        var idx = existing.findIndex(function(e){ return e.id === p.id; });
+        if (idx >= 0) { existing[idx] = p; updated++; }
+        else { existing.push(p); added++; }
+      });
+      saveBlogPosts(existing);
+      renderBlogPostsList();
+      showToast('✅ Importati: ' + added + ' nuovi, ' + updated + ' aggiornati');
+    } catch(err) {
+      showToast('⚠️ Errore lettura JSON: ' + (err.message || ''));
+    }
+    input.value = '';
+  };
+  reader.readAsText(file);
 }
 
 // Close editor on overlay click
@@ -1621,6 +1878,22 @@ document.getElementById('blogEditorOverlay').addEventListener('click', function(
       }
     }
   };
+
+  // Update dashboard blog stat on page load
+  (function updateDashBlogStat() {
+    var posts = getBlogPosts();
+    if (!posts.length) {
+      // Try to fetch count from JSON
+      fetch('./data/blog-posts.json').then(function(r){ return r.json(); }).then(function(p) {
+        var n = Array.isArray(p) ? p.length : 0;
+        var el = document.getElementById('dashBlogStatus');
+        if (el) el.textContent = n + (n === 1 ? ' articolo →' : ' articoli →');
+      }).catch(function(){});
+    } else {
+      var el = document.getElementById('dashBlogStatus');
+      if (el) el.textContent = posts.length + (posts.length === 1 ? ' articolo →' : ' articoli →');
+    }
+  })();
 })();
 </script>
 </body>
