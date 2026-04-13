@@ -1766,7 +1766,8 @@ function renderBlogPostsList(filtered) {
   el = document.getElementById('bstatDrafts');    if (el) el.textContent = drafts;
   el = document.getElementById('bstatFeatured');  if (el) el.textContent = featured;
 
-  var countStr = (filtered !== undefined ? filtered.length : total) + (total === 1 ? ' articolo' : ' articoli');
+  var displayCount = filtered !== undefined ? filtered.length : total;
+  var countStr = displayCount + (displayCount === 1 ? ' articolo' : ' articoli');
   if (filtered !== undefined && filtered.length !== total) countStr += ' (filtrati)';
   else if (drafts > 0) countStr += ' (' + drafts + ' bozz' + (drafts === 1 ? 'a' : 'e') + ')';
   if (countEl) countEl.textContent = countStr;
