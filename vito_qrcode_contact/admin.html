@@ -1057,6 +1057,8 @@ function insertBlogLink(){
 }
 
 document.getElementById('blogLinkModal').addEventListener('click',function(e){ if(e.target===this) closeBlogLinkModal(); });
+
+function loadBlogImg(input){
   var f=input.files[0]; if(!f) return;
   var r=new FileReader();
   r.onload=function(e){
