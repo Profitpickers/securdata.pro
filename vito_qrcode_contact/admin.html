@@ -175,6 +175,11 @@ input[type=file] { display:none; }
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
       Note & Archivio
     </div>
+    <div class="nav-section">Contenuti</div>
+    <div class="nav-item" onclick="showPage('blog',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
+      Blog
+    </div>
   </div>
 
   <div class="main">
@@ -322,11 +327,132 @@ input[type=file] { display:none; }
       <div id="notesList"></div>
     </div>
 
+    <!-- BLOG -->
+    <div class="page" id="page-blog">
+      <h2>Dashboard Blog</h2>
+
+      <!-- Stats -->
+      <div class="stat-cards" style="margin-bottom:1.5rem;">
+        <div class="stat"><div class="stat-num" id="blog-stat-total">0</div><div class="stat-label">Articoli totali</div></div>
+        <div class="stat"><div class="stat-num" id="blog-stat-pub">0</div><div class="stat-label">Pubblicati</div></div>
+        <div class="stat"><div class="stat-num" id="blog-stat-draft">0</div><div class="stat-label">Bozze</div></div>
+      </div>
+
+      <!-- Toolbar -->
+      <div style="display:flex;gap:0.75rem;margin-bottom:1.5rem;flex-wrap:wrap;align-items:center;">
+        <button class="btn-primary" onclick="openBlogEditor()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right:6px;vertical-align:-2px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Nuovo Articolo
+        </button>
+        <select id="blogFilterStatus" onchange="renderBlog()" style="background:#0a0e1a;border:1px solid rgba(99,179,237,0.25);border-radius:8px;padding:0.5rem 0.9rem;color:#e2e8f0;font-size:0.85rem;cursor:pointer;">
+          <option value="">Tutti</option>
+          <option value="published">Pubblicati</option>
+          <option value="draft">Bozze</option>
+        </select>
+        <input type="text" id="blogSearch" placeholder="Cerca articolo…" oninput="renderBlog()" style="background:#0a0e1a;border:1px solid rgba(99,179,237,0.25);border-radius:8px;padding:0.5rem 0.9rem;color:#e2e8f0;font-size:0.85rem;flex:1;min-width:160px;">
+      </div>
+
+      <!-- Article list -->
+      <div class="card" style="padding:0;overflow:hidden;">
+        <div id="blogList" style="min-height:80px;"></div>
+      </div>
+
+      <!-- Inline Editor (hidden by default) -->
+      <div id="blogEditor" style="display:none;margin-top:1.5rem;">
+        <div class="card">
+          <div class="card-title" id="blogEditorTitle">Nuovo Articolo</div>
+          <input type="hidden" id="blogEditIndex" value="-1">
+
+          <div class="form-row">
+            <label>Titolo *</label>
+            <input type="text" id="blog_title" placeholder="Titolo dell'articolo…">
+          </div>
+          <div class="grid2">
+            <div class="form-row">
+              <label>Categoria</label>
+              <input type="text" id="blog_cat" placeholder="es. Cybersecurity, AI, GDPR…">
+            </div>
+            <div class="form-row">
+              <label>Tag (separati da virgola)</label>
+              <input type="text" id="blog_tags" placeholder="es. privacy, sicurezza, cloud">
+            </div>
+          </div>
+          <div class="form-row">
+            <label>Immagine in evidenza (URL o carica)</label>
+            <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;">
+              <input type="text" id="blog_img" placeholder="https://…" style="flex:1;" oninput="blogImgPreview()">
+              <label style="cursor:pointer;background:rgba(99,179,237,0.1);border:1px solid rgba(99,179,237,0.3);color:#63b3ed;padding:0.5rem 0.9rem;border-radius:8px;font-size:0.82rem;white-space:nowrap;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:4px;"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 12l3 3 5-5"/></svg>
+                Carica
+                <input type="file" accept="image/*" style="display:none;" onchange="loadBlogImg(this)">
+              </label>
+            </div>
+            <img id="blog_img_preview" src="" alt="" style="display:none;max-height:120px;border-radius:8px;margin-top:0.5rem;border:1px solid rgba(99,179,237,0.2);">
+          </div>
+          <div class="form-row">
+            <label>Sommario / Excerpt SEO</label>
+            <textarea id="blog_excerpt" rows="2" placeholder="Breve descrizione dell'articolo (max 160 caratteri)…" maxlength="160"></textarea>
+          </div>
+
+          <!-- Formatting toolbar -->
+          <div class="form-row">
+            <label>Contenuto *</label>
+            <div id="blog_toolbar" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px;">
+              <button type="button" onclick="blogFmt('bold')" title="Grassetto" style="background:rgba(99,179,237,0.1);border:1px solid rgba(99,179,237,0.2);color:#90cdf4;border-radius:5px;padding:3px 9px;cursor:pointer;font-weight:700;font-size:0.85rem;">B</button>
+              <button type="button" onclick="blogFmt('italic')" title="Corsivo" style="background:rgba(99,179,237,0.1);border:1px solid rgba(99,179,237,0.2);color:#90cdf4;border-radius:5px;padding:3px 9px;cursor:pointer;font-style:italic;font-size:0.85rem;">I</button>
+              <button type="button" onclick="blogFmt('underline')" title="Sottolineato" style="background:rgba(99,179,237,0.1);border:1px solid rgba(99,179,237,0.2);color:#90cdf4;border-radius:5px;padding:3px 9px;cursor:pointer;text-decoration:underline;font-size:0.85rem;">U</button>
+              <button type="button" onclick="blogFmt('h2')" title="Titolo H2" style="background:rgba(99,179,237,0.1);border:1px solid rgba(99,179,237,0.2);color:#90cdf4;border-radius:5px;padding:3px 9px;cursor:pointer;font-size:0.82rem;">H2</button>
+              <button type="button" onclick="blogFmt('h3')" title="Titolo H3" style="background:rgba(99,179,237,0.1);border:1px solid rgba(99,179,237,0.2);color:#90cdf4;border-radius:5px;padding:3px 9px;cursor:pointer;font-size:0.82rem;">H3</button>
+              <button type="button" onclick="blogFmt('ul')" title="Lista puntata" style="background:rgba(99,179,237,0.1);border:1px solid rgba(99,179,237,0.2);color:#90cdf4;border-radius:5px;padding:3px 9px;cursor:pointer;font-size:0.82rem;">• List</button>
+              <button type="button" onclick="blogFmt('ol')" title="Lista numerata" style="background:rgba(99,179,237,0.1);border:1px solid rgba(99,179,237,0.2);color:#90cdf4;border-radius:5px;padding:3px 9px;cursor:pointer;font-size:0.82rem;">1. List</button>
+              <button type="button" onclick="blogFmt('link')" title="Inserisci link" style="background:rgba(99,179,237,0.1);border:1px solid rgba(99,179,237,0.2);color:#90cdf4;border-radius:5px;padding:3px 9px;cursor:pointer;font-size:0.82rem;">🔗 Link</button>
+              <button type="button" onclick="blogFmt('quote')" title="Citazione" style="background:rgba(99,179,237,0.1);border:1px solid rgba(99,179,237,0.2);color:#90cdf4;border-radius:5px;padding:3px 9px;cursor:pointer;font-size:0.82rem;">" Cit.</button>
+              <button type="button" onclick="blogFmt('code')" title="Codice" style="background:rgba(99,179,237,0.1);border:1px solid rgba(99,179,237,0.2);color:#90cdf4;border-radius:5px;padding:3px 9px;cursor:pointer;font-family:monospace;font-size:0.82rem;">&lt;/&gt;</button>
+            </div>
+            <div id="blog_content" contenteditable="true"
+              style="background:#0a0e1a;border:1px solid rgba(99,179,237,0.25);border-radius:8px;padding:0.85rem;min-height:260px;color:#e2e8f0;font-size:0.9rem;line-height:1.7;outline:none;resize:vertical;overflow-y:auto;">
+            </div>
+          </div>
+
+          <div class="grid2">
+            <div class="form-row">
+              <label>Stato</label>
+              <select id="blog_status" style="background:#0a0e1a;border:1px solid rgba(99,179,237,0.25);border-radius:8px;padding:0.6rem 0.9rem;color:#e2e8f0;width:100%;font-size:0.88rem;">
+                <option value="draft">Bozza</option>
+                <option value="published">Pubblicato</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label>Slug URL (auto)</label>
+              <input type="text" id="blog_slug" placeholder="es. sicurezza-dati-2025">
+            </div>
+          </div>
+
+          <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-top:0.5rem;">
+            <button class="btn-primary" onclick="saveBlogPost()">💾 Salva Articolo</button>
+            <button class="btn-primary" onclick="publishBlogPost()" style="background:linear-gradient(135deg,#1a7a4a,#15653e);">🚀 Pubblica</button>
+            <button type="button" onclick="closeBlogEditor()" style="background:rgba(255,255,255,0.06);border:1px solid rgba(99,179,237,0.2);color:#90cdf4;padding:0.75rem 1.4rem;border-radius:10px;font-size:0.9rem;cursor:pointer;">✕ Annulla</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
 <!-- MODAL ADD/EDIT LEAD -->
 <div class="modal-overlay" id="leadModal">
+
+<!-- BLOG LINK MODAL -->
+<div class="modal-overlay" id="blogLinkModal">
+  <div class="modal" style="width:380px;">
+    <button class="modal-close" onclick="closeBlogLinkModal()">✕</button>
+    <h3>Inserisci Link</h3>
+    <div class="form-row"><label>URL</label><input type="url" id="blogLinkUrl" placeholder="https://…" style="width:100%;"></div>
+    <div class="form-row"><label>Testo (opzionale, lascia vuoto per usare la selezione)</label><input type="text" id="blogLinkText" placeholder="Testo del link…" style="width:100%;"></div>
+    <button class="btn-primary" onclick="insertBlogLink()" style="width:100%;margin-top:0.25rem;">Inserisci</button>
+  </div>
+</div>
   <div class="modal">
     <button class="modal-close" onclick="closeModal()">✕</button>
     <h3 id="modalTitle">Aggiungi Lead</h3>
@@ -383,6 +509,7 @@ function showPage(id,el){
   if(id==='leads') renderLeads();
   if(id==='qr') { renderQR(); renderEmbedCode(); }
   if(id==='note') renderNotes();
+  if(id==='blog') renderBlog();
 }
 
 function toast(msg){
@@ -739,6 +866,211 @@ function renderNotes(){
 }
 
 function deleteNote(i){ notes.splice(i,1); localStorage.setItem('sdp_notes',JSON.stringify(notes)); renderNotes(); }
+
+/* =========================================================
+   BLOG
+   ========================================================= */
+var articles = JSON.parse(localStorage.getItem('sdp_articles') || '[]');
+
+// Register slug auto-generation once at load time
+document.addEventListener('DOMContentLoaded', function(){
+  var titleEl = document.getElementById('blog_title');
+  var slugEl  = document.getElementById('blog_slug');
+  if(titleEl && slugEl){
+    titleEl.addEventListener('input', function(){
+      if(!slugEl._manually_set) slugEl.value = slugify(titleEl.value);
+    });
+    slugEl.addEventListener('input', function(){ slugEl._manually_set = true; });
+  }
+});
+
+function slugify(str){
+  return str.toLowerCase().replace(/[^a-z0-9\s-]/g,'').trim().replace(/\s+/g,'-');
+}
+
+function openBlogEditor(idx){
+  document.getElementById('blogEditor').style.display='block';
+  document.getElementById('blogEditor').scrollIntoView({behavior:'smooth',block:'start'});
+  var slugEl=document.getElementById('blog_slug');
+  slugEl._manually_set=false;
+  if(idx===undefined || idx===-1){
+    document.getElementById('blogEditorTitle').textContent='Nuovo Articolo';
+    document.getElementById('blogEditIndex').value='-1';
+    document.getElementById('blog_title').value='';
+    document.getElementById('blog_cat').value='';
+    document.getElementById('blog_tags').value='';
+    document.getElementById('blog_img').value='';
+    document.getElementById('blog_img_preview').style.display='none';
+    document.getElementById('blog_excerpt').value='';
+    document.getElementById('blog_content').innerHTML='';
+    document.getElementById('blog_status').value='draft';
+    slugEl.value='';
+  } else {
+    var a=articles[idx];
+    document.getElementById('blogEditorTitle').textContent='Modifica Articolo';
+    document.getElementById('blogEditIndex').value=idx;
+    document.getElementById('blog_title').value=a.title||'';
+    document.getElementById('blog_cat').value=a.category||'';
+    document.getElementById('blog_tags').value=(a.tags||[]).join(', ');
+    document.getElementById('blog_img').value=a.image||'';
+    blogImgPreview();
+    document.getElementById('blog_excerpt').value=a.excerpt||'';
+    document.getElementById('blog_content').innerHTML=a.content||'';
+    document.getElementById('blog_status').value=a.status||'draft';
+    slugEl.value=a.slug||'';
+    slugEl._manually_set=true;
+  }
+}
+
+function closeBlogEditor(){
+  document.getElementById('blogEditor').style.display='none';
+}
+
+function saveBlogPost(forceStatus){
+  var title=document.getElementById('blog_title').value.trim();
+  if(!title){ toast('Inserisci un titolo!'); return; }
+  var idx=parseInt(document.getElementById('blogEditIndex').value);
+  var status=forceStatus||document.getElementById('blog_status').value;
+  var slug=document.getElementById('blog_slug').value.trim()||slugify(title);
+  var existingDate = (idx >= 0 && articles[idx]) ? articles[idx].date : new Date().toISOString();
+  var art={
+    title:title,
+    category:document.getElementById('blog_cat').value.trim(),
+    tags:document.getElementById('blog_tags').value.split(',').map(function(t){return t.trim();}).filter(Boolean),
+    image:document.getElementById('blog_img').value.trim(),
+    excerpt:document.getElementById('blog_excerpt').value.trim(),
+    content:document.getElementById('blog_content').innerHTML,
+    status:status,
+    slug:slug,
+    date:existingDate,
+    updated:new Date().toISOString()
+  };
+  if(idx>=0){ articles[idx]=art; } else { articles.unshift(art); }
+  localStorage.setItem('sdp_articles',JSON.stringify(articles));
+  closeBlogEditor();
+  renderBlog();
+  toast(status==='published'?'Articolo pubblicato!':'Bozza salvata!');
+}
+
+function publishBlogPost(){
+  document.getElementById('blog_status').value='published';
+  saveBlogPost('published');
+}
+
+function toggleBlogStatus(i){
+  articles[i].status=articles[i].status==='published'?'draft':'published';
+  localStorage.setItem('sdp_articles',JSON.stringify(articles));
+  renderBlog();
+  toast(articles[i].status==='published'?'Articolo pubblicato!':'Tornato in bozza!');
+}
+
+function deleteBlogPost(i){
+  if(!confirm('Eliminare definitivamente questo articolo?')) return;
+  articles.splice(i,1);
+  localStorage.setItem('sdp_articles',JSON.stringify(articles));
+  renderBlog();
+  toast('Articolo eliminato.');
+}
+
+function renderBlog(){
+  var filter=document.getElementById('blogFilterStatus')?document.getElementById('blogFilterStatus').value:'';
+  var search=(document.getElementById('blogSearch')?document.getElementById('blogSearch').value:'').toLowerCase();
+  var pub=articles.filter(function(a){return a.status==='published';}).length;
+  var draft=articles.length-pub;
+  document.getElementById('blog-stat-total').textContent=articles.length;
+  document.getElementById('blog-stat-pub').textContent=pub;
+  document.getElementById('blog-stat-draft').textContent=draft;
+
+  var filtered=articles.filter(function(a,i){
+    if(filter&&a.status!==filter) return false;
+    if(search&&!(a.title+' '+(a.category||'')).toLowerCase().includes(search)) return false;
+    return true;
+  });
+
+  var list=document.getElementById('blogList');
+  if(!filtered.length){
+    list.innerHTML='<p style="padding:1.5rem;color:#4a5568;font-size:0.88rem;">Nessun articolo trovato.</p>';
+    return;
+  }
+
+  list.innerHTML=filtered.map(function(a){
+    var realIdx=articles.indexOf(a);
+    var dateStr=a.updated?new Date(a.updated).toLocaleDateString('it-IT'):(a.date?new Date(a.date).toLocaleDateString('it-IT'):'');
+    var statusBadge=a.status==='published'
+      ?'<span style="background:rgba(72,187,120,0.15);color:#68d391;border:1px solid rgba(72,187,120,0.3);font-size:0.7rem;padding:2px 9px;border-radius:20px;">✓ Pubblicato</span>'
+      :'<span style="background:rgba(246,173,85,0.12);color:#f6ad55;border:1px solid rgba(246,173,85,0.3);font-size:0.7rem;padding:2px 9px;border-radius:20px;">✎ Bozza</span>';
+    var catHtml=a.category?'<span style="font-size:0.72rem;color:#63b3ed;margin-left:6px;">'+escHtml(a.category)+'</span>':'';
+    var imgHtml=a.image?'<img src="'+escHtml(a.image)+'" alt="" style="width:56px;height:42px;object-fit:cover;border-radius:6px;margin-right:12px;flex-shrink:0;border:1px solid rgba(99,179,237,0.15);" onerror="this.style.display=\'none\'">':'';
+    return '<div style="display:flex;align-items:center;padding:0.9rem 1.25rem;border-bottom:1px solid rgba(99,179,237,0.08);gap:0.5rem;flex-wrap:wrap;">'
+      +imgHtml
+      +'<div style="flex:1;min-width:0;">'
+        +'<div style="font-weight:600;font-size:0.9rem;color:#e2e8f0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+escHtml(a.title)+'</div>'
+        +'<div style="font-size:0.75rem;color:#718096;margin-top:3px;">'+dateStr+catHtml+'</div>'
+      +'</div>'
+      +'<div style="display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap;align-items:center;">'
+        +statusBadge
+        +'<button onclick="openBlogEditor('+realIdx+')" style="background:rgba(99,179,237,0.1);border:1px solid rgba(99,179,237,0.25);color:#63b3ed;padding:4px 12px;border-radius:6px;font-size:0.78rem;cursor:pointer;">✎ Modifica</button>'
+        +'<button onclick="toggleBlogStatus('+realIdx+')" style="background:rgba(99,179,237,0.06);border:1px solid rgba(99,179,237,0.2);color:#90cdf4;padding:4px 12px;border-radius:6px;font-size:0.78rem;cursor:pointer;">'+(a.status==='published'?'↩ Bozza':'↑ Pubblica')+'</button>'
+        +'<button class="btn-danger" onclick="deleteBlogPost('+realIdx+')">🗑 Elimina</button>'
+      +'</div>'
+    +'</div>';
+  }).join('');
+}
+
+function escHtml(s){ var d=document.createElement('div'); d.appendChild(document.createTextNode(s||'')); return d.innerHTML; }
+
+function blogFmt(type){
+  var el=document.getElementById('blog_content');
+  el.focus();
+  if(type==='bold') document.execCommand('bold');
+  else if(type==='italic') document.execCommand('italic');
+  else if(type==='underline') document.execCommand('underline');
+  else if(type==='h2') document.execCommand('formatBlock',false,'h2');
+  else if(type==='h3') document.execCommand('formatBlock',false,'h3');
+  else if(type==='ul') document.execCommand('insertUnorderedList');
+  else if(type==='ol') document.execCommand('insertOrderedList');
+  else if(type==='quote') document.execCommand('formatBlock',false,'blockquote');
+  else if(type==='code') document.execCommand('formatBlock',false,'pre');
+  else if(type==='link'){
+    document.getElementById('blogLinkModal').classList.add('open');
+  }
+}
+
+function closeBlogLinkModal(){ document.getElementById('blogLinkModal').classList.remove('open'); }
+
+function insertBlogLink(){
+  var url=document.getElementById('blogLinkUrl').value.trim();
+  var text=document.getElementById('blogLinkText').value.trim();
+  if(!url){ toast('Inserisci un URL!'); return; }
+  document.getElementById('blog_content').focus();
+  if(text){
+    document.execCommand('insertHTML',false,'<a href="'+escHtml(url)+'" target="_blank" rel="noopener noreferrer">'+escHtml(text)+'</a>');
+  } else {
+    document.execCommand('createLink',false,url);
+    // make link open in new tab
+    var links=document.getElementById('blog_content').querySelectorAll('a[href="'+url+'"]');
+    links.forEach(function(l){ l.target='_blank'; l.rel='noopener noreferrer'; });
+  }
+  closeBlogLinkModal();
+  document.getElementById('blogLinkUrl').value='';
+  document.getElementById('blogLinkText').value='';
+}
+
+document.getElementById('blogLinkModal').addEventListener('click',function(e){ if(e.target===this) closeBlogLinkModal(); });
+  var f=input.files[0]; if(!f) return;
+  var r=new FileReader();
+  r.onload=function(e){
+    document.getElementById('blog_img').value=e.target.result;
+    blogImgPreview();
+  };
+  r.readAsDataURL(f);
+}
+
+function blogImgPreview(){
+  var src=document.getElementById('blog_img').value;
+  var prev=document.getElementById('blog_img_preview');
+  if(src){ prev.src=src; prev.style.display='block'; } else { prev.style.display='none'; }
+}
 
 document.getElementById('leadModal').addEventListener('click',function(e){ if(e.target===this) closeModal(); });
 
