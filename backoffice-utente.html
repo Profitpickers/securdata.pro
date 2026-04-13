@@ -2083,39 +2083,48 @@ document.getElementById('blogEditorOverlay').addEventListener('click', function(
 
 // Init blog section when it becomes visible
 (function() {
+  // Pre-load blog posts from JSON into localStorage on page init if empty
+  var _blogJsonReady = false;
+  function _initBlogFromJson(callback) {
+    if (getBlogPosts().length) {
+      _blogJsonReady = true;
+      if (callback) callback();
+      return;
+    }
+    fetch('./data/blog-posts.json').then(function(r){ return r.json(); }).then(function(posts) {
+      if (Array.isArray(posts) && posts.length) {
+        saveBlogPosts(posts);
+      }
+      _blogJsonReady = true;
+      if (callback) callback();
+    }).catch(function(){
+      _blogJsonReady = true;
+      if (callback) callback();
+    });
+  }
+
   var origShow = window.showSection;
   window.showSection = function(name) {
     origShow(name);
     if (name === 'blog') {
-      // Lazy-load default posts from JSON if localStorage is empty
-      if (!getBlogPosts().length) {
-        fetch('./data/blog-posts.json').then(function(r){ return r.json(); }).then(function(posts) {
-          if (Array.isArray(posts) && posts.length) {
-            saveBlogPosts(posts);
-          }
-          renderBlogPostsList();
-        }).catch(function(){ renderBlogPostsList(); });
-      } else {
+      if (_blogJsonReady) {
         renderBlogPostsList();
+      } else {
+        // Show loading state, then render once data is ready
+        var container = document.getElementById('blogPostsList');
+        if (container) container.innerHTML = '<div style="padding:2rem;text-align:center;color:#4a5568;font-size:0.85rem;">⏳ Caricamento articoli…</div>';
+        _initBlogFromJson(function() { renderBlogPostsList(); });
       }
     }
   };
 
-  // Update dashboard blog stat on page load
-  (function updateDashBlogStat() {
+  // Pre-fetch on page load so the blog section renders instantly when opened
+  _initBlogFromJson(function() {
     var posts = getBlogPosts();
-    if (!posts.length) {
-      // Try to fetch count from JSON
-      fetch('./data/blog-posts.json').then(function(r){ return r.json(); }).then(function(p) {
-        var n = Array.isArray(p) ? p.length : 0;
-        var el = document.getElementById('dashBlogStatus');
-        if (el) el.textContent = n + (n === 1 ? ' articolo →' : ' articoli →');
-      }).catch(function(){});
-    } else {
-      var el = document.getElementById('dashBlogStatus');
-      if (el) el.textContent = posts.length + (posts.length === 1 ? ' articolo →' : ' articoli →');
-    }
-  })();
+    var n = posts.length;
+    var el = document.getElementById('dashBlogStatus');
+    if (el) el.textContent = n + (n === 1 ? ' articolo →' : ' articoli →');
+  });
 })();
 </script>
 </body>
