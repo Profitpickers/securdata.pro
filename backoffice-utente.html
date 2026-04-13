@@ -1612,12 +1612,15 @@ function removeBeImage() {
   setBeImagePreview(null);
 }
 
+function makeSlug(str) {
+  return (str || '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').substring(0, 80);
+}
+
 function autoSlugFromTitle() {
   var titleVal = document.getElementById('be_title').value;
   // Only auto-update slug if user hasn't manually edited it (or if it's a new post)
   var slugEl = document.getElementById('be_slug');
-  var autoSlug = titleVal.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').substring(0, 120);
-  if (!slugEl._userEdited) slugEl.value = autoSlug;
+  if (!slugEl._userEdited) slugEl.value = makeSlug(titleVal);
 }
 
 function renderBlogPostsList() {
@@ -1741,7 +1744,7 @@ function saveBlogPost() {
 
   // Auto-generate slug if empty
   if (!slugVal) {
-    slugVal = title.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').substring(0, 80);
+    slugVal = makeSlug(title);
   }
 
   var postId = existingId || generateBlogId();
@@ -1828,7 +1831,6 @@ function importBlogFile(input) {
       var imported = JSON.parse(e.target.result);
       if (!Array.isArray(imported)) { showToast('⚠️ Formato JSON non valido'); return; }
       var existing = getBlogPosts();
-      var existingIds = existing.map(function(p){ return p.id; });
       var added = 0, updated = 0;
       imported.forEach(function(p) {
         if (!p.id || !p.title) return;
@@ -1837,9 +1839,9 @@ function importBlogFile(input) {
           setBlogImage(p.id, p.imageEmbedded);
           delete p.imageEmbedded;
         }
-        var idx = existingIds.indexOf(p.id);
+        var idx = existing.findIndex(function(e){ return e.id === p.id; });
         if (idx >= 0) { existing[idx] = p; updated++; }
-        else { existing.push(p); added++; existingIds.push(p.id); }
+        else { existing.push(p); added++; }
       });
       saveBlogPosts(existing);
       renderBlogPostsList();
