@@ -1563,7 +1563,7 @@ function saveBlogPost() {
 
   var post = {
     id:       existingId || generateBlogId(),
-    slug:     title.toLowerCase().replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'').substring(0, 80),
+    slug:     title.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').substring(0, 80),
     title:    title,
     excerpt:  (document.getElementById('be_excerpt').value || '').trim(),
     content:  content,
