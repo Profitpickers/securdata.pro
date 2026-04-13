@@ -657,8 +657,8 @@ async function handleLogin(e) {
       document.getElementById('loginSuccess').classList.add('show');
       // Redirect to dashboard after short delay
       var redirect = new URLSearchParams(window.location.search).get('redirect') || 'backoffice-utente.html';
-      // Allow only relative paths (no protocol, no external domains)
-      if (/^https?:|^\/\/|^javascript:/i.test(redirect)) { redirect = 'backoffice-utente.html'; }
+      // Only allow simple relative paths (filename or path starting with /, no protocol, no external domains)
+      if (!redirect || !/^[a-zA-Z0-9_./-]+$/.test(redirect) || /^https?:|^\/\/|^javascript:|^data:|^vbscript:/i.test(redirect)) { redirect = 'backoffice-utente.html'; }
       setTimeout(function(){ window.location.href = redirect; }, 1200);
     } else {
       // Check if user exists but wrong password
@@ -738,7 +738,11 @@ async function handleRegister(e) {
 
     var hash = await sha256(pwd);
     var newUser = {
-      id:           Date.now().toString(36) + Math.random().toString(36).slice(2,7),
+      id:           (function(){
+        var arr = new Uint8Array(16);
+        crypto.getRandomValues(arr);
+        return Array.from(arr).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
+      })(),
       nome:         nome,
       username:     username,
       email:        email,
@@ -755,7 +759,7 @@ async function handleRegister(e) {
 
     document.getElementById('regSuccess').classList.add('show');
     var redirect = new URLSearchParams(window.location.search).get('redirect') || 'backoffice-utente.html';
-    if (/^https?:|^\/\/|^javascript:/i.test(redirect)) { redirect = 'backoffice-utente.html'; }
+    if (!redirect || !/^[a-zA-Z0-9_./-]+$/.test(redirect) || /^https?:|^\/\/|^javascript:|^data:|^vbscript:/i.test(redirect)) { redirect = 'backoffice-utente.html'; }
     setTimeout(function(){ window.location.href = redirect + '?nome=' + encodeURIComponent(nome) + '&email=' + encodeURIComponent(email); }, 1500);
 
   } catch(err) {
@@ -775,20 +779,20 @@ function resetBtn(btn, html) {
   btn.innerHTML  = html;
 }
 
-// ── Auto-redirect if already logged in ──
+// ── Init: auto-redirect if already logged in, handle URL tab param ──
 (function(){
+  // Pre-fill tab from URL param
+  var tab = new URLSearchParams(window.location.search).get('tab');
+  if (tab === 'register') switchTab('register');
+  // Auto-redirect if already logged in
   try {
     var session = JSON.parse(sessionStorage.getItem(SESSION_KEY) || 'null');
     if (session && session.userId) {
       var redirect = new URLSearchParams(window.location.search).get('redirect') || 'backoffice-utente.html';
-      if (/^https?:|^\/\/|^javascript:/i.test(redirect)) { redirect = 'backoffice-utente.html'; }
+      if (!redirect || !/^[a-zA-Z0-9_./-]+$/.test(redirect) || /^https?:|^\/\/|^javascript:|^data:|^vbscript:/i.test(redirect)) { redirect = 'backoffice-utente.html'; }
       window.location.href = redirect;
     }
   } catch(_){}
-
-  // Pre-fill tab from URL param
-  var tab = new URLSearchParams(window.location.search).get('tab');
-  if (tab === 'register') switchTab('register');
 })();
 </script>
 </body>

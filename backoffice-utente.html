@@ -1018,13 +1018,18 @@ document.getElementById('newsletterTopics').addEventListener('click', function(e
       }
     } catch(_){}
   } else {
-    // Not logged in: populate with defaults (allow access without login for backward compatibility)
+    // Not logged in: show guest info but limit visibility hint
     var avatarEl = document.getElementById('sidebarAvatar');
     if (avatarEl) avatarEl.textContent = '👤';
     var nameEl = document.getElementById('sidebarName');
     if (nameEl) nameEl.textContent = 'Ospite';
     var typeEl = document.getElementById('sidebarType');
     if (typeEl) typeEl.textContent = 'non loggato';
+    var welcomeEl = document.getElementById('welcomeName');
+    if (welcomeEl) welcomeEl.textContent = 'Ospite';
+    // Show a login prompt in the dashboard section
+    var dashInfo = document.getElementById('dashAccountInfo');
+    if (dashInfo) dashInfo.innerHTML = '⚠️ <span style="color:#fca5a5;">Non sei autenticato.</span> <a href="login-utente.html" style="color:#60a5fa;font-weight:700;">Accedi o Registrati →</a>';
   }
 })();
 

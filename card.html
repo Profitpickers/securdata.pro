@@ -470,7 +470,9 @@ try {
   });
 } catch(e) {
   document.getElementById('qrcode').style.display = 'none';
-  document.getElementById('qrFallback').style.display = 'block';
+  var fallback = document.getElementById('qrFallback');
+  fallback.style.display = 'block';
+  fallback.querySelector('svg').setAttribute('title', e.message || 'QR non disponibile');
 }
 
 /* ── Blocco condivisione ── */
