@@ -60,9 +60,10 @@ body{
   animation:float linear infinite;
 }
 @keyframes float{
-  0%{transform:translateY(100vh) scale(0);opacity:0}
-  10%{opacity:1}90%{opacity:1}
-  100%{transform:translateY(-15vh) scale(1);opacity:0}
+  0%{transform:translateY(100vh) scale(0);opacity:0;}
+  10%{opacity:1;}
+  90%{opacity:1;}
+  100%{transform:translateY(-15vh) scale(1);opacity:0;}
 }
 /* Warning banner */
 .warning-banner{
@@ -394,11 +395,13 @@ hr.divider{border:none;border-top:1px solid rgba(99,179,237,0.08);margin:1.4rem 
 //   otpauth://totp/SECURDATA.PRO:admin?secret=JBSWY3DPEHPK3PXP&issuer=SECURDATA.PRO
 //   oppure incollare manualmente il secret nell'app.
 // ═══════════════════════════════════════════════════════════════
-var VALID_USER  = 'admin';
-var VALID_HASH  = 'd75e5a7ab4d547daaa799247055caddd181fbb598700e65d7c1fe219453ef501';
-var TOTP_SECRET = 'JBSWY3DPEHPK3PXP';
-var MAX_ATTEMPTS = 3;
-var LOCKOUT_MS   = 5 * 60 * 1000; // 5 minuti
+var VALID_USER    = 'admin';
+var VALID_HASH    = 'd75e5a7ab4d547daaa799247055caddd181fbb598700e65d7c1fe219453ef501';
+var TOTP_SECRET   = 'JBSWY3DPEHPK3PXP';
+var MAX_ATTEMPTS  = 3;
+var LOCKOUT_MS    = 5 * 60 * 1000; // 5 minuti
+var REDIRECT_MS   = 1200;          // ms prima del redirect dopo login
+var UINT32_MAX    = 0x100000000;   // 2^32 per gestione counter TOTP a 64-bit
 // ═══════════════════════════════════════════════════════════════
 
 // SHA-256 via Web Crypto API
@@ -430,7 +433,7 @@ async function totp(secret, offset) {
   var ctr    = Math.floor(Date.now() / 1000 / step) + offset;
   var buf    = new ArrayBuffer(8);
   var view   = new DataView(buf);
-  var hi     = Math.floor(ctr / 0x100000000);
+  var hi     = Math.floor(ctr / UINT32_MAX);
   if (hi > 0) view.setUint32(0, hi >>> 0, false);
   view.setUint32(4, ctr >>> 0, false);
   var sig    = new Uint8Array(await crypto.subtle.sign('HMAC', key, buf));
@@ -498,7 +501,7 @@ async function handleLogin(e) {
       sessionStorage.setItem('sd_auth_token', 'authenticated');
       sessionStorage.removeItem('sd_lock');
       showSuccess();
-      setTimeout(function(){ window.location.replace('./admin.html'); }, 1200);
+      setTimeout(function(){ window.location.replace('./admin.html'); }, REDIRECT_MS);
     } else {
       lock.attempts = (lock.attempts || 0) + 1;
       var rem = MAX_ATTEMPTS - lock.attempts;
