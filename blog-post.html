@@ -175,6 +175,11 @@
       <!-- Title -->
       <h1 id="article-title" class="text-2xl sm:text-3xl font-extrabold text-white leading-tight mb-4"></h1>
 
+      <!-- Cover image (shown when available) -->
+      <div id="article-cover" class="hidden mb-6">
+        <img id="article-cover-img" src="" alt="" class="w-full rounded-xl" style="max-height:340px;object-fit:cover;border:1px solid rgba(148,163,184,0.1);">
+      </div>
+
       <!-- Excerpt -->
       <p id="article-excerpt" class="text-slate-400 text-base leading-relaxed mb-8 border-l-2 border-indigo-500/40 pl-4 italic"></p>
 
@@ -351,6 +356,16 @@ function copyLink() {
 }
 
 // ── Load posts ────────────────────────────────────────────────
+function getPostImage(post) {
+  try {
+    var local = localStorage.getItem('blog_img_' + post.id);
+    if (local) return local;
+  } catch(e) {}
+  if (post.imageUrl && (post.imageUrl.startsWith('http://') || post.imageUrl.startsWith('https://'))) return post.imageUrl;
+  if (post.image && (post.image.startsWith('http://') || post.image.startsWith('https://'))) return post.image;
+  return '';
+}
+
 function loadPosts() {
   var stored = localStorage.getItem('blog_posts');
   if (stored) {
@@ -378,6 +393,16 @@ function renderArticle(post, allPosts) {
   document.getElementById('article-author').textContent = '✍️ ' + (post.author || 'SecurData.Pro');
 
   document.getElementById('article-title').textContent = post.title;
+
+  // Cover image
+  var coverSrc = getPostImage(post);
+  if (coverSrc) {
+    var coverImg = document.getElementById('article-cover-img');
+    coverImg.src = coverSrc;
+    coverImg.alt = post.title;
+    document.getElementById('article-cover').classList.remove('hidden');
+  }
+
   document.getElementById('article-excerpt').textContent = post.excerpt || '';
   document.getElementById('article-body').innerHTML = renderContent(post.content || '');
 
@@ -445,7 +470,7 @@ if (!postId) {
       document.getElementById('loading').style.display = 'none';
       document.getElementById('error-state').classList.remove('hidden');
     } else {
-      renderArticle(post, posts);
+      renderArticle(post, posts.filter(function(p){ return p.published !== false; }));
     }
   }).catch(function() {
     document.getElementById('loading').style.display = 'none';
