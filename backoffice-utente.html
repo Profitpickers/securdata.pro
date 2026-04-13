@@ -625,6 +625,69 @@ input:focus { border-color: #63b3ed; }
   color: #63b3ed; font-family: inherit;
 }
 .btn-io:hover { background: rgba(99,179,237,0.14); }
+
+/* ── Blog Stats Bar ── */
+.blog-stats-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+@media (max-width: 600px) {
+  .blog-stats-bar { grid-template-columns: repeat(2, 1fr); }
+}
+.blog-stat-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(99,179,237,0.15);
+  border-radius: 12px;
+  padding: 0.85rem 1rem;
+  text-align: center;
+}
+.blog-stat-value {
+  font-size: 1.5rem; font-weight: 800; color: #63b3ed; line-height: 1;
+  margin-bottom: 4px;
+}
+.blog-stat-label {
+  font-size: 0.68rem; font-weight: 600; color: #718096; text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+.blog-stat-card.stat-published .blog-stat-value { color: #48bb78; }
+.blog-stat-card.stat-draft     .blog-stat-value { color: #f6ad55; }
+.blog-stat-card.stat-featured  .blog-stat-value { color: #a78bfa; }
+
+/* ── Blog Filter Bar ── */
+.blog-filter-bar {
+  display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+.blog-search-input {
+  flex: 1; min-width: 160px;
+  background: rgba(0,0,0,0.25); border: 1px solid rgba(99,179,237,0.2);
+  border-radius: 8px; padding: 0.45rem 0.75rem;
+  color: #e2e8f0; font-size: 0.8rem; outline: none; font-family: inherit;
+}
+.blog-search-input:focus { border-color: #63b3ed; }
+.blog-filter-select {
+  background: rgba(0,0,0,0.25); border: 1px solid rgba(99,179,237,0.2);
+  border-radius: 8px; padding: 0.45rem 0.6rem;
+  color: #e2e8f0; font-size: 0.78rem; outline: none; cursor: pointer;
+  font-family: inherit;
+}
+.blog-filter-select:focus { border-color: #63b3ed; }
+
+/* ── Blog SEO Section in editor ── */
+.blog-seo-toggle {
+  width: 100%; text-align: left; background: rgba(99,179,237,0.05);
+  border: 1px solid rgba(99,179,237,0.2); border-radius: 8px;
+  padding: 0.55rem 0.85rem; color: #63b3ed; font-size: 0.8rem; font-weight: 700;
+  cursor: pointer; margin-bottom: 0.65rem; font-family: inherit;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.blog-seo-toggle:hover { background: rgba(99,179,237,0.1); }
+.blog-seo-panel {
+  background: rgba(0,0,0,0.15); border: 1px solid rgba(99,179,237,0.12);
+  border-radius: 10px; padding: 0.9rem; margin-bottom: 0.85rem;
+}
 </style>
 </head>
 <body>
@@ -923,11 +986,31 @@ input:focus { border-color: #63b3ed; }
   <div class="dash-section" id="sectionBlog">
     <div class="section-header">
       <div class="section-title">📖 Gestione Blog</div>
-      <div class="section-sub">Crea, modifica ed elimina gli articoli del blog pubblico</div>
+      <div class="section-sub">Dashboard completa per la gestione professionale degli articoli e degli strumenti del blog</div>
+    </div>
+
+    <!-- Stats bar -->
+    <div class="blog-stats-bar" id="blogStatsBar">
+      <div class="blog-stat-card">
+        <div class="blog-stat-value" id="bstatTotal">0</div>
+        <div class="blog-stat-label">Totale Articoli</div>
+      </div>
+      <div class="blog-stat-card stat-published">
+        <div class="blog-stat-value" id="bstatPublished">0</div>
+        <div class="blog-stat-label">Pubblicati</div>
+      </div>
+      <div class="blog-stat-card stat-draft">
+        <div class="blog-stat-value" id="bstatDrafts">0</div>
+        <div class="blog-stat-label">Bozze</div>
+      </div>
+      <div class="blog-stat-card stat-featured">
+        <div class="blog-stat-value" id="bstatFeatured">0</div>
+        <div class="blog-stat-label">In Evidenza</div>
+      </div>
     </div>
 
     <!-- Blog header actions -->
-    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem;margin-bottom:1.25rem;">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem;margin-bottom:0.85rem;">
       <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
         <button onclick="openBlogEditor(null)" class="btn-save-profile" style="max-width:none;width:auto;padding:0.55rem 1rem;font-size:0.8rem;margin-top:0;">
           ✏️ Nuovo Articolo
@@ -940,6 +1023,27 @@ input:focus { border-color: #63b3ed; }
         <input type="file" id="blogImportInput" accept=".json,application/json" style="display:none;" onchange="importBlogFile(this)">
       </div>
       <div style="font-size:0.75rem;color:#4a5568;" id="blogPostCount">0 articoli</div>
+    </div>
+
+    <!-- Filter & Search bar -->
+    <div class="blog-filter-bar">
+      <input type="text" class="blog-search-input" id="blogSearchInput" placeholder="🔍 Cerca per titolo…" oninput="filterBlogList()">
+      <select class="blog-filter-select" id="blogFilterCategory" onchange="filterBlogList()">
+        <option value="">Tutte le categorie</option>
+        <option value="Sicurezza">🛡️ Sicurezza</option>
+        <option value="Normativa">⚖️ Normativa</option>
+        <option value="Minacce">⚠️ Minacce</option>
+        <option value="AI &amp; Innovazione">🤖 AI &amp; Innovazione</option>
+        <option value="Guide">📚 Guide</option>
+        <option value="Notizie">📰 Notizie</option>
+      </select>
+      <select class="blog-filter-select" id="blogFilterStatus" onchange="filterBlogList()">
+        <option value="">Tutti gli stati</option>
+        <option value="published">✅ Pubblicati</option>
+        <option value="draft">📝 Bozze</option>
+        <option value="featured">⭐ In evidenza</option>
+      </select>
+      <button onclick="clearBlogFilters()" class="btn-io" style="padding:0.45rem 0.7rem;font-size:0.75rem;">✕ Reset</button>
     </div>
 
     <!-- Posts list -->
@@ -1002,8 +1106,12 @@ input:focus { border-color: #63b3ed; }
           </div>
           <div>
             <label style="display:block;font-size:0.77rem;color:#718096;margin-bottom:4px;">Tempo di lettura</label>
-            <input type="text" id="be_readtime" placeholder="es. 5 min" maxlength="10"
-              style="width:100%;background:rgba(0,0,0,0.3);border:1px solid rgba(99,179,237,0.25);border-radius:8px;padding:0.6rem 0.8rem;color:#e2e8f0;font-size:0.875rem;outline:none;">
+            <div style="display:flex;gap:0.4rem;">
+              <input type="text" id="be_readtime" placeholder="es. 5 min" maxlength="10"
+                style="flex:1;background:rgba(0,0,0,0.3);border:1px solid rgba(99,179,237,0.25);border-radius:8px;padding:0.6rem 0.8rem;color:#e2e8f0;font-size:0.875rem;outline:none;">
+              <button type="button" onclick="autoCalcReadTime()" title="Calcola automaticamente dal contenuto"
+                style="padding:0.6rem 0.65rem;background:rgba(99,179,237,0.08);border:1px solid rgba(99,179,237,0.25);border-radius:8px;color:#63b3ed;font-size:0.8rem;cursor:pointer;white-space:nowrap;">⏱ Auto</button>
+            </div>
           </div>
         </div>
 
@@ -1026,7 +1134,7 @@ input:focus { border-color: #63b3ed; }
             style="width:100%;background:rgba(0,0,0,0.3);border:1px solid rgba(99,179,237,0.25);border-radius:8px;padding:0.6rem 0.8rem;color:#e2e8f0;font-size:0.875rem;outline:none;">
         </div>
 
-        <div style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;margin-bottom:1.25rem;">
+        <div style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;margin-bottom:1rem;">
           <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:0.8rem;color:#90cdf4;">
             <input type="checkbox" id="be_featured" style="width:16px;height:16px;accent-color:#3b82f6;">
             In primo piano (featured)
@@ -1035,6 +1143,23 @@ input:focus { border-color: #63b3ed; }
             <input type="checkbox" id="be_draft" style="width:16px;height:16px;accent-color:#f6ad55;">
             Salva come bozza (non pubblicato)
           </label>
+        </div>
+
+        <!-- SEO Panel -->
+        <button type="button" class="blog-seo-toggle" onclick="toggleSeoPanel()">
+          🔍 Impostazioni SEO avanzate
+          <span id="seoToggleArrow">▼</span>
+        </button>
+        <div class="blog-seo-panel" id="blogSeoPanel" style="display:none;">
+          <label style="display:block;font-size:0.77rem;color:#718096;margin-bottom:4px;">Meta Description <span style="font-weight:400;color:#4a5568;">(max 160 caratteri)</span></label>
+          <textarea id="be_metadesc" rows="2" placeholder="Descrizione per i motori di ricerca (se vuoto usa l'estratto)" maxlength="160"
+            style="width:100%;background:rgba(0,0,0,0.3);border:1px solid rgba(99,179,237,0.25);border-radius:8px;padding:0.6rem 0.8rem;color:#e2e8f0;font-size:0.875rem;outline:none;resize:vertical;margin-bottom:0.75rem;"></textarea>
+          <label style="display:block;font-size:0.77rem;color:#718096;margin-bottom:4px;">Canonical URL <span style="font-weight:400;color:#4a5568;">(lascia vuoto per URL predefinito)</span></label>
+          <input type="text" id="be_canonical" placeholder="https://securdata.pro/blog-post.html?id=…"
+            style="width:100%;background:rgba(0,0,0,0.3);border:1px solid rgba(99,179,237,0.25);border-radius:8px;padding:0.6rem 0.8rem;color:#e2e8f0;font-size:0.85rem;outline:none;margin-bottom:0.75rem;">
+          <label style="display:block;font-size:0.77rem;color:#718096;margin-bottom:4px;">Alt immagine copertina <span style="font-weight:400;color:#4a5568;">(per accessibilità e SEO)</span></label>
+          <input type="text" id="be_imgalt" placeholder="Descrizione breve dell'immagine" maxlength="120"
+            style="width:100%;background:rgba(0,0,0,0.3);border:1px solid rgba(99,179,237,0.25);border-radius:8px;padding:0.6rem 0.8rem;color:#e2e8f0;font-size:0.85rem;outline:none;">
         </div>
 
         <div style="display:flex;gap:0.75rem;justify-content:flex-end;flex-wrap:wrap;">
@@ -1623,24 +1748,40 @@ function autoSlugFromTitle() {
   if (!slugEl._userEdited) slugEl.value = makeSlug(titleVal);
 }
 
-function renderBlogPostsList() {
-  var posts = getBlogPosts();
+function renderBlogPostsList(filtered) {
+  var posts = filtered !== undefined ? filtered : getBlogPosts();
+  var allPosts = getBlogPosts();
   var container = document.getElementById('blogPostsList');
   var countEl = document.getElementById('blogPostCount');
   var dashEl  = document.getElementById('dashBlogStatus');
-  var total   = posts.length;
-  var published = posts.filter(function(p){ return p.published !== false; }).length;
+  var total   = allPosts.length;
+  var published = allPosts.filter(function(p){ return p.published !== false; }).length;
   var drafts  = total - published;
-  var countStr = total + (total === 1 ? ' articolo' : ' articoli');
-  if (drafts > 0) countStr += ' (' + drafts + ' bozz' + (drafts === 1 ? 'a' : 'e') + ')';
+  var featured = allPosts.filter(function(p){ return p.featured; }).length;
+
+  // Update stats bar
+  var el;
+  el = document.getElementById('bstatTotal');     if (el) el.textContent = total;
+  el = document.getElementById('bstatPublished'); if (el) el.textContent = published;
+  el = document.getElementById('bstatDrafts');    if (el) el.textContent = drafts;
+  el = document.getElementById('bstatFeatured');  if (el) el.textContent = featured;
+
+  var displayCount = filtered !== undefined ? filtered.length : total;
+  var countStr = displayCount + (displayCount === 1 ? ' articolo' : ' articoli');
+  if (filtered !== undefined && filtered.length !== total) countStr += ' (filtrati)';
+  else if (drafts > 0) countStr += ' (' + drafts + ' bozz' + (drafts === 1 ? 'a' : 'e') + ')';
   if (countEl) countEl.textContent = countStr;
   if (dashEl)  dashEl.textContent  = total + (total === 1 ? ' articolo →' : ' articoli →');
-  if (!posts.length) {
-    container.innerHTML = '<div style="padding:2rem;text-align:center;color:#4a5568;font-size:0.85rem;">Nessun articolo ancora. Clicca <strong style="color:#63b3ed;">✏️ Nuovo Articolo</strong> per iniziare.</div>';
+
+  var displayPosts = filtered !== undefined ? filtered : allPosts;
+  if (!displayPosts.length) {
+    container.innerHTML = total === 0
+      ? '<div style="padding:2rem;text-align:center;color:#4a5568;font-size:0.85rem;">Nessun articolo ancora. Clicca <strong style="color:#63b3ed;">✏️ Nuovo Articolo</strong> per iniziare.</div>'
+      : '<div style="padding:2rem;text-align:center;color:#4a5568;font-size:0.85rem;">Nessun articolo trovato con i filtri selezionati.</div>';
     return;
   }
   // Sort newest first
-  var sorted = posts.slice().sort(function(a,b){ return new Date(b.date) - new Date(a.date); });
+  var sorted = displayPosts.slice().sort(function(a,b){ return new Date(b.date) - new Date(a.date); });
   var html = '';
   sorted.forEach(function(p) {
     var catColors = {
@@ -1667,17 +1808,84 @@ function renderBlogPostsList() {
         '<div style="font-size:0.85rem;font-weight:600;color:#e2e8f0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + escBlog(p.title) + '</div>' +
         '<div style="font-size:0.72rem;color:#4a5568;margin-top:1px;">⏱ ' + escBlog(p.readTime || '—') + '</div>' +
       '</div>' +
-      '<div style="display:flex;gap:0.5rem;flex-shrink:0;">' +
+      '<div style="display:flex;gap:0.4rem;flex-shrink:0;flex-wrap:wrap;">' +
         '<a href="blog-post.html?id=' + encodeURIComponent(p.id) + '" target="_blank" ' +
           'style="padding:0.35rem 0.65rem;font-size:0.72rem;font-weight:700;color:#63b3ed;background:rgba(99,179,237,0.08);border:1px solid rgba(99,179,237,0.2);border-radius:7px;text-decoration:none;white-space:nowrap;">👁 Vedi</a>' +
         '<button onclick="openBlogEditor(\'' + p.id + '\')" ' +
           'style="padding:0.35rem 0.65rem;font-size:0.72rem;font-weight:700;color:#90cdf4;background:rgba(26,86,219,0.15);border:1px solid rgba(26,86,219,0.3);border-radius:7px;cursor:pointer;white-space:nowrap;">✏️ Modifica</button>' +
+        '<button onclick="duplicateBlogPost(\'' + p.id + '\')" ' +
+          'style="padding:0.35rem 0.65rem;font-size:0.72rem;font-weight:700;color:#68d391;background:rgba(72,187,120,0.08);border:1px solid rgba(72,187,120,0.2);border-radius:7px;cursor:pointer;" title="Duplica articolo">⧉</button>' +
         '<button onclick="deleteBlogPost(\'' + p.id + '\')" ' +
           'style="padding:0.35rem 0.65rem;font-size:0.72rem;font-weight:700;color:#fca5a5;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:7px;cursor:pointer;">🗑</button>' +
       '</div>' +
     '</div>';
   });
   container.innerHTML = html;
+}
+
+/* ── Filter blog list ── */
+function filterBlogList() {
+  var search   = (document.getElementById('blogSearchInput').value || '').toLowerCase().trim();
+  var category = document.getElementById('blogFilterCategory').value;
+  var status   = document.getElementById('blogFilterStatus').value;
+  var posts    = getBlogPosts();
+  var filtered = posts.filter(function(p) {
+    if (search && p.title.toLowerCase().indexOf(search) === -1) return false;
+    if (category && p.category !== category) return false;
+    if (status === 'published' && p.published === false) return false;
+    if (status === 'draft'     && p.published !== false) return false;
+    if (status === 'featured'  && !p.featured)           return false;
+    return true;
+  });
+  renderBlogPostsList(filtered);
+}
+
+function clearBlogFilters() {
+  document.getElementById('blogSearchInput').value = '';
+  document.getElementById('blogFilterCategory').value = '';
+  document.getElementById('blogFilterStatus').value = '';
+  renderBlogPostsList();
+}
+
+/* ── SEO panel toggle ── */
+function toggleSeoPanel() {
+  var panel  = document.getElementById('blogSeoPanel');
+  var arrow  = document.getElementById('seoToggleArrow');
+  var hidden = panel.style.display === 'none';
+  panel.style.display = hidden ? 'block' : 'none';
+  if (arrow) arrow.textContent = hidden ? '▲' : '▼';
+}
+
+/* ── Auto-calculate reading time ── */
+function autoCalcReadTime() {
+  var content = document.getElementById('be_content').value || '';
+  var words   = content.trim().split(/\s+/).filter(Boolean).length;
+  var minutes = Math.max(1, Math.round(words / 200));
+  document.getElementById('be_readtime').value = minutes + ' min';
+  showToast('⏱ Tempo stimato: ' + minutes + ' min (' + words + ' parole)');
+}
+
+/* ── Duplicate article ── */
+function duplicateBlogPost(postId) {
+  var posts = getBlogPosts();
+  var original = posts.find(function(p){ return p.id === postId; });
+  if (!original) return;
+  var newId   = generateBlogId();
+  var copy    = Object.assign({}, original, {
+    id:        newId,
+    title:     'Copia di ' + original.title,
+    slug:      makeSlug('copia-' + original.title),
+    published: false,
+    featured:  false,
+    date:      new Date().toISOString().slice(0,10)
+  });
+  // Copy image if present
+  var localImg = getBlogImage(postId);
+  if (localImg) setBlogImage(newId, localImg);
+  posts.push(copy);
+  saveBlogPosts(posts);
+  renderBlogPostsList();
+  showToast('⧉ Articolo duplicato come bozza');
 }
 
 function openBlogEditor(postId) {
@@ -1702,6 +1910,17 @@ function openBlogEditor(postId) {
   document.getElementById('be_featured').checked = post ? !!post.featured : false;
   document.getElementById('be_draft').checked  = post ? (post.published === false) : false;
   document.getElementById('be_imageurl').value = post ? (post.imageUrl || '') : '';
+
+  // SEO fields
+  document.getElementById('be_metadesc').value  = post ? (post.metaDesc || '') : '';
+  document.getElementById('be_canonical').value = post ? (post.canonical || '') : '';
+  document.getElementById('be_imgalt').value    = post ? (post.imgAlt || '') : '';
+
+  // Reset SEO panel to collapsed
+  var seoPanel = document.getElementById('blogSeoPanel');
+  var seoArrow = document.getElementById('seoToggleArrow');
+  if (seoPanel) seoPanel.style.display = 'none';
+  if (seoArrow) seoArrow.textContent = '▼';
 
   // Reset slug user-edited flag
   var slugEl = document.getElementById('be_slug');
@@ -1769,7 +1988,10 @@ function saveBlogPost() {
     featured:  document.getElementById('be_featured').checked,
     published: !document.getElementById('be_draft').checked,
     image:     '',
-    imageUrl:  imageUrlVal
+    imageUrl:  imageUrlVal,
+    metaDesc:  (document.getElementById('be_metadesc').value || '').trim(),
+    canonical: (document.getElementById('be_canonical').value || '').trim(),
+    imgAlt:    (document.getElementById('be_imgalt').value || '').trim()
   };
 
   if (existingId) {
