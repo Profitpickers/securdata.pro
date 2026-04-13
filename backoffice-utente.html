@@ -625,10 +625,9 @@ input:focus { border-color: #63b3ed; }
       Newsletter
     </button>
 
-    <button class="nav-item coming-soon" title="In lavorazione" disabled>
+    <button class="nav-item" id="navBlog" onclick="showSection('blog')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
-      Blog Premium
-      <span class="nav-badge">Presto</span>
+      Gestione Blog
     </button>
 
     <div class="nav-section-label" style="margin-top:0.5rem;">Account</div>
@@ -876,20 +875,106 @@ input:focus { border-color: #63b3ed; }
   <!-- ═══ SECTION: BLOG ═══ -->
   <div class="dash-section" id="sectionBlog">
     <div class="section-header">
-      <div class="section-title">📖 Blog Premium</div>
-      <div class="section-sub">Contenuti esclusivi riservati agli iscritti</div>
+      <div class="section-title">📖 Gestione Blog</div>
+      <div class="section-sub">Crea, modifica ed elimina gli articoli del blog pubblico</div>
     </div>
-    <div class="blog-teaser">
-      <div class="blog-teaser-icon">🔐</div>
-      <div class="blog-teaser-title">Contenuti in fase di lavorazione</div>
-      <div class="blog-teaser-sub">
-        Il Blog Premium con contenuti esclusivi su cybersecurity, AI, e guide avanzate è in fase di sviluppo.<br><br>
-        Iscriviti alla newsletter per essere tra i primi a ricevere accesso anticipato!
+
+    <!-- Blog header actions -->
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem;margin-bottom:1.25rem;">
+      <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+        <button onclick="openBlogEditor(null)" class="btn-save-profile" style="max-width:none;width:auto;padding:0.55rem 1rem;font-size:0.8rem;margin-top:0;">
+          ✏️ Nuovo Articolo
+        </button>
+        <a href="blog.html" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:0.55rem 1rem;font-size:0.8rem;font-weight:700;color:#63b3ed;background:rgba(99,179,237,0.08);border:1px solid rgba(99,179,237,0.25);border-radius:10px;text-decoration:none;transition:background 0.2s;">
+          🌐 Vedi Blog Pubblico
+        </a>
       </div>
-      <button onclick="showSection('newsletter')" class="btn-save-profile" style="max-width:240px;margin:1.5rem auto 0;display:flex;">
-        📧 Iscriviti alla Newsletter
-      </button>
+      <div style="font-size:0.75rem;color:#4a5568;" id="blogPostCount">0 articoli</div>
     </div>
+
+    <!-- Posts list -->
+    <div class="panel" style="padding:0;overflow:hidden;">
+      <div id="blogPostsList" style="min-height:80px;"></div>
+    </div>
+
+    <!-- Editor modal -->
+    <div id="blogEditorOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;overflow-y:auto;padding:1rem;">
+      <div style="max-width:680px;margin:0 auto;background:#0d1530;border:1px solid rgba(99,179,237,0.25);border-radius:16px;padding:1.5rem;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;">
+          <div style="font-size:1rem;font-weight:700;color:#90cdf4;" id="blogEditorTitle">✏️ Nuovo Articolo</div>
+          <button onclick="closeBlogEditor()" style="background:none;border:none;color:#718096;font-size:1.25rem;cursor:pointer;line-height:1;">✕</button>
+        </div>
+
+        <input type="hidden" id="be_id">
+
+        <label style="display:block;font-size:0.77rem;color:#718096;margin-bottom:4px;">Titolo *</label>
+        <input type="text" id="be_title" placeholder="Titolo dell'articolo" maxlength="200"
+          style="width:100%;background:rgba(0,0,0,0.3);border:1px solid rgba(99,179,237,0.25);border-radius:8px;padding:0.6rem 0.8rem;color:#e2e8f0;font-size:0.875rem;outline:none;margin-bottom:0.85rem;">
+
+        <label style="display:block;font-size:0.77rem;color:#718096;margin-bottom:4px;">Estratto (anteprima)</label>
+        <textarea id="be_excerpt" rows="2" placeholder="Breve descrizione dell'articolo (max 300 caratteri)" maxlength="300"
+          style="width:100%;background:rgba(0,0,0,0.3);border:1px solid rgba(99,179,237,0.25);border-radius:8px;padding:0.6rem 0.8rem;color:#e2e8f0;font-size:0.875rem;outline:none;resize:vertical;margin-bottom:0.85rem;"></textarea>
+
+        <label style="display:block;font-size:0.77rem;color:#718096;margin-bottom:4px;">Contenuto * <span style="font-weight:400;color:#4a5568;">(usa ## per h2, ### per h3, - per lista, **grassetto**)</span></label>
+        <textarea id="be_content" rows="10" placeholder="Scrivi qui il contenuto completo dell'articolo..."
+          style="width:100%;background:rgba(0,0,0,0.3);border:1px solid rgba(99,179,237,0.25);border-radius:8px;padding:0.6rem 0.8rem;color:#e2e8f0;font-size:0.875rem;outline:none;resize:vertical;font-family:monospace;margin-bottom:0.85rem;"></textarea>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.85rem;">
+          <div>
+            <label style="display:block;font-size:0.77rem;color:#718096;margin-bottom:4px;">Categoria</label>
+            <select id="be_category" style="width:100%;background:rgba(0,0,0,0.3);border:1px solid rgba(99,179,237,0.25);border-radius:8px;padding:0.6rem 0.8rem;color:#e2e8f0;font-size:0.875rem;outline:none;">
+              <option value="Sicurezza">🛡️ Sicurezza</option>
+              <option value="Normativa">⚖️ Normativa</option>
+              <option value="Minacce">⚠️ Minacce</option>
+              <option value="AI &amp; Innovazione">🤖 AI &amp; Innovazione</option>
+              <option value="Guide">📚 Guide</option>
+              <option value="Notizie">📰 Notizie</option>
+            </select>
+          </div>
+          <div>
+            <label style="display:block;font-size:0.77rem;color:#718096;margin-bottom:4px;">Tempo di lettura</label>
+            <input type="text" id="be_readtime" placeholder="es. 5 min" maxlength="10"
+              style="width:100%;background:rgba(0,0,0,0.3);border:1px solid rgba(99,179,237,0.25);border-radius:8px;padding:0.6rem 0.8rem;color:#e2e8f0;font-size:0.875rem;outline:none;">
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.85rem;">
+          <div>
+            <label style="display:block;font-size:0.77rem;color:#718096;margin-bottom:4px;">Data pubblicazione</label>
+            <input type="date" id="be_date"
+              style="width:100%;background:rgba(0,0,0,0.3);border:1px solid rgba(99,179,237,0.25);border-radius:8px;padding:0.6rem 0.8rem;color:#e2e8f0;font-size:0.875rem;outline:none;">
+          </div>
+          <div>
+            <label style="display:block;font-size:0.77rem;color:#718096;margin-bottom:4px;">Autore</label>
+            <input type="text" id="be_author" placeholder="Nome autore" maxlength="80"
+              style="width:100%;background:rgba(0,0,0,0.3);border:1px solid rgba(99,179,237,0.25);border-radius:8px;padding:0.6rem 0.8rem;color:#e2e8f0;font-size:0.875rem;outline:none;">
+          </div>
+        </div>
+
+        <div style="margin-bottom:0.85rem;">
+          <label style="display:block;font-size:0.77rem;color:#718096;margin-bottom:4px;">Tag (separati da virgola)</label>
+          <input type="text" id="be_tags" placeholder="es. GDPR, Sicurezza, AI" maxlength="200"
+            style="width:100%;background:rgba(0,0,0,0.3);border:1px solid rgba(99,179,237,0.25);border-radius:8px;padding:0.6rem 0.8rem;color:#e2e8f0;font-size:0.875rem;outline:none;">
+        </div>
+
+        <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1.25rem;">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:0.8rem;color:#90cdf4;">
+            <input type="checkbox" id="be_featured" style="width:16px;height:16px;accent-color:#3b82f6;">
+            In primo piano (featured)
+          </label>
+        </div>
+
+        <div style="display:flex;gap:0.75rem;justify-content:flex-end;flex-wrap:wrap;">
+          <button onclick="closeBlogEditor()" style="padding:0.6rem 1.2rem;background:rgba(255,255,255,0.06);border:1px solid rgba(148,163,184,0.2);border-radius:10px;color:#94a3b8;font-size:0.875rem;font-weight:600;cursor:pointer;">
+            Annulla
+          </button>
+          <button onclick="saveBlogPost()" class="btn-save-profile" style="max-width:none;width:auto;padding:0.6rem 1.5rem;margin-top:0;font-size:0.875rem;">
+            💾 Salva Articolo
+          </button>
+        </div>
+      </div>
+    </div>
+
   </div>
 
 </div><!-- /main -->
@@ -917,7 +1002,7 @@ function showSection(name) {
     var nav = document.getElementById('nav' + s.charAt(0).toUpperCase() + s.slice(1));
     if (nav) nav.classList[s === name ? 'add' : 'remove']('active');
   });
-  var labels = { dashboard:'Dashboard', profilo:'Profilo', biglietto:'Biglietto Digitale', newsletter:'Newsletter', blog:'Blog Premium' };
+  var labels = { dashboard:'Dashboard', profilo:'Profilo', biglietto:'Biglietto Digitale', newsletter:'Newsletter', blog:'Gestione Blog' };
   var tb = document.getElementById('topbarSection');
   if (tb) tb.textContent = labels[name] || name;
   closeSidebar();
@@ -1376,6 +1461,167 @@ document.getElementById('emailBtn').onclick = function () {
   var body    = 'Ciao,\n\nho appena creato il mio biglietto digitale gratuito con SecurData.Pro!\n\nPuoi vederlo e creare il tuo qui: ' + shareUrl + '\n\nA presto!';
   window.open('mailto:?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body));
 };
+
+/* ── Blog Management ── */
+var BLOG_KEY = 'blog_posts';
+
+function getBlogPosts() {
+  try { return JSON.parse(localStorage.getItem(BLOG_KEY) || '[]'); } catch(_){ return []; }
+}
+function saveBlogPosts(posts) {
+  try { localStorage.setItem(BLOG_KEY, JSON.stringify(posts)); } catch(_){ showToast('⚠️ Impossibile salvare'); }
+}
+function generateBlogId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+}
+function escBlog(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function renderBlogPostsList() {
+  var posts = getBlogPosts();
+  var container = document.getElementById('blogPostsList');
+  var countEl = document.getElementById('blogPostCount');
+  if (countEl) countEl.textContent = posts.length + (posts.length === 1 ? ' articolo' : ' articoli');
+  if (!posts.length) {
+    container.innerHTML = '<div style="padding:2rem;text-align:center;color:#4a5568;font-size:0.85rem;">Nessun articolo ancora. Clicca <strong style="color:#63b3ed;">Nuovo Articolo</strong> per iniziare.</div>';
+    return;
+  }
+  // Sort newest first
+  var sorted = posts.slice().sort(function(a,b){ return new Date(b.date) - new Date(a.date); });
+  var html = '';
+  sorted.forEach(function(p) {
+    var catColors = {
+      'Normativa':'color:#d97706',
+      'Sicurezza':'color:#059669',
+      'Minacce':'color:#dc2626',
+      'AI & Innovazione':'color:#7c3aed'
+    };
+    var catStyle = catColors[p.category] || 'color:#3b82f6';
+    html += '<div style="display:flex;align-items:center;gap:0.75rem;padding:0.85rem 1rem;border-bottom:1px solid rgba(99,179,237,0.08);">' +
+      '<div style="flex:1;min-width:0;">' +
+        '<div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;margin-bottom:2px;">' +
+          (p.featured ? '<span style="font-size:0.65rem;font-weight:700;padding:2px 6px;background:rgba(99,102,241,0.2);color:#a5b4fc;border-radius:4px;">★ Featured</span>' : '') +
+          '<span style="font-size:0.7rem;font-weight:700;' + catStyle + '">' + escBlog(p.category || '') + '</span>' +
+          '<span style="font-size:0.7rem;color:#4a5568;">' + (p.date || '') + '</span>' +
+        '</div>' +
+        '<div style="font-size:0.85rem;font-weight:600;color:#e2e8f0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + escBlog(p.title) + '</div>' +
+        '<div style="font-size:0.72rem;color:#4a5568;margin-top:1px;">⏱ ' + escBlog(p.readTime || '—') + '</div>' +
+      '</div>' +
+      '<div style="display:flex;gap:0.5rem;flex-shrink:0;">' +
+        '<a href="blog-post.html?id=' + encodeURIComponent(p.id) + '" target="_blank" ' +
+          'style="padding:0.35rem 0.65rem;font-size:0.72rem;font-weight:700;color:#63b3ed;background:rgba(99,179,237,0.08);border:1px solid rgba(99,179,237,0.2);border-radius:7px;text-decoration:none;white-space:nowrap;">👁 Vedi</a>' +
+        '<button onclick="openBlogEditor(\'' + p.id + '\')" ' +
+          'style="padding:0.35rem 0.65rem;font-size:0.72rem;font-weight:700;color:#90cdf4;background:rgba(26,86,219,0.15);border:1px solid rgba(26,86,219,0.3);border-radius:7px;cursor:pointer;white-space:nowrap;">✏️ Modifica</button>' +
+        '<button onclick="deleteBlogPost(\'' + p.id + '\')" ' +
+          'style="padding:0.35rem 0.65rem;font-size:0.72rem;font-weight:700;color:#fca5a5;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:7px;cursor:pointer;">🗑</button>' +
+      '</div>' +
+    '</div>';
+  });
+  container.innerHTML = html;
+}
+
+function openBlogEditor(postId) {
+  var post = null;
+  if (postId) {
+    var posts = getBlogPosts();
+    post = posts.find(function(p){ return p.id === postId; }) || null;
+  }
+  var titleEl = document.getElementById('blogEditorTitle');
+  if (titleEl) titleEl.textContent = post ? '✏️ Modifica Articolo' : '✏️ Nuovo Articolo';
+
+  document.getElementById('be_id').value       = post ? post.id : '';
+  document.getElementById('be_title').value    = post ? (post.title || '') : '';
+  document.getElementById('be_excerpt').value  = post ? (post.excerpt || '') : '';
+  document.getElementById('be_content').value  = post ? (post.content || '') : '';
+  document.getElementById('be_category').value = post ? (post.category || 'Sicurezza') : 'Sicurezza';
+  document.getElementById('be_readtime').value = post ? (post.readTime || '') : '';
+  document.getElementById('be_date').value     = post ? (post.date || '') : new Date().toISOString().slice(0,10);
+  document.getElementById('be_author').value   = post ? (post.author || '') : 'Vito Iacobellis';
+  document.getElementById('be_tags').value     = post ? ((post.tags || []).join(', ')) : '';
+  document.getElementById('be_featured').checked = post ? !!post.featured : false;
+
+  document.getElementById('blogEditorOverlay').style.display = 'block';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeBlogEditor() {
+  document.getElementById('blogEditorOverlay').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function saveBlogPost() {
+  var title   = (document.getElementById('be_title').value || '').trim();
+  var content = (document.getElementById('be_content').value || '').trim();
+  if (!title) { showToast('⚠️ Il titolo è obbligatorio'); return; }
+  if (!content) { showToast('⚠️ Il contenuto è obbligatorio'); return; }
+
+  var existingId = document.getElementById('be_id').value;
+  var posts = getBlogPosts();
+  var tagsRaw = (document.getElementById('be_tags').value || '').split(',').map(function(t){ return t.trim(); }).filter(Boolean);
+
+  var post = {
+    id:       existingId || generateBlogId(),
+    slug:     title.toLowerCase().replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'').substring(0, 80),
+    title:    title,
+    excerpt:  (document.getElementById('be_excerpt').value || '').trim(),
+    content:  content,
+    category: document.getElementById('be_category').value || 'Sicurezza',
+    readTime: (document.getElementById('be_readtime').value || '5 min').trim(),
+    date:     document.getElementById('be_date').value || new Date().toISOString().slice(0,10),
+    author:   (document.getElementById('be_author').value || 'SecurData.Pro').trim(),
+    tags:     tagsRaw,
+    featured: document.getElementById('be_featured').checked,
+    image:    ''
+  };
+
+  if (existingId) {
+    var idx = posts.findIndex(function(p){ return p.id === existingId; });
+    if (idx >= 0) posts[idx] = post; else posts.push(post);
+  } else {
+    posts.push(post);
+  }
+
+  saveBlogPosts(posts);
+  closeBlogEditor();
+  renderBlogPostsList();
+  showToast('✅ Articolo salvato!');
+}
+
+function deleteBlogPost(postId) {
+  if (!confirm('Eliminare questo articolo? L\'operazione non può essere annullata.')) return;
+  var posts = getBlogPosts().filter(function(p){ return p.id !== postId; });
+  saveBlogPosts(posts);
+  renderBlogPostsList();
+  showToast('🗑 Articolo eliminato');
+}
+
+// Close editor on overlay click
+document.getElementById('blogEditorOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeBlogEditor();
+});
+
+// Init blog section when it becomes visible
+(function() {
+  var origShow = window.showSection;
+  window.showSection = function(name) {
+    origShow(name);
+    if (name === 'blog') {
+      // Lazy-load default posts from JSON if localStorage is empty
+      if (!getBlogPosts().length) {
+        fetch('./data/blog-posts.json').then(function(r){ return r.json(); }).then(function(posts) {
+          if (Array.isArray(posts) && posts.length) {
+            saveBlogPosts(posts);
+          }
+          renderBlogPostsList();
+        }).catch(function(){ renderBlogPostsList(); });
+      } else {
+        renderBlogPostsList();
+      }
+    }
+  };
+})();
 </script>
 </body>
 </html>
