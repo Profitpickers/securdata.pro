@@ -897,7 +897,7 @@ if (!articles) {
       localStorage.setItem('sdp_articles', JSON.stringify(articles));
       renderBlog();
     })
-    .catch(function(){ articles = []; renderBlog(); });
+    .catch(function(err){ console.error('Failed to load blog-posts.json:', err); articles = []; renderBlog(); });
 }
 
 // Register slug auto-generation once at load time
