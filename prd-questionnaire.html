@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PRD Questionnaire | SECURDATA.PRO – Definisci il Tuo Progetto Digitale</title>
+  <meta name="description" content="Compila il questionario PRD di SECURDATA.PRO per definire i requisiti del tuo progetto digitale. Rispondi via testo o voce, ascolta le domande, ottieni spiegazioni personalizzate.">
+  <link rel="icon" href="logo-00-securdata-pro.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/cookie-consent.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    .bg-gradient-dark { background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%); }
+    .bg-gradient-accent { background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); }
+
+    .card-glass {
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(148, 163, 184, 0.1);
+    }
+    .logo-container img { filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.6)); }
+
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: #6366f1; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #a855f7; }
+
+    /* Progress bar */
+    #reading-progress {
+      position: fixed; top: 0; left: 0; height: 3px; width: 0%;
+      background: linear-gradient(90deg, #6366f1, #a855f7);
+      z-index: 200; transition: width 0.15s linear;
+    }
+
+    /* Questionnaire steps */
+    .step { display: none; }
+    .step.active { display: block; }
+
+    /* Step progress indicator */
+    .step-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: rgba(99,102,241,0.2);
+      border: 1px solid rgba(99,102,241,0.3);
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+    .step-dot.completed { background: #6366f1; border-color: #6366f1; }
+    .step-dot.current { background: #a855f7; border-color: #a855f7; box-shadow: 0 0 8px rgba(168,85,247,0.5); }
+
+    /* Text area */
+    .q-textarea {
+      background: rgba(15,23,42,0.8);
+      border: 1px solid rgba(148,163,184,0.2);
+      color: #e2e8f0;
+      border-radius: 12px;
+      padding: 12px 16px;
+      width: 100%;
+      min-height: 120px;
+      resize: vertical;
+      font-size: 0.9rem;
+      line-height: 1.7;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      font-family: inherit;
+    }
+    .q-textarea:focus {
+      outline: none;
+      border-color: #6366f1;
+      box-shadow: 0 0 0 2px rgba(99,102,241,0.2);
+    }
+    .q-textarea::placeholder { color: #475569; }
+
+    /* Buttons */
+    .btn-primary {
+      background: linear-gradient(135deg, #6366f1, #a855f7);
+      color: white; font-weight: 700; border-radius: 10px;
+      padding: 10px 22px; font-size: 0.875rem;
+      transition: opacity 0.2s, transform 0.2s;
+      border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+    .btn-secondary {
+      background: rgba(15,23,42,0.8);
+      color: #94a3b8; font-weight: 600; border-radius: 10px;
+      padding: 10px 18px; font-size: 0.875rem;
+      border: 1px solid rgba(148,163,184,0.2);
+      transition: all 0.2s; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn-secondary:hover { border-color: rgba(99,102,241,0.4); color: #c7d2fe; background: rgba(99,102,241,0.08); }
+
+    .btn-icon {
+      background: rgba(99,102,241,0.12);
+      border: 1px solid rgba(99,102,241,0.3);
+      color: #a5b4fc; border-radius: 10px;
+      padding: 9px 14px; font-size: 0.8rem; font-weight: 600;
+      transition: all 0.2s; cursor: pointer; display: inline-flex; align-items: center; gap: 5px;
+    }
+    .btn-icon:hover { background: rgba(99,102,241,0.22); color: #c7d2fe; }
+    .btn-icon.recording {
+      background: rgba(239,68,68,0.15);
+      border-color: rgba(239,68,68,0.4);
+      color: #fca5a5;
+      animation: pulse-record 1.2s ease-in-out infinite;
+    }
+    @keyframes pulse-record {
+      0%,100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.3); }
+      50% { box-shadow: 0 0 0 6px rgba(239,68,68,0); }
+    }
+
+    /* Explanation popup */
+    .popup-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.65);
+      backdrop-filter: blur(4px);
+      z-index: 300;
+      align-items: center; justify-content: center;
+      padding: 1rem;
+    }
+    .popup-overlay.open { display: flex; }
+    .popup-box {
+      background: #0f172a;
+      border: 1px solid rgba(99,102,241,0.3);
+      border-radius: 20px;
+      padding: 28px;
+      max-width: 520px;
+      width: 100%;
+      position: relative;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .popup-close {
+      position: absolute; top: 14px; right: 16px;
+      background: rgba(148,163,184,0.1); border: none;
+      width: 32px; height: 32px; border-radius: 50%;
+      color: #94a3b8; cursor: pointer; font-size: 1rem;
+      transition: all 0.2s; display: flex; align-items: center; justify-content: center;
+    }
+    .popup-close:hover { background: rgba(239,68,68,0.15); color: #fca5a5; }
+
+    /* Chat assistant */
+    .chat-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(4px);
+      z-index: 300;
+      align-items: flex-end; justify-content: center;
+      padding: 1rem;
+    }
+    .chat-overlay.open { display: flex; }
+    .chat-box {
+      background: #0f172a;
+      border: 1px solid rgba(99,102,241,0.3);
+      border-radius: 20px 20px 0 0;
+      width: 100%;
+      max-width: 560px;
+      max-height: 65vh;
+      display: flex; flex-direction: column;
+      overflow: hidden;
+    }
+    .chat-messages {
+      flex: 1; overflow-y: auto;
+      padding: 20px 20px 0;
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .chat-msg-ai {
+      background: rgba(99,102,241,0.1);
+      border: 1px solid rgba(99,102,241,0.2);
+      border-radius: 12px 12px 12px 4px;
+      padding: 10px 14px;
+      font-size: 0.85rem; color: #c7d2fe; line-height: 1.6;
+      max-width: 85%;
+      align-self: flex-start;
+    }
+    .chat-msg-user {
+      background: rgba(168,85,247,0.12);
+      border: 1px solid rgba(168,85,247,0.2);
+      border-radius: 12px 12px 4px 12px;
+      padding: 10px 14px;
+      font-size: 0.85rem; color: #e9d5ff; line-height: 1.6;
+      max-width: 85%;
+      align-self: flex-end;
+    }
+    .chat-typing {
+      display: inline-flex; align-items: center; gap: 4px; padding: 8px 12px;
+    }
+    .chat-typing span {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: #6366f1; animation: typing 1s ease-in-out infinite;
+    }
+    .chat-typing span:nth-child(2) { animation-delay: 0.15s; }
+    .chat-typing span:nth-child(3) { animation-delay: 0.3s; }
+    @keyframes typing { 0%,60%,100% { transform: translateY(0); } 30% { transform: translateY(-5px); } }
+
+    .chat-input-area {
+      padding: 14px 16px;
+      border-top: 1px solid rgba(148,163,184,0.1);
+      display: flex; gap: 8px;
+    }
+    .chat-input {
+      flex: 1;
+      background: rgba(30,41,59,0.8);
+      border: 1px solid rgba(148,163,184,0.2);
+      border-radius: 10px; padding: 8px 12px;
+      font-size: 0.85rem; color: #e2e8f0; font-family: inherit;
+    }
+    .chat-input:focus { outline: none; border-color: #6366f1; }
+    .chat-input::placeholder { color: #475569; }
+
+    /* Summary */
+    #summary-section { display: none; }
+    #summary-section.show { display: block; }
+
+    .summary-item {
+      background: rgba(15,23,42,0.6);
+      border: 1px solid rgba(148,163,184,0.1);
+      border-radius: 12px;
+      padding: 14px 18px;
+      margin-bottom: 12px;
+    }
+    .summary-label { font-size: 0.7rem; font-weight: 700; color: #6366f1; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 4px; }
+    .summary-value { font-size: 0.875rem; color: #e2e8f0; line-height: 1.6; white-space: pre-wrap; }
+
+    @keyframes fadeInUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+    .animate-in { animation: fadeInUp 0.4s ease-out both; }
+
+    /* Voice unsupported notice */
+    .voice-unsupported { font-size: 0.75rem; color: #f87171; display: none; }
+  </style>
+</head>
+<body class="bg-gradient-dark text-slate-100 min-h-screen">
+
+<div id="reading-progress"></div>
+
+<!-- Popup esplicativo -->
+<div id="explain-popup" class="popup-overlay" role="dialog" aria-modal="true" aria-labelledby="popup-title">
+  <div class="popup-box">
+    <button class="popup-close" onclick="closeExplainPopup()" aria-label="Chiudi">✕</button>
+    <div class="flex items-center gap-3 mb-4">
+      <span class="text-2xl">💡</span>
+      <h3 id="popup-title" class="text-base font-bold text-white">Spiegazione</h3>
+    </div>
+    <div id="popup-body" class="text-slate-300 text-sm leading-relaxed"></div>
+    <div class="mt-5 flex flex-wrap gap-2">
+      <button onclick="speakExplanation()" class="btn-icon text-xs">
+        🔊 Ascolta la spiegazione
+      </button>
+      <button onclick="openChatWithContext()" class="btn-icon text-xs">
+        💬 Chiedi all'AI Assistente
+      </button>
+      <button onclick="closeExplainPopup()" class="btn-secondary text-xs">Chiudi</button>
+    </div>
+  </div>
+</div>
+
+<!-- Chat AI Assistant -->
+<div id="chat-overlay" class="chat-overlay" role="dialog" aria-modal="true" aria-label="AI Assistente SECURDATA">
+  <div class="chat-box">
+    <div class="flex items-center justify-between px-5 py-4 border-b border-slate-800">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-sm">🤖</div>
+        <div>
+          <span class="font-bold text-sm text-white">AI Assistente SECURDATA</span>
+          <span class="block text-xs text-emerald-400">● Online (demo)</span>
+        </div>
+      </div>
+      <button onclick="closeChatOverlay()" class="popup-close" aria-label="Chiudi chat">✕</button>
+    </div>
+    <div class="chat-messages" id="chat-messages"></div>
+    <div class="chat-input-area">
+      <input type="text" id="chat-user-input" class="chat-input" placeholder="Scrivi una domanda…" onkeydown="if(event.key==='Enter')sendChatMsg()">
+      <button onclick="sendChatMsg()" class="btn-primary" style="padding:8px 14px;font-size:0.8rem;">Invia</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ NAVBAR ═══ -->
+<nav class="fixed w-full top-0 z-50 bg-slate-950/80 backdrop-blur-md border-b border-slate-800" style="top:3px">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-14">
+      <a href="./index.html" class="flex items-center gap-3 logo-container group">
+        <img src="logo-00-securdata-pro.svg" alt="SECURDATA.PRO Logo" class="h-9 w-auto rounded-full">
+        <div class="hidden sm:block">
+          <span class="font-bold text-sm tracking-tight text-white group-hover:text-indigo-300 transition">SECURDATA.PRO</span>
+          <span class="block text-xs text-slate-400">PRD Questionnaire</span>
+        </div>
+      </a>
+      <div class="flex items-center gap-3">
+        <a href="./risorse-gratuite.html" class="text-slate-400 hover:text-indigo-400 transition text-sm font-medium hidden sm:block">← Risorse Gratuite</a>
+        <a href="./login-utente.html" class="flex items-center gap-1.5 px-3 py-1.5 text-white rounded-lg font-semibold text-xs" style="background:linear-gradient(135deg,#6366f1,#a855f7)">
+          Accedi
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<main class="pt-20 pb-16 px-4 sm:px-6 lg:px-8">
+<div class="max-w-2xl mx-auto">
+
+  <!-- Breadcrumb -->
+  <nav class="flex items-center gap-2 text-xs text-slate-500 mb-6 pt-4">
+    <a href="./index.html" class="hover:text-indigo-400 transition">Home</a>
+    <span>›</span>
+    <a href="./risorse-gratuite.html" class="hover:text-indigo-400 transition">Risorse Gratuite</a>
+    <span>›</span>
+    <span class="text-slate-400">PRD Questionnaire</span>
+  </nav>
+
+  <!-- Intro -->
+  <div class="mb-8 animate-in">
+    <div class="flex flex-wrap items-center gap-2 mb-3">
+      <span class="text-xs font-bold px-2.5 py-1 rounded border text-amber-300 bg-amber-500/15 border-amber-500/30">🆓 Risorsa Gratuita</span>
+      <span class="text-xs font-bold px-2.5 py-1 rounded border text-indigo-300 bg-indigo-500/15 border-indigo-500/30">📋 PRD</span>
+    </div>
+    <h1 class="text-2xl sm:text-3xl font-extrabold text-white leading-tight mb-3">
+      PRD Questionnaire
+      <span class="block text-base font-normal text-slate-400 mt-1">Definisci i Requisiti del Tuo Progetto Digitale</span>
+    </h1>
+    <p class="text-slate-400 text-sm leading-relaxed">
+      Rispondi alle domande qui sotto per costruire il tuo <strong class="text-slate-300">Product Requirements Document</strong>.
+      Ogni domanda può essere <strong class="text-slate-300">ascoltata in audio 🔊</strong>, risposta via
+      <strong class="text-slate-300">testo o voce 🎤</strong>, e spiegata con un popup, una chat AI o audio assistente.
+    </p>
+
+    <!-- Instructions -->
+    <div class="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div class="card-glass rounded-xl p-3 text-center">
+        <div class="text-xl mb-1">✍️</div>
+        <div class="text-xs text-slate-400">Scrivi la risposta</div>
+      </div>
+      <div class="card-glass rounded-xl p-3 text-center">
+        <div class="text-xl mb-1">🎤</div>
+        <div class="text-xs text-slate-400">Rispondi a voce</div>
+      </div>
+      <div class="card-glass rounded-xl p-3 text-center">
+        <div class="text-xl mb-1">🔊</div>
+        <div class="text-xs text-slate-400">Ascolta la domanda</div>
+      </div>
+      <div class="card-glass rounded-xl p-3 text-center">
+        <div class="text-xl mb-1">💡</div>
+        <div class="text-xs text-slate-400">Ottieni spiegazione</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step progress -->
+  <div class="flex items-center gap-2 mb-6" id="step-dots-container" aria-label="Progresso questionario">
+    <!-- Injected by JS -->
+  </div>
+
+  <!-- Questions container -->
+  <div id="questions-container"></div>
+
+  <!-- Navigation -->
+  <div id="nav-controls" class="flex items-center justify-between gap-3 mt-6">
+    <button id="btn-prev" onclick="prevStep()" class="btn-secondary" style="display:none">
+      ← Precedente
+    </button>
+    <div class="flex-1"></div>
+    <button id="btn-next" onclick="nextStep()" class="btn-primary">
+      Avanti →
+    </button>
+    <button id="btn-submit" onclick="submitQuestionnaire()" class="btn-primary" style="display:none">
+      ✅ Genera il mio PRD
+    </button>
+  </div>
+
+  <!-- Summary / Result -->
+  <div id="summary-section" class="mt-8 animate-in">
+    <div class="card-glass rounded-2xl p-6 mb-6 text-center">
+      <div class="text-4xl mb-3">🎉</div>
+      <h2 class="text-xl font-extrabold text-white mb-2">Il tuo PRD è pronto!</h2>
+      <p class="text-slate-400 text-sm leading-relaxed mb-4">
+        Ecco un riepilogo delle tue risposte. Puoi copiarlo, scaricarlo o inviarlo direttamente a un consulente SECURDATA.PRO.
+      </p>
+      <div class="flex flex-wrap justify-center gap-3">
+        <button onclick="copyPRD()" class="btn-primary text-sm">📋 Copia testo PRD</button>
+        <button onclick="downloadPRD()" class="btn-secondary text-sm">⬇️ Scarica .txt</button>
+        <a href="mailto:info@securdata.pro?subject=Il%20mio%20PRD%20SECURDATA.PRO" id="send-prd-email" class="btn-secondary text-sm">✉️ Invia a Vito</a>
+      </div>
+    </div>
+    <div id="summary-content"></div>
+    <div class="mt-6 text-center">
+      <button onclick="restartQuestionnaire()" class="btn-secondary text-sm">🔄 Ricomincia</button>
+    </div>
+  </div>
+
+</div>
+</main>
+
+<!-- ═══ FOOTER ═══ -->
+<footer class="border-t border-slate-800 bg-slate-950/60 py-8 px-4 sm:px-6 lg:px-8 mt-8">
+  <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+    <a href="./index.html" class="flex items-center gap-3 logo-container group">
+      <img src="logo-00-securdata-pro.svg" alt="Logo" class="h-8 w-auto rounded-full">
+      <span class="font-bold text-sm text-slate-300 group-hover:text-indigo-300 transition">SECURDATA.PRO</span>
+    </a>
+    <div class="flex gap-5 text-xs text-slate-500">
+      <a href="./blog.html" class="hover:text-indigo-400 transition">Blog</a>
+      <a href="./risorse-gratuite.html" class="hover:text-indigo-400 transition">Risorse</a>
+      <a href="./privacy-policy.html" class="hover:text-indigo-400 transition">Privacy</a>
+      <a href="mailto:info@securdata.pro" class="hover:text-indigo-400 transition">Contatti</a>
+    </div>
+    <p class="text-xs text-slate-600">© 2025 SecurData.Pro</p>
+  </div>
+</footer>
+
+<script src="js/cookie-consent.js" defer></script>
+<script>
+// ─────────────────────────────────────────────
+// PRD QUESTIONS DATA
+// ─────────────────────────────────────────────
+var questions = [
+  {
+    id: 'nome',
+    label: 'Il tuo nome e la tua azienda',
+    text: 'Come ti chiami e qual è il nome della tua azienda o progetto?',
+    placeholder: 'Es. Mario Rossi, Rossi Consulting Srl',
+    explanation: 'Questa informazione serve per personalizzare il documento PRD. Il nome dell\'azienda aiuta a contestualizzare il progetto e a capire il settore di appartenenza.',
+    explanationSimple: 'Ti chiediamo solo chi sei! Scrivi il tuo nome e il nome della tua azienda o progetto. Non ti preoccupare se non hai ancora un nome ufficiale.',
+    chatContext: 'Il visitatore sta compilando il questionario PRD e vuole capire perché viene chiesto il suo nome.'
+  },
+  {
+    id: 'problema',
+    label: 'Il problema da risolvere',
+    text: 'Qual è il problema principale che il tuo progetto o prodotto digitale vuole risolvere?',
+    placeholder: 'Descrivi il problema che i tuoi clienti o il tuo team affronta ogni giorno...',
+    explanation: 'Il "problema da risolvere" (Problem Statement) è il cuore di ogni PRD. Un buon prodotto digitale nasce sempre da un problema reale. Descrivere chiaramente il problema aiuta a definire gli obiettivi del progetto e a valutare il suo successo.',
+    explanationSimple: 'Pensa a una cosa che crea difficoltà a te, ai tuoi dipendenti o ai tuoi clienti ogni giorno. Cosa vorresti che fosse più semplice, veloce o automatico? Quello è il tuo problema!',
+    chatContext: 'Il visitatore sta compilando il PRD e cerca di capire come descrivere il problema principale del suo progetto.'
+  },
+  {
+    id: 'target',
+    label: 'Gli utenti target',
+    text: 'Chi sono gli utenti o clienti principali che utilizzeranno la tua soluzione?',
+    placeholder: 'Es. Imprenditori con PMI nel settore manifatturiero, 40-60 anni, nord Italia...',
+    explanation: 'Il "target utente" definisce a chi si rivolge il prodotto. Include caratteristiche demografiche (età, ruolo, settore), comportamentali (come usano la tecnologia) e bisogni specifici. Conoscere bene il target permette di progettare funzionalità davvero utili.',
+    explanationSimple: 'Chi userà il tuo strumento o servizio? Pensa a una persona specifica: che lavoro fa, quanti anni ha, è pratica di tecnologia? Più sei preciso, meglio possiamo aiutarti.',
+    chatContext: 'Il visitatore vuole capire come identificare e descrivere il proprio target utente nel PRD.'
+  },
+  {
+    id: 'funzionalita',
+    label: 'Funzionalità principali',
+    text: 'Quali sono le 3-5 funzionalità principali che la tua soluzione deve assolutamente avere?',
+    placeholder: 'Es. 1. Dashboard con report automatici, 2. Notifiche via WhatsApp, 3. Login sicuro...',
+    explanation: 'Le "must-have features" sono le funzionalità senza le quali il prodotto non ha senso. In un PRD si distinguono tra funzionalità essenziali (must-have), importanti (should-have) e desiderabili (nice-to-have). Elenca quelle senza cui il progetto non funzionerebbe.',
+    explanationSimple: 'Se il tuo strumento fosse un\'auto, cosa non può mancare? Le ruote, il motore, i freni. Pensa alle 3-5 cose che il tuo strumento digitale DEVE assolutamente fare per essere utile.',
+    chatContext: 'Il visitatore sta compilando le funzionalità principali del suo progetto nel PRD.'
+  },
+  {
+    id: 'budget',
+    label: 'Budget e tempistiche',
+    text: 'Hai già un\'idea di budget e di quando vorresti avere il progetto pronto?',
+    placeholder: 'Es. Budget indicativo: 5.000-15.000€. Tempistica: entro 6 mesi...',
+    explanation: 'Budget e tempistiche sono parametri fondamentali in un PRD per valutare la fattibilità del progetto. Non è necessario avere cifre precise: anche una stima approssimativa aiuta a identificare le soluzioni più adatte e a pianificare il lavoro.',
+    explanationSimple: 'Quanti soldi puoi investire e quanto tempo hai? Non devi essere preciso, anche "poco budget, subito" o "budget flessibile, entro l\'anno" sono risposte utilissime!',
+    chatContext: 'Il visitatore vuole capire come rispondere alla domanda su budget e tempistiche del progetto.'
+  },
+  {
+    id: 'sicurezza',
+    label: 'Requisiti di sicurezza e dati',
+    text: 'Il tuo progetto gestirà dati sensibili (clienti, dipendenti, dati finanziari)? Hai requisiti specifici di sicurezza o conformità (GDPR, NIS2)?',
+    placeholder: 'Es. Gestiremo dati personali dei clienti, necessario rispetto GDPR. Settore sanitario, serve conformità...',
+    explanation: 'I requisiti di sicurezza e conformità normativa sono essenziali nei progetti digitali che trattano dati personali o sensibili. Il GDPR impone obblighi precisi su come raccogliere, conservare e proteggere i dati. La NIS2 riguarda la cybersecurity per settori critici. SECURDATA.PRO è specializzata in questo ambito.',
+    explanationSimple: 'Il tuo sistema raccoglierà informazioni su persone (clienti, dipendenti)? Se sì, ci sono leggi che devi rispettare, come il GDPR. Non preoccuparti: ti aiutiamo noi a capire cosa fare!',
+    chatContext: 'Il visitatore sta compilando i requisiti di sicurezza del suo progetto e vuole capire il GDPR e la NIS2.'
+  },
+  {
+    id: 'integrazioni',
+    label: 'Integrazioni e sistemi esistenti',
+    text: 'Hai già software o sistemi in uso che la nuova soluzione dovrebbe integrare o sostituire?',
+    placeholder: 'Es. Usiamo già gestionale SAP, email su Office 365, CRM Salesforce. Vogliamo integrarci con...',
+    explanation: 'Le "integrazioni" descrivono come il nuovo progetto si collega ai sistemi già in uso in azienda. Questo è un elemento tecnico fondamentale: integrare sistemi esistenti può aumentare significativamente i costi e i tempi di sviluppo, ma spesso è essenziale per non creare silos informativi.',
+    explanationSimple: 'Usi già qualche programma in azienda (gestionale, email, CRM, fatturazione)? Il nuovo strumento dovrà "parlare" con questi? O li sostituirà? Dimmi cosa usi già!',
+    chatContext: 'Il visitatore vuole capire come descrivere le integrazioni con i sistemi esistenti nel suo PRD.'
+  },
+  {
+    id: 'successo',
+    label: 'Definizione di successo',
+    text: 'Come misurerai il successo di questo progetto? Quali risultati concreti ti aspetti?',
+    placeholder: 'Es. Riduzione del 30% del tempo speso su attività amministrative, aumento delle vendite del 20%, zero incidenti di sicurezza...',
+    explanation: 'I "criteri di successo" (KPI - Key Performance Indicators) definiscono oggettivamente se il progetto ha raggiunto i suoi obiettivi. Un buon PRD include sempre metriche misurabili. "Il progetto ha successo se..." è una delle domande più importanti da rispondere prima di iniziare.',
+    explanationSimple: 'Come farai a sapere se il tuo nuovo strumento funziona davvero? Pensa a un numero concreto: "risparmio X ore a settimana", "ho Y clienti in più", "non ho più Z problema". Questo è il tuo obiettivo!',
+    chatContext: 'Il visitatore sta definendo i criteri di successo del suo progetto nel PRD.'
+  }
+];
+
+// ─────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────
+var currentStep = 0;
+var answers = {};
+var currentExplanation = '';
+var currentExplanationSimple = '';
+var currentChatContext = '';
+var speechSynth = window.speechSynthesis || null;
+var recognition = null;
+var isRecording = false;
+var isTalking = false;
+var chatHistory = [];
+
+// ─────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  initSpeechRecognition();
+  renderDots();
+  renderQuestion(currentStep);
+  updateNav();
+});
+
+window.addEventListener('scroll', function() {
+  var scrolled = window.scrollY;
+  var total = document.documentElement.scrollHeight - window.innerHeight;
+  var pct = total > 0 ? Math.round((scrolled / total) * 100) : 0;
+  document.getElementById('reading-progress').style.width = pct + '%';
+});
+
+// ─────────────────────────────────────────────
+// SPEECH RECOGNITION INIT
+// ─────────────────────────────────────────────
+function initSpeechRecognition() {
+  var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) return;
+  recognition = new SpeechRecognition();
+  recognition.lang = 'it-IT';
+  recognition.continuous = false;
+  recognition.interimResults = true;
+
+  recognition.onresult = function(event) {
+    var transcript = '';
+    for (var i = event.resultIndex; i < event.results.length; i++) {
+      transcript += event.results[i][0].transcript;
+    }
+    var ta = document.getElementById('answer-' + questions[currentStep].id);
+    if (ta) ta.value = transcript;
+  };
+
+  recognition.onend = function() {
+    setRecordingState(false);
+  };
+
+  recognition.onerror = function(e) {
+    setRecordingState(false);
+    console.warn('Speech recognition error:', e.error);
+  };
+}
+
+// ─────────────────────────────────────────────
+// RENDER DOTS
+// ─────────────────────────────────────────────
+function renderDots() {
+  var container = document.getElementById('step-dots-container');
+  container.innerHTML = '';
+  questions.forEach(function(q, i) {
+    var dot = document.createElement('div');
+    dot.className = 'step-dot' + (i < currentStep ? ' completed' : i === currentStep ? ' current' : '');
+    dot.title = 'Domanda ' + (i + 1) + ': ' + q.label;
+    dot.setAttribute('aria-label', 'Domanda ' + (i + 1));
+    dot.onclick = (function(idx) { return function() { goToStep(idx); }; })(i);
+    container.appendChild(dot);
+    if (i < questions.length - 1) {
+      var line = document.createElement('div');
+      line.style.cssText = 'flex:1;height:1px;background:rgba(99,102,241,' + (i < currentStep ? '0.5' : '0.15') + ');';
+      container.appendChild(line);
+    }
+  });
+  // Step counter
+  var counter = document.createElement('span');
+  counter.className = 'text-xs text-slate-500 ml-2';
+  counter.textContent = (currentStep + 1) + '/' + questions.length;
+  container.appendChild(counter);
+}
+
+// ─────────────────────────────────────────────
+// RENDER QUESTION
+// ─────────────────────────────────────────────
+function renderQuestion(idx) {
+  var q = questions[idx];
+  var container = document.getElementById('questions-container');
+  var voiceSupported = !!(window.SpeechRecognition || window.webkitSpeechRecognition);
+  var ttsSupported = !!window.speechSynthesis;
+
+  container.innerHTML = '<div class="card-glass rounded-2xl p-6 animate-in">' +
+    '<div class="flex items-start justify-between gap-3 mb-4">' +
+      '<div>' +
+        '<span class="text-xs font-bold text-indigo-400 uppercase tracking-wider">Domanda ' + (idx + 1) + ' di ' + questions.length + '</span>' +
+        '<h2 class="text-base font-bold text-white mt-1 leading-snug">' + escHtml(q.label) + '</h2>' +
+      '</div>' +
+      '<span class="text-2xl flex-shrink-0">📋</span>' +
+    '</div>' +
+    '<p class="text-slate-300 text-sm leading-relaxed mb-5">' + escHtml(q.text) + '</p>' +
+
+    // Action buttons row
+    '<div class="flex flex-wrap gap-2 mb-4">' +
+      (ttsSupported ? '<button onclick="speakQuestion()" class="btn-icon text-xs" id="btn-speak-q" aria-label="Ascolta la domanda">' +
+        '🔊 Ascolta domanda' +
+      '</button>' : '') +
+      (voiceSupported ? '<button onclick="toggleRecording()" class="btn-icon text-xs" id="btn-record" aria-label="Rispondi a voce">' +
+        '🎤 Rispondi a voce' +
+      '</button>' : '<span class="voice-unsupported" style="display:inline-block">🎤 Voce non supportata dal browser</span>') +
+      '<button onclick="openExplainPopup()" class="btn-icon text-xs" aria-label="Spiegazione semplice">' +
+        '💡 Spiegazione semplice' +
+      '</button>' +
+    '</div>' +
+
+    // Textarea
+    '<textarea id="answer-' + q.id + '" class="q-textarea" placeholder="' + escAttr(q.placeholder) + '" ' +
+      'aria-label="Risposta: ' + escAttr(q.text) + '">' +
+      (answers[q.id] || '') +
+    '</textarea>' +
+
+    // Auto-save note
+    '<p class="text-xs text-slate-600 mt-2">💾 Le risposte vengono salvate automaticamente mentre scrivi</p>' +
+  '</div>';
+
+  // Auto-save on input
+  var ta = document.getElementById('answer-' + q.id);
+  if (ta) {
+    ta.addEventListener('input', function() {
+      answers[q.id] = ta.value;
+    });
+  }
+
+  // Set current explanation context
+  currentExplanation = q.explanation;
+  currentExplanationSimple = q.explanationSimple;
+  currentChatContext = q.chatContext;
+}
+
+// ─────────────────────────────────────────────
+// NAVIGATION
+// ─────────────────────────────────────────────
+function saveCurrentAnswer() {
+  var q = questions[currentStep];
+  var ta = document.getElementById('answer-' + q.id);
+  if (ta) answers[q.id] = ta.value;
+}
+
+function goToStep(idx) {
+  saveCurrentAnswer();
+  stopSpeaking();
+  currentStep = idx;
+  renderDots();
+  renderQuestion(currentStep);
+  updateNav();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function nextStep() {
+  saveCurrentAnswer();
+  stopSpeaking();
+  if (currentStep < questions.length - 1) {
+    currentStep++;
+    renderDots();
+    renderQuestion(currentStep);
+    updateNav();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
+function prevStep() {
+  saveCurrentAnswer();
+  stopSpeaking();
+  if (currentStep > 0) {
+    currentStep--;
+    renderDots();
+    renderQuestion(currentStep);
+    updateNav();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
+function updateNav() {
+  var btnPrev = document.getElementById('btn-prev');
+  var btnNext = document.getElementById('btn-next');
+  var btnSubmit = document.getElementById('btn-submit');
+
+  btnPrev.style.display = currentStep > 0 ? 'inline-flex' : 'none';
+  var isLast = currentStep === questions.length - 1;
+  btnNext.style.display = isLast ? 'none' : 'inline-flex';
+  btnSubmit.style.display = isLast ? 'inline-flex' : 'none';
+}
+
+// ─────────────────────────────────────────────
+// TTS — SPEAK QUESTION
+// ─────────────────────────────────────────────
+function speakQuestion() {
+  if (!speechSynth) return;
+  stopSpeaking();
+  var q = questions[currentStep];
+  var btn = document.getElementById('btn-speak-q');
+  var utt = new SpeechSynthesisUtterance(q.text);
+  utt.lang = 'it-IT';
+  utt.rate = 0.92;
+  utt.onstart = function() {
+    isTalking = true;
+    if (btn) { btn.textContent = '⏹ Stop audio'; }
+  };
+  utt.onend = utt.onerror = function() {
+    isTalking = false;
+    if (btn) { btn.textContent = '🔊 Ascolta domanda'; }
+  };
+  speechSynth.speak(utt);
+}
+
+function speakExplanation() {
+  if (!speechSynth) return;
+  stopSpeaking();
+  var utt = new SpeechSynthesisUtterance(currentExplanationSimple || currentExplanation);
+  utt.lang = 'it-IT'; utt.rate = 0.92;
+  speechSynth.speak(utt);
+}
+
+function stopSpeaking() {
+  if (speechSynth && speechSynth.speaking) speechSynth.cancel();
+  isTalking = false;
+}
+
+// ─────────────────────────────────────────────
+// VOICE RECORDING
+// ─────────────────────────────────────────────
+function toggleRecording() {
+  if (!recognition) return;
+  if (isRecording) {
+    recognition.stop();
+    setRecordingState(false);
+  } else {
+    stopSpeaking();
+    recognition.start();
+    setRecordingState(true);
+  }
+}
+
+function setRecordingState(active) {
+  isRecording = active;
+  var btn = document.getElementById('btn-record');
+  if (!btn) return;
+  if (active) {
+    btn.classList.add('recording');
+    btn.textContent = '⏹ Stop registrazione';
+  } else {
+    btn.classList.remove('recording');
+    btn.textContent = '🎤 Rispondi a voce';
+  }
+}
+
+// ─────────────────────────────────────────────
+// EXPLAIN POPUP
+// ─────────────────────────────────────────────
+function openExplainPopup() {
+  var overlay = document.getElementById('explain-popup');
+  var body = document.getElementById('popup-body');
+  body.innerHTML =
+    '<div class="mb-4 p-4 rounded-xl" style="background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.2)">' +
+      '<p class="text-xs font-bold text-indigo-400 uppercase tracking-wide mb-2">🎯 Per non addetti ai lavori</p>' +
+      '<p>' + escHtml(currentExplanationSimple) + '</p>' +
+    '</div>' +
+    '<div>' +
+      '<p class="text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">📚 Approfondimento tecnico</p>' +
+      '<p>' + escHtml(currentExplanation) + '</p>' +
+    '</div>';
+  overlay.classList.add('open');
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) closeExplainPopup();
+  });
+}
+
+function closeExplainPopup() {
+  document.getElementById('explain-popup').classList.remove('open');
+  stopSpeaking();
+}
+
+// ─────────────────────────────────────────────
+// CHAT AI ASSISTANT
+// ─────────────────────────────────────────────
+var aiResponses = {
+  default: [
+    "Ciao! Sono l'AI Assistente di SECURDATA.PRO. Posso aiutarti a capire le domande del questionario PRD. Cosa vorresti sapere?",
+    "Ottima domanda! Il PRD (Product Requirements Document) è un documento che descrive cosa deve fare il tuo prodotto digitale, chi lo usa e perché. Serviti pure!",
+    "Ricorda: non devi essere un esperto tecnico per compilare questo questionario. Le tue risposte, anche in linguaggio semplice, sono preziose per costruire la soluzione giusta per te.",
+    "Se hai dubbi su una domanda, premi il pulsante 💡 per avere una spiegazione semplice, o chiedimi qui in chat!"
+  ],
+  gdpr: "Il GDPR (Regolamento Generale sulla Protezione dei Dati) è una legge europea che protegge la privacy delle persone. Se il tuo progetto raccoglie dati come nomi, email, numeri di telefono o dati di salute, devi rispettare regole precise su come li conservi e usi. SECURDATA.PRO può aiutarti a essere in regola senza stress.",
+  budget: "Non preoccuparti se non hai un budget preciso! Anche una stima approssimativa come 'meno di 10.000€' o 'ho bisogno di qualcosa di economico' è utile. Questo ci aiuta a proporti soluzioni adatte alle tue possibilità.",
+  target: "Il 'target' è semplicemente il tipo di persona che userà la tua soluzione. Pensa a chi ha il problema che vuoi risolvere: è un manager, un operaio, un cliente finale? Descrivilo come descrivresti un amico.",
+  prd: "Il PRD è come una 'lettera di incarico' per il tuo progetto digitale. Descrive cosa deve fare, per chi, in quanto tempo e con quale budget. Compilarlo ti aiuta a evitare malintesi con gli sviluppatori e a ottenere esattamente quello che vuoi.",
+  sicurezza: "La sicurezza informatica non è solo per le grandi aziende! Anche una piccola impresa che gestisce dati clienti deve proteggersi da hacker e violazioni. SECURDATA.PRO ti aiuta a costruire sistemi sicuri fin dall'inizio, senza complicazioni."
+};
+
+function openChatWithContext() {
+  closeExplainPopup();
+  openChatOverlay();
+  var q = questions[currentStep];
+  var welcomeMsg = "Ciao! Sono qui per aiutarti con la domanda: \"" + q.label + "\". " +
+    "Puoi chiedermi spiegazioni o esempi pratici. Come posso aiutarti?";
+  if (chatHistory.length === 0) {
+    addChatMsg('ai', welcomeMsg);
+  }
+}
+
+function openChatOverlay() {
+  document.getElementById('chat-overlay').classList.add('open');
+  document.getElementById('chat-overlay').addEventListener('click', function(e) {
+    if (e.target === this) closeChatOverlay();
+  });
+  setTimeout(function() {
+    var inp = document.getElementById('chat-user-input');
+    if (inp) inp.focus();
+  }, 100);
+}
+
+function closeChatOverlay() {
+  document.getElementById('chat-overlay').classList.remove('open');
+}
+
+function addChatMsg(role, text) {
+  var msgs = document.getElementById('chat-messages');
+  var div = document.createElement('div');
+  div.className = role === 'ai' ? 'chat-msg-ai' : 'chat-msg-user';
+  div.textContent = text;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  chatHistory.push({ role: role, text: text });
+}
+
+function addTypingIndicator() {
+  var msgs = document.getElementById('chat-messages');
+  var div = document.createElement('div');
+  div.className = 'chat-msg-ai';
+  div.id = 'typing-indicator';
+  div.innerHTML = '<div class="chat-typing"><span></span><span></span><span></span></div>';
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function removeTypingIndicator() {
+  var el = document.getElementById('typing-indicator');
+  if (el) el.remove();
+}
+
+function getAIResponse(userMsg) {
+  var lower = userMsg.toLowerCase();
+  if (lower.includes('gdpr') || lower.includes('privacy') || lower.includes('dati personali')) return aiResponses.gdpr;
+  if (lower.includes('budget') || lower.includes('costo') || lower.includes('quanto')) return aiResponses.budget;
+  if (lower.includes('target') || lower.includes('utenti') || lower.includes('clienti') || lower.includes('chi usa')) return aiResponses.target;
+  if (lower.includes('prd') || lower.includes('requisiti') || lower.includes('documento')) return aiResponses.prd;
+  if (lower.includes('sicurezza') || lower.includes('hacker') || lower.includes('protezione')) return aiResponses.sicurezza;
+  // Context-based response
+  var q = questions[currentStep];
+  return 'Per quanto riguarda "' + q.label + '": ' + q.explanationSimple +
+    '\n\nSe hai altre domande specifiche, scrivimi pure!';
+}
+
+function sendChatMsg() {
+  var inp = document.getElementById('chat-user-input');
+  var msg = (inp.value || '').trim();
+  if (!msg) return;
+  inp.value = '';
+  addChatMsg('user', msg);
+  addTypingIndicator();
+  setTimeout(function() {
+    removeTypingIndicator();
+    var response = getAIResponse(msg);
+    addChatMsg('ai', response);
+  }, 900 + Math.random() * 600);
+}
+
+// ─────────────────────────────────────────────
+// SUBMIT & SUMMARY
+// ─────────────────────────────────────────────
+function submitQuestionnaire() {
+  saveCurrentAnswer();
+  stopSpeaking();
+
+  // Hide questionnaire, show summary
+  document.getElementById('questions-container').style.display = 'none';
+  document.getElementById('nav-controls').style.display = 'none';
+  document.getElementById('step-dots-container').style.display = 'none';
+
+  var summarySection = document.getElementById('summary-section');
+  summarySection.classList.add('show');
+
+  var content = document.getElementById('summary-content');
+  var html = '';
+  questions.forEach(function(q) {
+    var ans = (answers[q.id] || '').trim();
+    html += '<div class="summary-item">' +
+      '<div class="summary-label">' + escHtml(q.label) + '</div>' +
+      '<div class="summary-value">' + (ans ? escHtml(ans) : '<em style="color:#475569">Nessuna risposta fornita</em>') + '</div>' +
+    '</div>';
+  });
+  content.innerHTML = html;
+
+  // Prepare mailto
+  buildEmailLink();
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function buildEmailLink() {
+  var lines = ['PRD QUESTIONNAIRE - SECURDATA.PRO', '=====================================', ''];
+  questions.forEach(function(q) {
+    lines.push(q.label.toUpperCase());
+    lines.push((answers[q.id] || 'Non risposto'));
+    lines.push('');
+  });
+  lines.push('---');
+  lines.push('Generato da: https://profitpickers.github.io/securdata.pro/prd-questionnaire.html');
+  var body = encodeURIComponent(lines.join('\n'));
+  var link = document.getElementById('send-prd-email');
+  if (link) link.href = 'mailto:info@securdata.pro?subject=Il%20mio%20PRD%20SECURDATA.PRO&body=' + body;
+}
+
+function getPRDText() {
+  var lines = ['PRD QUESTIONNAIRE — SECURDATA.PRO', '=========================================', ''];
+  questions.forEach(function(q) {
+    lines.push('# ' + q.label.toUpperCase());
+    lines.push((answers[q.id] || 'Nessuna risposta fornita'));
+    lines.push('');
+  });
+  lines.push('---');
+  lines.push('Generato da SECURDATA.PRO — https://profitpickers.github.io/securdata.pro/');
+  return lines.join('\n');
+}
+
+function copyPRD() {
+  var text = getPRDText();
+  navigator.clipboard.writeText(text).then(function() {
+    alert('✅ PRD copiato negli appunti!');
+  }).catch(function() {
+    alert('Copia manuale:\n\n' + text);
+  });
+}
+
+function downloadPRD() {
+  var text = getPRDText();
+  var blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'PRD-SECURDATA-' + new Date().toISOString().slice(0, 10) + '.txt';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function restartQuestionnaire() {
+  answers = {};
+  currentStep = 0;
+  chatHistory = [];
+  document.getElementById('questions-container').style.display = '';
+  document.getElementById('nav-controls').style.display = '';
+  document.getElementById('step-dots-container').style.display = '';
+  document.getElementById('summary-section').classList.remove('show');
+  renderDots();
+  renderQuestion(currentStep);
+  updateNav();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ─────────────────────────────────────────────
+// UTILS
+// ─────────────────────────────────────────────
+function escHtml(s) {
+  if (!s) return '';
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function escAttr(s) { return escHtml(s); }
+</script>
+</body>
+</html>

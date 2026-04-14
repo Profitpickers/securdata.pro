@@ -1,5 +1,20 @@
 [
   {
+    "id": "7",
+    "slug": "risorse-gratuite",
+    "title": "🎁 Risorse Gratuite SECURDATA.PRO: Strumenti Pratici per la Tua Impresa",
+    "excerpt": "Scopri i tools gratuiti di SECURDATA.PRO: TEMPORE per l'analisi del tempo, il Biglietto Digitale QR, la Dashboard Priorità COROLLE e il PRD Questionnaire interattivo. Strumenti reali, zero costi.",
+    "content": "## La Visione: Democratizzare la Sicurezza Digitale\n\nIn Italia, milioni di piccole e medie imprese affrontano ogni giorno sfide digitali complesse senza le risorse per affidarsi a consulenti specializzati.\n\n**SECURDATA.PRO nasce con una missione precisa:** mettere a disposizione di ogni imprenditore strumenti digitali di qualità, gratuitamente.\n\n## Le Risorse Disponibili\n\n- **TEMPORE** – Analisi spazio-temporale per manager e imprenditori\n- **Biglietto da Visita Digitale QR** – Il tuo profilo professionale condivisibile da smartphone\n- **COROLLE Dashboard** – Gestione delle priorità quotidiane (prossimamente online)\n- **PRD Questionnaire** – Definisci i requisiti del tuo progetto digitale via testo o voce\n\n## A Chi Si Rivolge\n\nImprenditori e titolari di PMI, manager e responsabili IT, liberi professionisti e startup che vogliono strutturare i propri requisiti di progetto.\n\n## Gratis, Sempre\n\nTutte le risorse sono accessibili senza registrazione, senza carta di credito, senza vincoli.",
+    "author": "Vito Iacobellis",
+    "date": "2025-04-14",
+    "tags": ["Risorse Gratuite", "Tools", "PRD", "TEMPORE", "Biglietto Digitale"],
+    "category": "Risorse & Strumenti",
+    "featured": true,
+    "image": "",
+    "readTime": "4 min",
+    "url": "./risorse-gratuite.html"
+  },
+  {
     "id": "1",
     "slug": "gdpr-ai-2025-guida-pratica",
     "title": "GDPR e Intelligenza Artificiale nel 2025: Guida Pratica per le PMI",
