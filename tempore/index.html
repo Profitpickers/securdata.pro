@@ -367,7 +367,7 @@
           <div id="lc-v-now" style="position:absolute;top:0;bottom:1.5rem;width:2px;background:rgba(251,191,36,.65);z-index:3;pointer-events:none;left:0;"></div>
           <!-- Row: Anni -->
           <div class="lc-row">
-            <div class="lc-top"><span class="lc-lbl">Anni di vita<span class="lc-ast">*</span></span><span id="lc-yr-lived" class="lc-lived"></span><span id="lc-yr-rem" class="lc-rem"></span></div>
+            <div class="lc-top"><span class="lc-lbl">Anni di vita</span><span class="lc-ast">*</span><span id="lc-yr-lived" class="lc-lived"></span><span id="lc-yr-rem" class="lc-rem"></span></div>
             <div class="lbar-track2"><div id="yr-bar-p" class="lbar-seg" style="background:linear-gradient(90deg,#6366f1,#a855f7);"></div><div id="yr-bar-f" class="lbar-seg" style="background:linear-gradient(90deg,#dc2626,#7f1d1d);"></div></div>
             <div class="lc-bot"><span id="lc-yr-pp" class="lc-pct-l"></span><span id="lc-yr-fp" class="lc-pct-r"></span></div>
           </div>
@@ -945,9 +945,10 @@ renderQ();
   fetch('https://ipapi.co/json/')
     .then(r=>r.json())
     .then(d=>{
-      const cc=(d.country_code||'').toUpperCase();
-      lifeExp=LE_TBL[cc]||LE_TBL.DEFAULT;
-      geoLabel=d.country_name||cc;
+      if(!d||typeof d!=='object') return;
+      const cc=typeof d.country_code==='string'?d.country_code.toUpperCase():'';
+      lifeExp=(cc&&LE_TBL[cc])||LE_TBL.DEFAULT;
+      geoLabel=typeof d.country_name==='string'?d.country_name:cc;
       if($('user-age').value) calcLife();
     }).catch(()=>{});
   // backward-compat: migrate old birth-year storage
@@ -964,7 +965,7 @@ renderQ();
     const fpct=+(100-pct).toFixed(1);
     const birthYear=now.getFullYear()-ag;
     const endYear=birthYear+LE;
-    // Lived values
+    // Lived values (52.18 = avg weeks/year = 365.25/7)
     const yL=ag, moL=Math.round(ag*12), wkL=Math.round(ag*52.18);
     const dyL=Math.round(ag*365.25), hrL=Math.round(dyL*24), mnL=hrL*60;
     // Remaining values
@@ -972,13 +973,13 @@ renderQ();
     const moR=Math.round(yR*12), wkR=Math.round(yR*52.18);
     const dyR=Math.round(yR*365.25), hrR=Math.round(dyR*24), mnR=hrR*60;
     function fmt(n){return n.toLocaleString('it');}
-    // Labels above bars
-    $('lc-yr-lived').textContent=yL+'y';      $('lc-yr-rem').textContent=yR+'y';
-    $('lc-mo-lived').textContent=fmt(moL)+'m'; $('lc-mo-rem').textContent=fmt(moR)+'m';
-    $('lc-wk-lived').textContent=fmt(wkL)+'w'; $('lc-wk-rem').textContent=fmt(wkR)+'w';
-    $('lc-dy-lived').textContent=fmt(dyL)+'g'; $('lc-dy-rem').textContent=fmt(dyR)+'g';
-    $('lc-hr-lived').textContent=fmt(hrL)+'h'; $('lc-hr-rem').textContent=fmt(hrR)+'h';
-    $('lc-mn-lived').textContent=fmt(mnL)+'m'; $('lc-mn-rem').textContent=fmt(mnR)+'m';
+    // Labels above bars (mo=mesi, min=minuti to avoid ambiguity)
+    $('lc-yr-lived').textContent=yL+'y';       $('lc-yr-rem').textContent=yR+'y';
+    $('lc-mo-lived').textContent=fmt(moL)+'mo'; $('lc-mo-rem').textContent=fmt(moR)+'mo';
+    $('lc-wk-lived').textContent=fmt(wkL)+'w';  $('lc-wk-rem').textContent=fmt(wkR)+'w';
+    $('lc-dy-lived').textContent=fmt(dyL)+'g';  $('lc-dy-rem').textContent=fmt(dyR)+'g';
+    $('lc-hr-lived').textContent=fmt(hrL)+'h';  $('lc-hr-rem').textContent=fmt(hrR)+'h';
+    $('lc-mn-lived').textContent=fmt(mnL)+'min';$('lc-mn-rem').textContent=fmt(mnR)+'min';
     // Percentages below bars
     ['yr','mo','wk','dy','hr','mn'].forEach(k=>{
       $('lc-'+k+'-pp').textContent=pct+'%';
