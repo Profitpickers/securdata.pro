@@ -352,13 +352,11 @@
 
     <!-- 3 LIFE COUNTER -->
     <div class="card glass">
-      <div class="card-hd">
-        <i data-lucide="activity" style="color:#a855f7;"></i>
-        <span>LIFE COUNTER</span>
-      </div>
-      <div id="life-input" style="display:flex;gap:.4rem;align-items:center;">
-        <input type="number" id="user-age" placeholder="Quanti anni hai?" min="1" max="120" class="nano-inp" style="flex:1;width:0;">
-        <button onclick="calcLife()" class="nano-btn">Vai</button>
+      <div class="card-hd" style="flex-wrap:wrap;gap:.3rem .5rem;">
+        <i data-lucide="activity" style="color:#a855f7;flex-shrink:0;"></i>
+        <span>LIFE COUNTER:</span>
+        <span style="color:#cbd5e1;font-size:.8rem;font-weight:400;white-space:nowrap;">Quanti anni ho?</span>
+        <input type="number" id="user-age" placeholder="età" min="1" max="120" oninput="calcLife()" aria-label="Quanti anni ho?" class="nano-inp" style="width:4rem;text-align:center;border-color:#22c55e;color:#22c55e;font-weight:700;">
       </div>
       <div id="life-bars" style="display:none;flex-direction:column;gap:0;flex:1;overflow:hidden;">
         <!-- Year labels: NASCITA / OGGI / FINE -->
@@ -967,12 +965,12 @@ renderQ();
       lEl.textContent=liveVal; lEl.style.left=lPos;
       rEl.textContent=remVal;  rEl.style.left=rPos;
     }
-    setNum('lc-yr-lived','lc-yr-rem', yL+'y', yR+'y');
-    setNum('lc-mo-lived','lc-mo-rem', fmt(moL)+'mo', fmt(moR)+'mo');
-    setNum('lc-wk-lived','lc-wk-rem', fmt(wkL)+'w',  fmt(wkR)+'w');
-    setNum('lc-dy-lived','lc-dy-rem', fmt(dyL)+'g',  fmt(dyR)+'g');
-    setNum('lc-hr-lived','lc-hr-rem', fmt(hrL)+'h',  fmt(hrR)+'h');
-    setNum('lc-mn-lived','lc-mn-rem', fmt(mnL)+'min',fmt(mnR)+'min');
+    setNum('lc-yr-lived','lc-yr-rem', yL, yR);
+    setNum('lc-mo-lived','lc-mo-rem', fmt(moL), fmt(moR));
+    setNum('lc-wk-lived','lc-wk-rem', fmt(wkL), fmt(wkR));
+    setNum('lc-dy-lived','lc-dy-rem', fmt(dyL), fmt(dyR));
+    setNum('lc-hr-lived','lc-hr-rem', fmt(hrL), fmt(hrR));
+    setNum('lc-mn-lived','lc-mn-rem', fmt(mnL), fmt(mnR));
     // Single shared percentage row
     const pctL=$('lc-pct-l'), pctR=$('lc-pct-r');
     pctL.textContent=pct+'%';  pctL.style.left=lPos;
@@ -986,9 +984,7 @@ renderQ();
     $('lc-v-now').style.left=pct+'%';
     // Summary with asterisk geo reference
     const geo=geoLabel?(' ('+geoLabel+')'):'';
-    $('life-sum').innerHTML='≈ <b style="color:#fca5a5">'+fmt(dyR)+'</b> giorni · <b style="color:#fca5a5">'+fmt(moR)+'</b> mesi rimanenti'
-      +'<br><span style="color:#475569;font-size:.62rem;">* aspettativa media '+LE+' anni'+geo+' — fonte: OMS/Eurostat</span>';
-    $('life-input').style.display='none';
+    $('life-sum').innerHTML='<span style="color:#475569;font-size:.62rem;">* aspettativa media '+LE+' anni'+geo+' — fonte: OMS/Eurostat</span>';
     $('life-bars').style.display='flex';
     setTimeout(()=>{
       ['yr','mo','wk','dy','hr','mn'].forEach(k=>{
