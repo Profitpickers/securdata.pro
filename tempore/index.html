@@ -89,6 +89,7 @@
       flex-direction: column;
       gap: .6rem;
       overflow: hidden;
+      position: relative;
     }
     .card-hd {
       display: flex;
@@ -160,6 +161,70 @@
     }
     #ai-modal.open { display: flex; }
     @keyframes spin { to { transform: rotate(360deg); } }
+    /* ── Zoom & Carousel ── */
+    .card-exp {
+      position: absolute; top: .42rem; right: .42rem; z-index: 5;
+      background: rgba(15,23,42,.78); border: 1px solid rgba(99,102,241,.3); border-radius: .38rem;
+      padding: .22rem .3rem; cursor: pointer; color: #818cf8; line-height: 0;
+      opacity: 0; transition: opacity .2s; display: flex; align-items: center; justify-content: center;
+    }
+    .card:hover .card-exp, .card-exp:focus { opacity: 1; }
+    @media (hover: none) { .card-exp { opacity: .7; } }
+    #zoom-ov {
+      display: none; position: fixed; inset: 0; z-index: 410;
+      background: rgba(2,6,23,.94); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      align-items: center; justify-content: center;
+      padding: 68px 1rem 5.5rem;
+    }
+    #zoom-ov.on { display: flex; }
+    #zoom-ov > .card {
+      width: 100%; max-width: 700px; max-height: 100%; overflow: auto;
+      box-shadow: 0 0 60px rgba(99,102,241,.35); flex-shrink: 0;
+    }
+    #zoom-xbtn {
+      position: fixed; top: 62px; right: 1rem; z-index: 420;
+      background: rgba(30,41,59,.92); border: 1px solid rgba(99,102,241,.3); border-radius: .5rem;
+      padding: .32rem .55rem; cursor: pointer; color: #94a3b8; display: none;
+      align-items: center; gap: .3rem; font-size: .82rem; font-weight: 700;
+    }
+    #zoom-xbtn:hover { color: #fff; border-color: rgba(99,102,241,.6); }
+    #crl-ctrl {
+      position: fixed; bottom: 1rem; left: 50%; transform: translateX(-50%);
+      z-index: 420; display: none; align-items: center; gap: .38rem;
+      background: rgba(2,6,23,.94); border: 1px solid rgba(99,102,241,.28);
+      border-radius: 2.5rem; padding: .36rem .65rem;
+      backdrop-filter: blur(10px); box-shadow: 0 4px 24px rgba(0,0,0,.5);
+      white-space: nowrap;
+    }
+    #crl-ctrl.on { display: flex; }
+    .cbt {
+      background: none; border: none; cursor: pointer; color: #818cf8;
+      padding: .22rem .3rem; border-radius: .35rem; line-height: 0;
+      transition: background .15s, color .15s;
+    }
+    .cbt:hover { background: rgba(99,102,241,.2); color: #fff; }
+    .cbt.stop-btn { color: #f87171; margin-left: .15rem; }
+    .cbt.stop-btn:hover { background: rgba(248,113,113,.15); color: #fca5a5; }
+    #crl-dots { display: flex; gap: .26rem; align-items: center; padding: 0 .15rem; }
+    .cdot {
+      width: 7px; height: 7px; border-radius: 50%; background: rgba(99,102,241,.3);
+      transition: background .2s, transform .2s; cursor: pointer; flex-shrink: 0;
+    }
+    .cdot.on { background: #6366f1; transform: scale(1.35); }
+    #crl-prog {
+      position: fixed; bottom: 0; left: 0; z-index: 419;
+      height: 3px; width: 100%; display: none;
+      background: rgba(99,102,241,.15);
+    }
+    #crl-prog.on { display: block; }
+    #crl-prog-fill { height: 100%; background: linear-gradient(90deg, var(--c1), var(--c2)); width: 0; }
+    #carousel-nav-btn {
+      display: flex; align-items: center; gap: .3rem;
+      padding: .28rem .6rem; background: rgba(99,102,241,.12); border: 1px solid rgba(99,102,241,.3);
+      border-radius: .45rem; font-size: .82rem; font-weight: 700; color: #818cf8; cursor: pointer;
+      transition: background .2s, color .2s;
+    }
+    #carousel-nav-btn:hover { background: rgba(99,102,241,.22); color: #c4b5fd; }
     @media (max-width: 1023px) {
       #widget-grid { grid-template-columns: repeat(2,1fr); grid-template-rows: auto; height: auto; }
       #forex-sessions { grid-template-columns: 1fr 1fr; }
@@ -203,10 +268,16 @@
       <span class="grad" style="font-size:1.1rem;font-weight:900;letter-spacing:.12em;">TEMPORE</span>
       <span style="font-size:.85rem;color:#a5b4fc;font-style:italic;padding:.15rem .5rem;border:1px solid rgba(99,102,241,.4);border-radius:.35rem;background:rgba(99,102,241,.08);">Risorse Gratuite</span>
     </div>
-    <a href="../" style="display:flex;align-items:center;gap:.3rem;font-size:.85rem;color:#94a3b8;text-decoration:none;padding:.28rem .55rem;border-radius:.45rem;" onmouseover="this.style.color='#818cf8'" onmouseout="this.style.color='#94a3b8'">
-      <i data-lucide="arrow-left" style="width:16px;height:16px;"></i>
-      <span style="display:none;" class="sm-show">Torna al sito</span>
-    </a>
+    <div style="display:flex;align-items:center;gap:.5rem;">
+      <button id="carousel-nav-btn" onclick="startCarousel()" title="Avvia carosello automatico">
+        <i data-lucide="play-circle" style="width:14px;height:14px;"></i>
+        <span>Carosello</span>
+      </button>
+      <a href="../" style="display:flex;align-items:center;gap:.3rem;font-size:.85rem;color:#94a3b8;text-decoration:none;padding:.28rem .55rem;border-radius:.45rem;" onmouseover="this.style.color='#818cf8'" onmouseout="this.style.color='#94a3b8'">
+        <i data-lucide="arrow-left" style="width:16px;height:16px;"></i>
+        <span style="display:none;" class="sm-show">Torna al sito</span>
+      </a>
+    </div>
   </div>
 </nav>
 
@@ -498,6 +569,46 @@
     <p style="margin:.18rem 0 0;">TEMPORE &egrave; uno strumento informativo gratuito. Meteo e dati di borsa hanno finalit&agrave; illustrative.</p>
   </footer>
 </div><!-- /app -->
+
+<!-- Zoom Overlay -->
+<div id="zoom-ov" onclick="if(event.target===this&&!_carousel)closeZoom()"></div>
+
+<!-- Zoom close / nav buttons -->
+<div id="zoom-xbtn" style="display:none;">
+  <div id="crl-prev-top" style="display:none;align-items:center;gap:.15rem;">
+    <button class="cbt" onclick="carouselPrev()" title="Precedente (←)" style="padding:.1rem .2rem;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <button class="cbt" onclick="carouselNext()" title="Successivo (→)" style="padding:.1rem .2rem;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+  </div>
+  <button onclick="_carousel?stopCarousel():closeZoom()" style="display:flex;align-items:center;gap:.28rem;background:none;border:none;cursor:pointer;color:#94a3b8;font-size:.82rem;font-weight:700;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#94a3b8'">
+    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    <span id="zoom-xbtn-lbl">ESC</span>
+  </button>
+</div>
+
+<!-- Carousel Controls -->
+<div id="crl-ctrl">
+  <button class="cbt" onclick="carouselPrev()" title="Precedente (←)">
+    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+  <div id="crl-dots"></div>
+  <span id="crl-lbl" style="font-size:.8rem;color:#94a3b8;min-width:2.4rem;text-align:center;"></span>
+  <button class="cbt" id="crl-play" onclick="toggleCarousel()" title="Pausa / Riprendi">
+    <svg id="crl-play-ico" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+  </button>
+  <button class="cbt" onclick="carouselNext()" title="Successivo (→)">
+    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+  </button>
+  <button class="cbt stop-btn" onclick="stopCarousel()" title="Esci dal carosello">
+    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+</div>
+
+<!-- Carousel progress bar -->
+<div id="crl-prog"><div id="crl-prog-fill"></div></div>
 
 <!-- AI MODAL -->
 <div id="ai-modal" onclick="closeModalOut(event)">
@@ -834,6 +945,162 @@ function submitForm(e){
   $('ai-form').style.display='none';$('form-ok').style.display='block';
   setTimeout(()=>{closeModal();setTimeout(()=>{$('ai-form').style.display='';$('form-ok').style.display='none';$('ai-form').reset();},600);},3800);
 }
+/* ══ ZOOM & CAROUSEL ══ */
+const ZOV = $('zoom-ov');
+const ALL_CARDS = Array.from(document.querySelectorAll('#widget-grid .card'));
+const PAUSE_ICO = '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
+const PLAY_ICO  = '<polygon points="5 3 19 12 5 21 5 3"/>';
+
+/* Add expand button to every card */
+ALL_CARDS.forEach(card => {
+  const btn = document.createElement('button');
+  btn.className = 'card-exp';
+  btn.title = 'Schermo intero';
+  btn.setAttribute('aria-label', 'Espandi a schermo intero');
+  btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>';
+  btn.addEventListener('click', e => { e.stopPropagation(); zoomCard(card); });
+  card.appendChild(btn);
+});
+
+let _zCard = null, _zParent = null, _zSib = null;
+
+function zoomCard(card) {
+  if (_zCard) _restoreCard(false);
+  _zCard = card;
+  _zParent = card.parentElement;
+  _zSib = card.nextElementSibling;
+  ZOV.appendChild(card);
+  ZOV.classList.add('on');
+  const xbtn = $('zoom-xbtn');
+  xbtn.style.display = 'flex';
+  $('zoom-xbtn-lbl').textContent = _carousel ? 'Stop' : 'ESC';
+  $('crl-prev-top').style.display = _carousel ? 'flex' : 'none';
+  document.body.style.overflow = 'hidden';
+}
+
+function _restoreCard(restoreScroll) {
+  if (!_zCard) return;
+  if (_zSib) _zParent.insertBefore(_zCard, _zSib);
+  else _zParent.appendChild(_zCard);
+  _zCard = null;
+  if (restoreScroll !== false) document.body.style.overflow = '';
+}
+
+function closeZoom() {
+  if (!ZOV.classList.contains('on')) return;
+  _restoreCard();
+  ZOV.classList.remove('on');
+  $('zoom-xbtn').style.display = 'none';
+}
+
+/* ── Carousel ── */
+let _carousel = false, _cIdx = 0, _cPaused = false, _cTimer = null;
+const CDUR = 7000;
+
+function buildDots() {
+  $('crl-dots').innerHTML = ALL_CARDS.map((_, i) =>
+    '<span class="cdot' + (i === _cIdx ? ' on' : '') + '" onclick="carouselJump(' + i + ')"></span>'
+  ).join('');
+}
+
+function _updateUI() {
+  $('crl-dots').querySelectorAll('.cdot').forEach((d, i) => d.classList.toggle('on', i === _cIdx));
+  $('crl-lbl').textContent = (_cIdx + 1) + '/' + ALL_CARDS.length;
+  if (_zCard) {
+    $('zoom-xbtn-lbl').textContent = 'Stop';
+    $('crl-prev-top').style.display = 'flex';
+  }
+}
+
+function startCarousel() {
+  _carousel = true; _cIdx = 0; _cPaused = false;
+  $('crl-ctrl').classList.add('on');
+  $('crl-prog').classList.add('on');
+  $('carousel-nav-btn').style.opacity = '.4';
+  $('carousel-nav-btn').style.pointerEvents = 'none';
+  buildDots();
+  _showCurrent();
+}
+
+function stopCarousel() {
+  _carousel = false;
+  clearTimeout(_cTimer);
+  $('crl-ctrl').classList.remove('on');
+  $('crl-prog').classList.remove('on');
+  $('carousel-nav-btn').style.opacity = '';
+  $('carousel-nav-btn').style.pointerEvents = '';
+  closeZoom();
+}
+
+function toggleCarousel() {
+  _cPaused = !_cPaused;
+  const ico = $('crl-play-ico');
+  if (_cPaused) {
+    clearTimeout(_cTimer);
+    $('crl-prog-fill').style.transition = 'none';
+    ico.innerHTML = PLAY_ICO;
+  } else {
+    ico.innerHTML = PAUSE_ICO;
+    _scheduleTick();
+  }
+}
+
+function carouselNext() {
+  clearTimeout(_cTimer);
+  _cIdx = (_cIdx + 1) % ALL_CARDS.length;
+  if (_cPaused) { _cPaused = false; $('crl-play-ico').innerHTML = PAUSE_ICO; }
+  _showCurrent();
+}
+
+function carouselPrev() {
+  clearTimeout(_cTimer);
+  _cIdx = (_cIdx - 1 + ALL_CARDS.length) % ALL_CARDS.length;
+  if (_cPaused) { _cPaused = false; $('crl-play-ico').innerHTML = PAUSE_ICO; }
+  _showCurrent();
+}
+
+function carouselJump(i) {
+  clearTimeout(_cTimer);
+  _cIdx = i;
+  if (_cPaused) { _cPaused = false; $('crl-play-ico').innerHTML = PAUSE_ICO; }
+  _showCurrent();
+}
+
+function _showCurrent() {
+  _restoreCard(false);
+  ZOV.classList.remove('on');
+  zoomCard(ALL_CARDS[_cIdx]);
+  _updateUI();
+  if (!_cPaused) _scheduleTick();
+}
+
+function _scheduleTick() {
+  const fill = $('crl-prog-fill');
+  fill.style.transition = 'none';
+  fill.style.width = '0';
+  requestAnimationFrame(() => {
+    fill.style.transition = 'width ' + CDUR + 'ms linear';
+    fill.style.width = '100%';
+  });
+  clearTimeout(_cTimer);
+  _cTimer = setTimeout(() => {
+    _cIdx = (_cIdx + 1) % ALL_CARDS.length;
+    _showCurrent();
+  }, CDUR);
+}
+
+/* Keyboard shortcuts */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    if (_carousel) stopCarousel();
+    else closeZoom();
+  }
+  if (_carousel) {
+    if (e.key === 'ArrowRight') carouselNext();
+    if (e.key === 'ArrowLeft') carouselPrev();
+    if (e.key === ' ') { e.preventDefault(); toggleCarousel(); }
+  }
+});
 </script>
 </body>
 </html>
