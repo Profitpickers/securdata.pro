@@ -942,20 +942,6 @@ renderQ();
     CL:80,CO:77,PE:76,ZA:64,TR:78,SA:75,AE:78,EG:72,IN:70,PK:67,NG:54,TH:77,
     ID:71,VN:76,PH:71,MY:76,BD:73,DEFAULT:82};
   let lifeExp=82,geoLabel='';
-  fetch('https://ipapi.co/json/')
-    .then(r=>r.json())
-    .then(d=>{
-      if(!d||typeof d!=='object') return;
-      const cc=typeof d.country_code==='string'?d.country_code.toUpperCase():'';
-      lifeExp=(cc&&LE_TBL[cc])||LE_TBL.DEFAULT;
-      geoLabel=typeof d.country_name==='string'?d.country_name:cc;
-      if($('user-age').value) calcLife();
-    }).catch(()=>{});
-  // backward-compat: migrate old birth-year storage
-  const oldBy=localStorage.getItem('tp_by');
-  const savedAge=localStorage.getItem('tp_age');
-  if(savedAge){$('user-age').value=savedAge;calcLife();}
-  else if(oldBy){const a=new Date().getFullYear()-parseInt(oldBy);if(a>0&&a<120){$('user-age').value=a;calcLife();}}
   window.calcLife=function(){
     const ag=parseInt($('user-age').value);
     if(!ag||ag<1||ag>120)return;
@@ -1005,6 +991,20 @@ renderQ();
       });
     },80);
   };
+  fetch('https://ipapi.co/json/')
+    .then(r=>r.json())
+    .then(d=>{
+      if(!d||typeof d!=='object') return;
+      const cc=typeof d.country_code==='string'?d.country_code.toUpperCase():'';
+      lifeExp=(cc&&LE_TBL[cc])||LE_TBL.DEFAULT;
+      geoLabel=typeof d.country_name==='string'?d.country_name:cc;
+      if($('user-age').value) window.calcLife();
+    }).catch(()=>{});
+  // backward-compat: migrate old birth-year storage
+  const oldBy=localStorage.getItem('tp_by');
+  const savedAge=localStorage.getItem('tp_age');
+  if(savedAge){$('user-age').value=savedAge;window.calcLife();}
+  else if(oldBy){const a=new Date().getFullYear()-parseInt(oldBy);if(a>0&&a<120){$('user-age').value=a;window.calcLife();}}
 })();
 
 /* ══ LIVE USERS ══ */
