@@ -129,17 +129,17 @@
       width: 0;
     }
     /* ── LIFE COUNTER ── */
-    .lbar-track2 { height:5px; background:rgba(30,41,59,.6); border-radius:999px; overflow:hidden; display:flex; }
+    .lbar-track2 { height:7px; background:rgba(30,41,59,.6); border-radius:999px; overflow:hidden; display:flex; }
     .lbar-seg { height:100%; flex-shrink:0; transition:width .8s cubic-bezier(.4,0,.2,1); width:0; }
-    .lc-row { display:flex; flex-direction:column; gap:0; }
-    .lc-top { display:flex; align-items:baseline; gap:.15rem; line-height:1.15; padding-top:.1rem; }
-    .lc-lbl { color:#cbd5e1; font-size:.72rem; flex:1; white-space:nowrap; }
-    .lc-ast { color:#fbbf24; font-size:.6rem; vertical-align:super; }
-    .lc-lived { color:#a5b4fc; font-weight:600; font-size:.68rem; }
-    .lc-rem   { color:#fca5a5; font-weight:600; font-size:.68rem; margin-left:.25rem; }
-    .lc-bot   { display:flex; justify-content:space-between; line-height:1.1; }
-    .lc-pct-l { color:#818cf8; font-size:.62rem; }
-    .lc-pct-r { color:#f87171; font-size:.62rem; }
+    .lc-row { display:flex; flex-direction:column; gap:0; margin-bottom:.16rem; }
+    .lc-nums { position:relative; height:1.55rem; }
+    .lc-lbl { color:#94a3b8; font-size:.7rem; line-height:1.55rem; }
+    .lc-ast { color:#fbbf24; font-size:.58rem; vertical-align:super; }
+    .lc-lived { color:#e2e8f0; font-weight:700; font-size:.95rem; position:absolute; top:0; transform:translateX(-50%); white-space:nowrap; line-height:1.55rem; }
+    .lc-rem   { color:#fb923c; font-weight:700; font-size:.95rem; position:absolute; top:0; transform:translateX(-50%); white-space:nowrap; line-height:1.55rem; }
+    .lc-pct-row { position:relative; height:1.2rem; margin-top:.25rem; flex-shrink:0; }
+    .lc-pct-l { color:#818cf8; font-size:.78rem; font-weight:700; position:absolute; transform:translateX(-50%); line-height:1.2rem; }
+    .lc-pct-r { color:#f97316; font-size:.78rem; font-weight:700; position:absolute; transform:translateX(-50%); line-height:1.2rem; }
     .mkt-row {
       display: flex; align-items: center; justify-content: space-between;
       padding: .28rem .45rem;
@@ -361,54 +361,53 @@
         <button onclick="calcLife()" class="nano-btn">Vai</button>
       </div>
       <div id="life-bars" style="display:none;flex-direction:column;gap:0;flex:1;overflow:hidden;">
+        <!-- Year labels: NASCITA / OGGI / FINE -->
+        <div id="lc-timeline" style="position:relative;height:1.45rem;margin-bottom:.12rem;flex-shrink:0;">
+          <span id="lc-t-start" style="position:absolute;left:0;font-size:.78rem;color:#fbbf24;font-weight:700;white-space:nowrap;line-height:1.45rem;"></span>
+          <span id="lc-t-now"   style="position:absolute;transform:translateX(-50%);font-size:.78rem;color:#fbbf24;font-weight:700;white-space:nowrap;line-height:1.45rem;"></span>
+          <span id="lc-t-end"   style="position:absolute;right:0;font-size:.78rem;color:#fbbf24;font-weight:700;white-space:nowrap;line-height:1.45rem;"></span>
+        </div>
         <!-- bars wrap with vertical NOW marker -->
         <div id="lc-bars-wrap" style="position:relative;flex:1;display:flex;flex-direction:column;gap:.05rem;">
           <!-- NOW vertical line -->
-          <div id="lc-v-now" style="position:absolute;top:0;bottom:1.5rem;width:2px;background:rgba(251,191,36,.65);z-index:3;pointer-events:none;left:0;"></div>
+          <div id="lc-v-now" style="position:absolute;top:0;bottom:0;width:2px;background:rgba(251,191,36,.65);z-index:3;pointer-events:none;left:0;"></div>
           <!-- Row: Anni -->
           <div class="lc-row">
-            <div class="lc-top"><span class="lc-lbl">Anni di vita</span><span class="lc-ast">*</span><span id="lc-yr-lived" class="lc-lived"></span><span id="lc-yr-rem" class="lc-rem"></span></div>
+            <div class="lc-nums"><span class="lc-lbl">Anni di vita<span class="lc-ast">*</span></span><span id="lc-yr-lived" class="lc-lived"></span><span id="lc-yr-rem" class="lc-rem"></span></div>
             <div class="lbar-track2"><div id="yr-bar-p" class="lbar-seg" style="background:linear-gradient(90deg,#6366f1,#a855f7);"></div><div id="yr-bar-f" class="lbar-seg" style="background:linear-gradient(90deg,#dc2626,#7f1d1d);"></div></div>
-            <div class="lc-bot"><span id="lc-yr-pp" class="lc-pct-l"></span><span id="lc-yr-fp" class="lc-pct-r"></span></div>
           </div>
           <!-- Row: Mesi -->
           <div class="lc-row">
-            <div class="lc-top"><span class="lc-lbl">Mesi</span><span id="lc-mo-lived" class="lc-lived"></span><span id="lc-mo-rem" class="lc-rem"></span></div>
+            <div class="lc-nums"><span class="lc-lbl">Mesi</span><span id="lc-mo-lived" class="lc-lived"></span><span id="lc-mo-rem" class="lc-rem"></span></div>
             <div class="lbar-track2"><div id="mo-bar-p" class="lbar-seg" style="background:linear-gradient(90deg,#0ea5e9,#06b6d4);"></div><div id="mo-bar-f" class="lbar-seg" style="background:linear-gradient(90deg,#ef4444,#991b1b);"></div></div>
-            <div class="lc-bot"><span id="lc-mo-pp" class="lc-pct-l"></span><span id="lc-mo-fp" class="lc-pct-r"></span></div>
           </div>
           <!-- Row: Settimane -->
           <div class="lc-row">
-            <div class="lc-top"><span class="lc-lbl">Settimane</span><span id="lc-wk-lived" class="lc-lived"></span><span id="lc-wk-rem" class="lc-rem"></span></div>
+            <div class="lc-nums"><span class="lc-lbl">Settimane</span><span id="lc-wk-lived" class="lc-lived"></span><span id="lc-wk-rem" class="lc-rem"></span></div>
             <div class="lbar-track2"><div id="wk-bar-p" class="lbar-seg" style="background:linear-gradient(90deg,#4f46e5,#7c3aed);"></div><div id="wk-bar-f" class="lbar-seg" style="background:linear-gradient(90deg,#f97316,#c2410c);"></div></div>
-            <div class="lc-bot"><span id="lc-wk-pp" class="lc-pct-l"></span><span id="lc-wk-fp" class="lc-pct-r"></span></div>
           </div>
           <!-- Row: Giorni -->
           <div class="lc-row">
-            <div class="lc-top"><span class="lc-lbl">Giorni</span><span id="lc-dy-lived" class="lc-lived"></span><span id="lc-dy-rem" class="lc-rem"></span></div>
+            <div class="lc-nums"><span class="lc-lbl">Giorni</span><span id="lc-dy-lived" class="lc-lived"></span><span id="lc-dy-rem" class="lc-rem"></span></div>
             <div class="lbar-track2"><div id="dy-bar-p" class="lbar-seg" style="background:linear-gradient(90deg,#10b981,#06b6d4);"></div><div id="dy-bar-f" class="lbar-seg" style="background:linear-gradient(90deg,#e11d48,#9f1239);"></div></div>
-            <div class="lc-bot"><span id="lc-dy-pp" class="lc-pct-l"></span><span id="lc-dy-fp" class="lc-pct-r"></span></div>
           </div>
           <!-- Row: Ore -->
           <div class="lc-row">
-            <div class="lc-top"><span class="lc-lbl">Ore</span><span id="lc-hr-lived" class="lc-lived"></span><span id="lc-hr-rem" class="lc-rem"></span></div>
+            <div class="lc-nums"><span class="lc-lbl">Ore</span><span id="lc-hr-lived" class="lc-lived"></span><span id="lc-hr-rem" class="lc-rem"></span></div>
             <div class="lbar-track2"><div id="hr-bar-p" class="lbar-seg" style="background:linear-gradient(90deg,#f59e0b,#f97316);"></div><div id="hr-bar-f" class="lbar-seg" style="background:linear-gradient(90deg,#be123c,#881337);"></div></div>
-            <div class="lc-bot"><span id="lc-hr-pp" class="lc-pct-l"></span><span id="lc-hr-fp" class="lc-pct-r"></span></div>
           </div>
           <!-- Row: Minuti -->
           <div class="lc-row">
-            <div class="lc-top"><span class="lc-lbl">Minuti</span><span id="lc-mn-lived" class="lc-lived"></span><span id="lc-mn-rem" class="lc-rem"></span></div>
+            <div class="lc-nums"><span class="lc-lbl">Minuti</span><span id="lc-mn-lived" class="lc-lived"></span><span id="lc-mn-rem" class="lc-rem"></span></div>
             <div class="lbar-track2"><div id="mn-bar-p" class="lbar-seg" style="background:linear-gradient(90deg,#ec4899,#a855f7);"></div><div id="mn-bar-f" class="lbar-seg" style="background:linear-gradient(90deg,#dc2626,#450a0a);"></div></div>
-            <div class="lc-bot"><span id="lc-mn-pp" class="lc-pct-l"></span><span id="lc-mn-fp" class="lc-pct-r"></span></div>
-          </div>
-          <!-- Timeline footer: INIZIO / NOW / FINE -->
-          <div id="lc-timeline" style="position:relative;height:1.4rem;margin-top:.2rem;flex-shrink:0;">
-            <span id="lc-t-start" style="position:absolute;left:0;font-size:.68rem;color:#94a3b8;"></span>
-            <span id="lc-t-now"   style="position:absolute;transform:translateX(-50%);font-size:.68rem;color:#fbbf24;font-weight:700;white-space:nowrap;"></span>
-            <span id="lc-t-end"   style="position:absolute;right:0;font-size:.68rem;color:#f87171;"></span>
           </div>
         </div>
-        <div id="life-sum" style="font-size:.68rem;color:#475569;line-height:1.35;flex-shrink:0;"></div>
+        <!-- Single shared percentage row -->
+        <div class="lc-pct-row">
+          <span id="lc-pct-l" class="lc-pct-l"></span>
+          <span id="lc-pct-r" class="lc-pct-r"></span>
+        </div>
+        <div id="life-sum" style="font-size:.68rem;color:#475569;line-height:1.35;flex-shrink:0;margin-top:.15rem;"></div>
       </div>
     </div>
 
@@ -959,18 +958,25 @@ renderQ();
     const moR=Math.round(yR*12), wkR=Math.round(yR*52.18);
     const dyR=Math.round(yR*365.25), hrR=Math.round(dyR*24), mnR=hrR*60;
     function fmt(n){return n.toLocaleString('it');}
+    // Position helpers: center of left segment and center of right segment
+    const lPos = (pct/2).toFixed(2)+'%';
+    const rPos = (pct + fpct/2).toFixed(2)+'%';
     // Labels above bars (mo=mesi, min=minuti to avoid ambiguity)
-    $('lc-yr-lived').textContent=yL+'y';       $('lc-yr-rem').textContent=yR+'y';
-    $('lc-mo-lived').textContent=fmt(moL)+'mo'; $('lc-mo-rem').textContent=fmt(moR)+'mo';
-    $('lc-wk-lived').textContent=fmt(wkL)+'w';  $('lc-wk-rem').textContent=fmt(wkR)+'w';
-    $('lc-dy-lived').textContent=fmt(dyL)+'g';  $('lc-dy-rem').textContent=fmt(dyR)+'g';
-    $('lc-hr-lived').textContent=fmt(hrL)+'h';  $('lc-hr-rem').textContent=fmt(hrR)+'h';
-    $('lc-mn-lived').textContent=fmt(mnL)+'min';$('lc-mn-rem').textContent=fmt(mnR)+'min';
-    // Percentages below bars
-    ['yr','mo','wk','dy','hr','mn'].forEach(k=>{
-      $('lc-'+k+'-pp').textContent=pct+'%';
-      $('lc-'+k+'-fp').textContent=fpct+'%';
-    });
+    function setNum(liveId, remId, liveVal, remVal){
+      const lEl=$( liveId), rEl=$( remId);
+      lEl.textContent=liveVal; lEl.style.left=lPos;
+      rEl.textContent=remVal;  rEl.style.left=rPos;
+    }
+    setNum('lc-yr-lived','lc-yr-rem', yL+'y', yR+'y');
+    setNum('lc-mo-lived','lc-mo-rem', fmt(moL)+'mo', fmt(moR)+'mo');
+    setNum('lc-wk-lived','lc-wk-rem', fmt(wkL)+'w',  fmt(wkR)+'w');
+    setNum('lc-dy-lived','lc-dy-rem', fmt(dyL)+'g',  fmt(dyR)+'g');
+    setNum('lc-hr-lived','lc-hr-rem', fmt(hrL)+'h',  fmt(hrR)+'h');
+    setNum('lc-mn-lived','lc-mn-rem', fmt(mnL)+'min',fmt(mnR)+'min');
+    // Single shared percentage row
+    const pctL=$('lc-pct-l'), pctR=$('lc-pct-r');
+    pctL.textContent=pct+'%';  pctL.style.left=lPos;
+    pctR.textContent=fpct+'%'; pctR.style.left=rPos;
     // Timeline footer
     $('lc-t-start').textContent=birthYear;
     $('lc-t-now').textContent=now.getFullYear();
