@@ -131,15 +131,17 @@
     /* ── LIFE COUNTER ── */
     .lbar-track2 { height:7px; background:rgba(30,41,59,.6); border-radius:999px; overflow:hidden; display:flex; }
     .lbar-seg { height:100%; flex-shrink:0; transition:width .8s cubic-bezier(.4,0,.2,1); width:0; }
-    .lc-row { display:flex; flex-direction:column; gap:0; margin-bottom:.16rem; }
-    .lc-nums { position:relative; height:1.55rem; }
-    .lc-lbl { color:#94a3b8; font-size:.7rem; line-height:1.55rem; }
-    .lc-ast { color:#fbbf24; font-size:.58rem; vertical-align:super; }
-    .lc-lived { color:#e2e8f0; font-weight:700; font-size:.95rem; position:absolute; top:0; transform:translateX(-50%); white-space:nowrap; line-height:1.55rem; }
-    .lc-rem   { color:#fb923c; font-weight:700; font-size:.95rem; position:absolute; top:0; transform:translateX(-50%); white-space:nowrap; line-height:1.55rem; }
-    .lc-pct-row { position:relative; height:1.2rem; margin-top:.25rem; flex-shrink:0; }
-    .lc-pct-l { color:#818cf8; font-size:.78rem; font-weight:700; position:absolute; transform:translateX(-50%); line-height:1.2rem; }
-    .lc-pct-r { color:#f97316; font-size:.78rem; font-weight:700; position:absolute; transform:translateX(-50%); line-height:1.2rem; }
+    .lc-ast { color:#fbbf24; font-size:.55rem; vertical-align:super; }
+    .lc-table { display:grid; grid-template-columns:auto auto 1fr auto auto; column-gap:.2rem; row-gap:.22rem; align-items:center; width:100%; min-width:0; }
+    .lc-cell-lbl { color:#94a3b8; font-size:.67rem; white-space:nowrap; }
+    .lc-cell-lived { text-align:right; color:#e2e8f0; font-weight:700; font-size:.7rem; white-space:nowrap; padding:.06rem .25rem .06rem .05rem; border-right:1px solid rgba(251,191,36,.5); }
+    .lc-cell-bar { min-width:0; padding:0 .1rem; }
+    .lc-cell-rem { text-align:left; color:#fb923c; font-weight:700; font-size:.7rem; white-space:nowrap; padding:.06rem .1rem .06rem .25rem; border-left:1px solid rgba(251,191,36,.5); }
+    .lc-cell-tot { text-align:right; color:#64748b; font-size:.67rem; font-weight:600; white-space:nowrap; padding-left:.18rem; }
+    .lc-hdr-yr { color:#fbbf24; font-weight:700; font-size:.75rem; white-space:nowrap; }
+    .lc-cell-pct-l { text-align:right; color:#818cf8; font-size:.74rem; font-weight:700; padding:.06rem .25rem .06rem .05rem; border-right:1px solid rgba(251,191,36,.5); margin-top:.1rem; }
+    .lc-cell-pct-r { color:#f97316; font-size:.74rem; font-weight:700; padding:.06rem .1rem .06rem .25rem; border-left:1px solid rgba(251,191,36,.5); margin-top:.1rem; }
+    .lc-cell-pct-100 { text-align:right; color:#475569; font-size:.74rem; font-weight:700; padding-left:.18rem; margin-top:.1rem; }
     .mkt-row {
       display: flex; align-items: center; justify-content: space-between;
       padding: .28rem .45rem;
@@ -355,57 +357,61 @@
       <div class="card-hd" style="flex-wrap:wrap;gap:.3rem .5rem;">
         <i data-lucide="activity" style="color:#a855f7;flex-shrink:0;"></i>
         <span>LIFE COUNTER:</span>
-        <span style="color:#cbd5e1;font-size:.8rem;font-weight:400;white-space:nowrap;">Quanti anni ho?</span>
-        <input type="number" id="user-age" placeholder="età" min="1" max="120" oninput="calcLife()" aria-label="Quanti anni ho?" class="nano-inp" style="width:4rem;text-align:center;border-color:#22c55e;color:#22c55e;font-weight:700;">
+        <span style="color:#cbd5e1;font-size:.8rem;font-weight:400;white-space:nowrap;">Quanti anni hai?</span>
+        <input type="number" id="user-age" placeholder="età" min="1" max="120" oninput="calcLife()" aria-label="Quanti anni hai?" class="nano-inp" style="width:4rem;text-align:center;border-color:#22c55e;color:#22c55e;font-weight:700;">
       </div>
-      <div id="life-bars" style="display:none;flex-direction:column;gap:0;flex:1;overflow:hidden;">
-        <!-- Year labels: NASCITA / OGGI / FINE -->
-        <div id="lc-timeline" style="position:relative;height:1.45rem;margin-bottom:.12rem;flex-shrink:0;">
-          <span id="lc-t-start" style="position:absolute;left:0;font-size:.78rem;color:#fbbf24;font-weight:700;white-space:nowrap;line-height:1.45rem;"></span>
-          <span id="lc-t-now"   style="position:absolute;transform:translateX(-50%);font-size:.78rem;color:#fbbf24;font-weight:700;white-space:nowrap;line-height:1.45rem;"></span>
-          <span id="lc-t-end"   style="position:absolute;right:0;font-size:.78rem;color:#fbbf24;font-weight:700;white-space:nowrap;line-height:1.45rem;"></span>
-        </div>
-        <!-- bars wrap with vertical NOW marker -->
-        <div id="lc-bars-wrap" style="position:relative;flex:1;display:flex;flex-direction:column;gap:.05rem;">
-          <!-- NOW vertical line -->
-          <div id="lc-v-now" style="position:absolute;top:0;bottom:0;width:2px;background:rgba(251,191,36,.65);z-index:3;pointer-events:none;left:0;"></div>
-          <!-- Row: Anni -->
-          <div class="lc-row">
-            <div class="lc-nums"><span class="lc-lbl">Anni di vita<span class="lc-ast">*</span></span><span id="lc-yr-lived" class="lc-lived"></span><span id="lc-yr-rem" class="lc-rem"></span></div>
-            <div class="lbar-track2"><div id="yr-bar-p" class="lbar-seg" style="background:linear-gradient(90deg,#6366f1,#a855f7);"></div><div id="yr-bar-f" class="lbar-seg" style="background:linear-gradient(90deg,#dc2626,#7f1d1d);"></div></div>
-          </div>
+      <div id="life-bars" style="display:none;flex-direction:column;gap:0;flex:1;overflow:hidden;min-width:0;">
+        <div class="lc-table">
+          <!-- Header: birth year / current year / end year -->
+          <div></div>
+          <div class="lc-hdr-yr" id="lc-t-start"></div>
+          <div class="lc-hdr-yr" style="text-align:center;" id="lc-t-now"></div>
+          <div class="lc-hdr-yr lc-cell-rem"></div>
+          <div class="lc-hdr-yr lc-cell-tot" id="lc-t-end"></div>
+          <!-- Row: Anni di vita -->
+          <div class="lc-cell-lbl">Anni di vita<span class="lc-ast">*</span></div>
+          <div class="lc-cell-lived"><span id="lc-yr-lived"></span></div>
+          <div class="lc-cell-bar"><div class="lbar-track2"><div id="yr-bar-p" class="lbar-seg" style="background:linear-gradient(90deg,#6366f1,#a855f7);"></div><div id="yr-bar-f" class="lbar-seg" style="background:linear-gradient(90deg,#dc2626,#7f1d1d);"></div></div></div>
+          <div class="lc-cell-rem"><span id="lc-yr-rem"></span></div>
+          <div class="lc-cell-tot"><span id="lc-yr-tot"></span></div>
           <!-- Row: Mesi -->
-          <div class="lc-row">
-            <div class="lc-nums"><span class="lc-lbl">Mesi</span><span id="lc-mo-lived" class="lc-lived"></span><span id="lc-mo-rem" class="lc-rem"></span></div>
-            <div class="lbar-track2"><div id="mo-bar-p" class="lbar-seg" style="background:linear-gradient(90deg,#0ea5e9,#06b6d4);"></div><div id="mo-bar-f" class="lbar-seg" style="background:linear-gradient(90deg,#ef4444,#991b1b);"></div></div>
-          </div>
+          <div class="lc-cell-lbl">Mesi</div>
+          <div class="lc-cell-lived"><span id="lc-mo-lived"></span></div>
+          <div class="lc-cell-bar"><div class="lbar-track2"><div id="mo-bar-p" class="lbar-seg" style="background:linear-gradient(90deg,#0ea5e9,#06b6d4);"></div><div id="mo-bar-f" class="lbar-seg" style="background:linear-gradient(90deg,#ef4444,#991b1b);"></div></div></div>
+          <div class="lc-cell-rem"><span id="lc-mo-rem"></span></div>
+          <div class="lc-cell-tot"><span id="lc-mo-tot"></span></div>
           <!-- Row: Settimane -->
-          <div class="lc-row">
-            <div class="lc-nums"><span class="lc-lbl">Settimane</span><span id="lc-wk-lived" class="lc-lived"></span><span id="lc-wk-rem" class="lc-rem"></span></div>
-            <div class="lbar-track2"><div id="wk-bar-p" class="lbar-seg" style="background:linear-gradient(90deg,#4f46e5,#7c3aed);"></div><div id="wk-bar-f" class="lbar-seg" style="background:linear-gradient(90deg,#f97316,#c2410c);"></div></div>
-          </div>
+          <div class="lc-cell-lbl">Settimane</div>
+          <div class="lc-cell-lived"><span id="lc-wk-lived"></span></div>
+          <div class="lc-cell-bar"><div class="lbar-track2"><div id="wk-bar-p" class="lbar-seg" style="background:linear-gradient(90deg,#4f46e5,#7c3aed);"></div><div id="wk-bar-f" class="lbar-seg" style="background:linear-gradient(90deg,#f97316,#c2410c);"></div></div></div>
+          <div class="lc-cell-rem"><span id="lc-wk-rem"></span></div>
+          <div class="lc-cell-tot"><span id="lc-wk-tot"></span></div>
           <!-- Row: Giorni -->
-          <div class="lc-row">
-            <div class="lc-nums"><span class="lc-lbl">Giorni</span><span id="lc-dy-lived" class="lc-lived"></span><span id="lc-dy-rem" class="lc-rem"></span></div>
-            <div class="lbar-track2"><div id="dy-bar-p" class="lbar-seg" style="background:linear-gradient(90deg,#10b981,#06b6d4);"></div><div id="dy-bar-f" class="lbar-seg" style="background:linear-gradient(90deg,#e11d48,#9f1239);"></div></div>
-          </div>
+          <div class="lc-cell-lbl">Giorni</div>
+          <div class="lc-cell-lived"><span id="lc-dy-lived"></span></div>
+          <div class="lc-cell-bar"><div class="lbar-track2"><div id="dy-bar-p" class="lbar-seg" style="background:linear-gradient(90deg,#10b981,#06b6d4);"></div><div id="dy-bar-f" class="lbar-seg" style="background:linear-gradient(90deg,#e11d48,#9f1239);"></div></div></div>
+          <div class="lc-cell-rem"><span id="lc-dy-rem"></span></div>
+          <div class="lc-cell-tot"><span id="lc-dy-tot"></span></div>
           <!-- Row: Ore -->
-          <div class="lc-row">
-            <div class="lc-nums"><span class="lc-lbl">Ore</span><span id="lc-hr-lived" class="lc-lived"></span><span id="lc-hr-rem" class="lc-rem"></span></div>
-            <div class="lbar-track2"><div id="hr-bar-p" class="lbar-seg" style="background:linear-gradient(90deg,#f59e0b,#f97316);"></div><div id="hr-bar-f" class="lbar-seg" style="background:linear-gradient(90deg,#be123c,#881337);"></div></div>
-          </div>
+          <div class="lc-cell-lbl">Ore</div>
+          <div class="lc-cell-lived"><span id="lc-hr-lived"></span></div>
+          <div class="lc-cell-bar"><div class="lbar-track2"><div id="hr-bar-p" class="lbar-seg" style="background:linear-gradient(90deg,#f59e0b,#f97316);"></div><div id="hr-bar-f" class="lbar-seg" style="background:linear-gradient(90deg,#be123c,#881337);"></div></div></div>
+          <div class="lc-cell-rem"><span id="lc-hr-rem"></span></div>
+          <div class="lc-cell-tot"><span id="lc-hr-tot"></span></div>
           <!-- Row: Minuti -->
-          <div class="lc-row">
-            <div class="lc-nums"><span class="lc-lbl">Minuti</span><span id="lc-mn-lived" class="lc-lived"></span><span id="lc-mn-rem" class="lc-rem"></span></div>
-            <div class="lbar-track2"><div id="mn-bar-p" class="lbar-seg" style="background:linear-gradient(90deg,#ec4899,#a855f7);"></div><div id="mn-bar-f" class="lbar-seg" style="background:linear-gradient(90deg,#dc2626,#450a0a);"></div></div>
-          </div>
+          <div class="lc-cell-lbl">Minuti</div>
+          <div class="lc-cell-lived"><span id="lc-mn-lived"></span></div>
+          <div class="lc-cell-bar"><div class="lbar-track2"><div id="mn-bar-p" class="lbar-seg" style="background:linear-gradient(90deg,#ec4899,#a855f7);"></div><div id="mn-bar-f" class="lbar-seg" style="background:linear-gradient(90deg,#dc2626,#450a0a);"></div></div></div>
+          <div class="lc-cell-rem"><span id="lc-mn-rem"></span></div>
+          <div class="lc-cell-tot"><span id="lc-mn-tot"></span></div>
+          <!-- Percentage row -->
+          <div></div>
+          <div class="lc-cell-pct-l" id="lc-pct-l"></div>
+          <div></div>
+          <div class="lc-cell-pct-r" id="lc-pct-r"></div>
+          <div class="lc-cell-pct-100">100%</div>
         </div>
-        <!-- Single shared percentage row -->
-        <div class="lc-pct-row">
-          <span id="lc-pct-l" class="lc-pct-l"></span>
-          <span id="lc-pct-r" class="lc-pct-r"></span>
-        </div>
-        <div id="life-sum" style="font-size:.68rem;color:#475569;line-height:1.35;flex-shrink:0;margin-top:.15rem;"></div>
+        <div id="life-sum" style="font-size:.62rem;color:#475569;line-height:1.35;flex-shrink:0;margin-top:.2rem;"></div>
       </div>
     </div>
 
@@ -955,33 +961,38 @@ renderQ();
     const yR=Math.max(0,LE-ag);
     const moR=Math.round(yR*12), wkR=Math.round(yR*52.18);
     const dyR=Math.round(yR*365.25), hrR=Math.round(dyR*24), mnR=hrR*60;
+    // Total values
+    const yT=LE, moT=Math.round(LE*12), wkT=Math.round(LE*52.18);
+    const dyT=Math.round(LE*365.25), hrT=Math.round(dyT*24), mnT=hrT*60;
     function fmt(n){return n.toLocaleString('it');}
-    // Position helpers: center of left segment and center of right segment
-    const lPos = (pct/2).toFixed(2)+'%';
-    const rPos = (pct + fpct/2).toFixed(2)+'%';
-    // Labels above bars (mo=mesi, min=minuti to avoid ambiguity)
-    function setNum(liveId, remId, liveVal, remVal){
-      const lEl=$( liveId), rEl=$( remId);
-      lEl.textContent=liveVal; lEl.style.left=lPos;
-      rEl.textContent=remVal;  rEl.style.left=rPos;
-    }
-    setNum('lc-yr-lived','lc-yr-rem', yL, yR);
-    setNum('lc-mo-lived','lc-mo-rem', fmt(moL), fmt(moR));
-    setNum('lc-wk-lived','lc-wk-rem', fmt(wkL), fmt(wkR));
-    setNum('lc-dy-lived','lc-dy-rem', fmt(dyL), fmt(dyR));
-    setNum('lc-hr-lived','lc-hr-rem', fmt(hrL), fmt(hrR));
-    setNum('lc-mn-lived','lc-mn-rem', fmt(mnL), fmt(mnR));
-    // Single shared percentage row
-    const pctL=$('lc-pct-l'), pctR=$('lc-pct-r');
-    pctL.textContent=pct+'%';  pctL.style.left=lPos;
-    pctR.textContent=fpct+'%'; pctR.style.left=rPos;
-    // Timeline footer
+    // Lived
+    $('lc-yr-lived').textContent=fmt(yL);
+    $('lc-mo-lived').textContent=fmt(moL);
+    $('lc-wk-lived').textContent=fmt(wkL);
+    $('lc-dy-lived').textContent=fmt(dyL);
+    $('lc-hr-lived').textContent=fmt(hrL);
+    $('lc-mn-lived').textContent=fmt(mnL);
+    // Remaining
+    $('lc-yr-rem').textContent=fmt(yR);
+    $('lc-mo-rem').textContent=fmt(moR);
+    $('lc-wk-rem').textContent=fmt(wkR);
+    $('lc-dy-rem').textContent=fmt(dyR);
+    $('lc-hr-rem').textContent=fmt(hrR);
+    $('lc-mn-rem').textContent=fmt(mnR);
+    // Totals
+    $('lc-yr-tot').textContent=fmt(yT);
+    $('lc-mo-tot').textContent=fmt(moT);
+    $('lc-wk-tot').textContent=fmt(wkT);
+    $('lc-dy-tot').textContent=fmt(dyT);
+    $('lc-hr-tot').textContent=fmt(hrT);
+    $('lc-mn-tot').textContent=fmt(mnT);
+    // Percentages
+    $('lc-pct-l').textContent=pct+'%';
+    $('lc-pct-r').textContent=fpct+'%';
+    // Timeline header years
     $('lc-t-start').textContent=birthYear;
     $('lc-t-now').textContent=now.getFullYear();
-    $('lc-t-now').style.left=pct+'%';
     $('lc-t-end').textContent=endYear;
-    // NOW vertical line
-    $('lc-v-now').style.left=pct+'%';
     // Summary with asterisk geo reference
     const geo=geoLabel?(' ('+geoLabel+')'):'';
     $('life-sum').innerHTML='<span style="color:#475569;font-size:.62rem;">* aspettativa media '+LE+' anni'+geo+' — fonte: OMS/Eurostat</span>';
