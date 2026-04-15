@@ -431,7 +431,7 @@
           <!-- Percentage row -->
           <div></div>
           <div class="lc-cell-pct-l" id="lc-pct-l"></div>
-          <div class="lc-pct-bar-cell"><div id="lc-now-lbl" class="lc-now-lbl">NOW</div></div>
+          <div class="lc-pct-bar-cell"><div id="lc-now-lbl" class="lc-now-lbl" aria-label="Current position indicator">NOW</div></div>
           <div class="lc-cell-pct-r" id="lc-pct-r"></div>
           <div class="lc-cell-pct-100">100%</div>
         </div>
@@ -1032,7 +1032,7 @@ renderQ();
       // Add/update NOW dashed vertical segments in each bar cell
       document.querySelectorAll('.lc-cell-bar').forEach(cell=>{
         let seg=cell.querySelector('.lc-now-seg');
-        if(!seg){seg=document.createElement('div');seg.className='lc-now-seg';cell.appendChild(seg);}
+        if(!seg){seg=document.createElement('div');seg.className='lc-now-seg';seg.setAttribute('aria-hidden','true');cell.appendChild(seg);}
         seg.style.left=pct+'%';
         seg.classList.add('vis');
       });
