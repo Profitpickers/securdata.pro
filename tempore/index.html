@@ -132,16 +132,31 @@
     .lbar-track2 { height:7px; background:rgba(30,41,59,.6); border-radius:999px; overflow:hidden; display:flex; }
     .lbar-seg { height:100%; flex-shrink:0; transition:width .8s cubic-bezier(.4,0,.2,1); width:0; }
     .lc-ast { color:#fbbf24; font-size:.55rem; vertical-align:super; }
-    .lc-table { display:grid; grid-template-columns:auto auto 1fr auto auto; column-gap:.2rem; row-gap:.22rem; align-items:center; width:100%; min-width:0; }
+    .lc-table { display:grid; grid-template-columns:auto auto 1fr auto auto; column-gap:.2rem; row-gap:.22rem; align-items:center; width:100%; min-width:0; position:relative; }
     .lc-cell-lbl { color:#94a3b8; font-size:.67rem; white-space:nowrap; }
     .lc-cell-lived { text-align:right; color:#e2e8f0; font-weight:700; font-size:.7rem; white-space:nowrap; padding:.06rem .25rem .06rem .05rem; border-right:1px solid rgba(251,191,36,.5); }
-    .lc-cell-bar { min-width:0; padding:0 .1rem; }
+    .lc-cell-bar { min-width:0; padding:0 .1rem; position:relative; }
     .lc-cell-rem { text-align:left; color:#fb923c; font-weight:700; font-size:.7rem; white-space:nowrap; padding:.06rem .1rem .06rem .25rem; border-left:1px solid rgba(251,191,36,.5); }
     .lc-cell-tot { text-align:right; color:#64748b; font-size:.67rem; font-weight:600; white-space:nowrap; padding-left:.18rem; }
     .lc-hdr-yr { color:#fbbf24; font-weight:700; font-size:.75rem; white-space:nowrap; }
     .lc-cell-pct-l { text-align:right; color:#818cf8; font-size:.74rem; font-weight:700; padding:.06rem .25rem .06rem .05rem; border-right:1px solid rgba(251,191,36,.5); margin-top:.1rem; }
     .lc-cell-pct-r { color:#f97316; font-size:.74rem; font-weight:700; padding:.06rem .1rem .06rem .25rem; border-left:1px solid rgba(251,191,36,.5); margin-top:.1rem; }
     .lc-cell-pct-100 { text-align:right; color:#475569; font-size:.74rem; font-weight:700; padding-left:.18rem; margin-top:.1rem; }
+    /* ── LIFE LINE / timeline additions ── */
+    .lc-lifeline-lbl { color:#fbbf24; font-weight:700; font-size:.67rem; white-space:nowrap; }
+    .lc-timeline-bar { position:relative; min-width:0; height:18px; }
+    .lc-tl-line { position:absolute; top:50%; left:0; right:0; height:2px; background:#fbbf24; border-radius:1px; transform:translateY(-50%); }
+    .lc-tl-tick { position:absolute; top:15%; width:2px; height:70%; background:#fbbf24; transform:translateX(-50%); }
+    .lc-tl-tick-s { left:0; transform:none; }
+    .lc-tl-tick-e { right:0; left:auto; transform:none; }
+    .lc-tl-yr-now { position:absolute; top:50%; transform:translate(-50%,-50%); color:#fbbf24; font-weight:700; font-size:.72rem; white-space:nowrap; pointer-events:none; }
+    .lc-totale-wrap { display:flex; flex-direction:column; align-items:flex-end; gap:.05rem; padding-left:.18rem; }
+    .lc-totale-lbl { color:#94a3b8; font-size:.55rem; font-weight:600; letter-spacing:.06em; line-height:1.1; white-space:nowrap; }
+    .lc-now-seg { position:absolute; top:-4px; bottom:-4px; width:0; border-left:1.5px dashed #fbbf24; pointer-events:none; z-index:2; transform:translateX(-50%); opacity:0; transition:opacity .4s; }
+    .lc-now-seg.vis { opacity:1; }
+    .lc-pct-bar-cell { position:relative; }
+    .lc-now-lbl { position:absolute; top:0; left:0; transform:translateX(-50%); color:#fbbf24; font-size:.68rem; font-weight:700; white-space:nowrap; letter-spacing:.04em; opacity:0; transition:opacity .4s; }
+    .lc-now-lbl.vis { opacity:1; }
     .mkt-row {
       display: flex; align-items: center; justify-content: space-between;
       padding: .28rem .45rem;
@@ -362,12 +377,21 @@
       </div>
       <div id="life-bars" style="display:none;flex-direction:column;gap:0;flex:1;overflow:hidden;min-width:0;">
         <div class="lc-table">
-          <!-- Header: birth year / current year / end year -->
-          <div></div>
+          <!-- Header: LIFE LINE / birth year / yellow timeline / end year / TOTALE -->
+          <div class="lc-lifeline-lbl">LIFE LINE</div>
           <div class="lc-hdr-yr" id="lc-t-start"></div>
-          <div class="lc-hdr-yr" style="text-align:center;" id="lc-t-now"></div>
+          <div class="lc-timeline-bar">
+            <div class="lc-tl-line"></div>
+            <div class="lc-tl-tick lc-tl-tick-s"></div>
+            <div id="lc-tl-tick-now" class="lc-tl-tick"></div>
+            <div class="lc-tl-tick lc-tl-tick-e"></div>
+            <div id="lc-t-now" class="lc-tl-yr-now"></div>
+          </div>
           <div class="lc-hdr-yr lc-cell-rem"></div>
-          <div class="lc-hdr-yr lc-cell-tot" id="lc-t-end"></div>
+          <div class="lc-totale-wrap">
+            <span class="lc-totale-lbl">TOTALE</span>
+            <span class="lc-hdr-yr" id="lc-t-end"></span>
+          </div>
           <!-- Row: Anni di vita -->
           <div class="lc-cell-lbl">Anni di vita<span class="lc-ast">*</span></div>
           <div class="lc-cell-lived"><span id="lc-yr-lived"></span></div>
@@ -407,7 +431,7 @@
           <!-- Percentage row -->
           <div></div>
           <div class="lc-cell-pct-l" id="lc-pct-l"></div>
-          <div></div>
+          <div class="lc-pct-bar-cell"><div id="lc-now-lbl" class="lc-now-lbl">NOW</div></div>
           <div class="lc-cell-pct-r" id="lc-pct-r"></div>
           <div class="lc-cell-pct-100">100%</div>
         </div>
@@ -992,6 +1016,9 @@ renderQ();
     // Timeline header years
     $('lc-t-start').textContent=birthYear;
     $('lc-t-now').textContent=now.getFullYear();
+    $('lc-t-now').style.left=pct+'%';
+    const tkNow=document.getElementById('lc-tl-tick-now');
+    if(tkNow) tkNow.style.left=pct+'%';
     $('lc-t-end').textContent=endYear;
     // Summary with asterisk geo reference
     const geo=geoLabel?(' ('+geoLabel+')'):'';
@@ -1002,6 +1029,16 @@ renderQ();
         $(k+'-bar-p').style.width=pct+'%';
         $(k+'-bar-f').style.width=fpct+'%';
       });
+      // Add/update NOW dashed vertical segments in each bar cell
+      document.querySelectorAll('.lc-cell-bar').forEach(cell=>{
+        let seg=cell.querySelector('.lc-now-seg');
+        if(!seg){seg=document.createElement('div');seg.className='lc-now-seg';cell.appendChild(seg);}
+        seg.style.left=pct+'%';
+        seg.classList.add('vis');
+      });
+      // Show NOW label at pct position
+      const nowLbl=document.getElementById('lc-now-lbl');
+      if(nowLbl){nowLbl.style.left=pct+'%';nowLbl.classList.add('vis');}
     },80);
   };
   fetch('https://ipapi.co/json/')
