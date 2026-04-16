@@ -1309,7 +1309,8 @@
     html += '<div style="width:40px;height:40px;background:#0A2647;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;">🛡️</div>';
     html += '<div>';
     html += '<div class="pdf-h1">Checklist Sicurezza PMI 2025</div>';
-    html += '<div class="pdf-sub">SECURDATA.PRO · securdata.pro · Generato il ' + now + (userName ? ' · ' + escHtml(userName) : '') + (userCompany ? ' – ' + escHtml(userCompany) : '') + '</div>';
+    const userLine = [now, userName ? escHtml(userName) : '', userCompany ? escHtml(userCompany) : ''].filter(Boolean).join(' · ');
+    html += `<div class="pdf-sub">SECURDATA.PRO · securdata.pro · Generato il ${userLine}</div>`;
     html += '</div></div>';
     html += '<div style="height:1px;background:#0A2647;opacity:0.2;margin-bottom:16px;"></div>';
     ITEMS.forEach(function(item) {
@@ -1439,7 +1440,8 @@
     doc.text('SECURDATA.PRO', 14, 12);
     doc.setFontSize(8); doc.setFont('helvetica','normal');
     doc.text('Checklist Sicurezza PMI 2025  |  securdata.pro', 14, 20);
-    doc.text('Generato il ' + dateStr + (userName ? '  |  ' + userName : '') + (userCompany ? '  –  ' + userCompany : ''), 14, 27);
+    const headerLine = `Generato il ${dateStr}${userName ? '  |  ' + userName : ''}${userCompany ? '  –  ' + userCompany : ''}`;
+    doc.text(headerLine, 14, 27);
     y = 40;
 
     doc.setTextColor(10,38,71);
