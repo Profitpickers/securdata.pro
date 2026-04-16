@@ -1,0 +1,1669 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Checklist Sicurezza PMI 2025 – 20 punti pratici | SECURDATA.PRO</title>
+  <meta name="description" content="Checklist interattiva sicurezza informatica per PMI 2025: 20 punti pratici per proteggere i dati della tua azienda. Scarica il PDF completo gratis."/>
+  <meta name="keywords" content="checklist sicurezza PMI, cybersecurity PMI 2025, GDPR, protezione dati aziendali, securdata.pro"/>
+  <link rel="icon" href="../logo-00-securdata-pro.svg" type="image/svg+xml"/>
+  <link rel="canonical" href="https://securdata.pro/checklist/checklist-sicurezza-pmi-2025.html"/>
+  <meta property="og:title" content="Checklist Sicurezza PMI 2025 – 20 punti pratici"/>
+  <meta property="og:description" content="Scarica la checklist gratuita per proteggere i dati della tua PMI nel 2025."/>
+  <meta property="og:url" content="https://securdata.pro/checklist/checklist-sicurezza-pmi-2025.html"/>
+  <meta property="og:image" content="https://securdata.pro/logo-securdata-originale.jpg"/>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+
+  <!-- jsPDF + html2canvas via CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <style>
+    /* ===== RESET & BASE ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #0A2647 50%, #0f172a 100%);
+      color: #cbd5e1;
+      min-height: 100vh;
+      line-height: 1.7;
+    }
+
+    /* ===== SCROLLBAR ===== */
+    ::-webkit-scrollbar { width: 7px; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: #2E8B57; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #3aaa6e; }
+
+    /* ===== READING PROGRESS ===== */
+    #progress-bar {
+      position: fixed; top: 0; left: 0; height: 3px; width: 0%;
+      background: linear-gradient(90deg, #2E8B57, #6366f1);
+      z-index: 1000; transition: width 0.1s linear;
+    }
+
+    /* ===== NAVBAR ===== */
+    nav {
+      position: sticky; top: 0; z-index: 900;
+      background: rgba(10, 38, 71, 0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(46, 139, 87, 0.25);
+      padding: 0.75rem 1.5rem;
+    }
+    .nav-inner {
+      max-width: 1200px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem;
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 0.6rem; text-decoration: none;
+    }
+    .nav-logo img { width: 38px; height: 38px; border-radius: 50%; }
+    .nav-logo span {
+      font-size: 1.1rem; font-weight: 800; letter-spacing: 0.03em;
+      background: linear-gradient(135deg, #60a5fa, #2E8B57);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .nav-links { display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap; }
+    .nav-links a {
+      color: #94a3b8; text-decoration: none; font-size: 0.88rem; font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: #2E8B57; }
+    .nav-cta {
+      background: linear-gradient(135deg, #2E8B57, #1a5c3a);
+      color: #fff !important; padding: 0.45rem 1.1rem;
+      border-radius: 6px; font-weight: 600 !important;
+      transition: transform 0.2s, box-shadow 0.2s !important;
+    }
+    .nav-cta:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(46,139,87,0.4) !important; }
+
+    /* ===== HERO ===== */
+    .hero {
+      max-width: 900px; margin: 0 auto; padding: 4rem 1.5rem 2.5rem;
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      background: rgba(46,139,87,0.12); border: 1px solid rgba(46,139,87,0.35);
+      color: #4ade80; padding: 0.35rem 1rem; border-radius: 50px;
+      font-size: 0.8rem; font-weight: 600; letter-spacing: 0.04em;
+      margin-bottom: 1.5rem; text-transform: uppercase;
+    }
+    .hero h1 {
+      font-size: clamp(1.8rem, 4vw, 2.9rem);
+      font-weight: 900; line-height: 1.2;
+      color: #f1f5f9; margin-bottom: 1.25rem;
+    }
+    .hero h1 span {
+      background: linear-gradient(135deg, #60a5fa, #2E8B57);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .hero-meta {
+      display: flex; align-items: center; justify-content: center; gap: 1.25rem;
+      flex-wrap: wrap; font-size: 0.85rem; color: #64748b; margin-bottom: 1.5rem;
+    }
+    .hero-meta span { display: flex; align-items: center; gap: 0.3rem; }
+    .hero-desc {
+      font-size: 1.05rem; color: #94a3b8; max-width: 680px; margin: 0 auto 2rem;
+    }
+
+    /* ===== TOC ===== */
+    .toc-box {
+      background: rgba(10,38,71,0.6); border: 1px solid rgba(46,139,87,0.2);
+      border-radius: 12px; padding: 1.5rem 2rem;
+      max-width: 680px; margin: 0 auto 3rem; text-align: left;
+    }
+    .toc-box h3 {
+      font-size: 0.95rem; font-weight: 700; color: #2E8B57;
+      text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 1rem;
+    }
+    .toc-box ol { padding-left: 1.5rem; color: #94a3b8; font-size: 0.9rem; }
+    .toc-box li { margin: 0.3rem 0; }
+    .toc-box a { color: #60a5fa; text-decoration: none; }
+    .toc-box a:hover { text-decoration: underline; color: #2E8B57; }
+
+    /* ===== ARTICLE SECTION ===== */
+    .section-container {
+      max-width: 900px; margin: 0 auto; padding: 0 1.5rem 4rem;
+    }
+    .section-header {
+      display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;
+    }
+    .section-header-icon {
+      width: 42px; height: 42px; border-radius: 10px;
+      background: linear-gradient(135deg, #0A2647, #2E8B57);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; flex-shrink: 0;
+    }
+    .section-title {
+      font-size: 1.6rem; font-weight: 800; color: #f1f5f9;
+    }
+    .section-subtitle { font-size: 0.9rem; color: #64748b; margin-top: 0.2rem; }
+
+    /* Article point cards */
+    .article-point {
+      background: rgba(15,23,42,0.6);
+      border: 1px solid rgba(148,163,184,0.08);
+      border-radius: 12px; padding: 1.5rem 1.75rem;
+      margin-bottom: 1.25rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .article-point:hover {
+      border-color: rgba(46,139,87,0.3);
+      box-shadow: 0 4px 20px rgba(46,139,87,0.08);
+    }
+    .point-num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 28px; height: 28px; border-radius: 50%;
+      background: linear-gradient(135deg, #0A2647, #2E8B57);
+      color: #fff; font-size: 0.75rem; font-weight: 700;
+      flex-shrink: 0; margin-right: 0.75rem; float: left; margin-top: 0.1rem;
+    }
+    .point-title {
+      font-size: 1rem; font-weight: 700; color: #e2e8f0;
+      margin-bottom: 0.6rem; overflow: hidden;
+    }
+    .point-body { font-size: 0.92rem; color: #94a3b8; line-height: 1.75; clear: both; }
+    .point-tag {
+      display: inline-block; background: rgba(46,139,87,0.12);
+      border: 1px solid rgba(46,139,87,0.25); color: #4ade80;
+      font-size: 0.72rem; font-weight: 600; padding: 0.15rem 0.6rem;
+      border-radius: 50px; margin-top: 0.75rem; letter-spacing: 0.04em;
+    }
+    .point-detail {
+      background: rgba(46,139,87,0.05); border-left: 3px solid #2E8B57;
+      padding: 0.5rem 0.75rem; border-radius: 0 6px 6px 0;
+      font-size: 0.85rem; color: #4ade80; margin-top: 0.75rem; font-style: italic;
+    }
+
+    /* Divider */
+    .divider {
+      border: none; border-top: 1px solid rgba(46,139,87,0.15);
+      margin: 3rem 0;
+    }
+
+    /* ===== CHECKLIST SECTION ===== */
+    .checklist-header-bar {
+      background: linear-gradient(135deg, rgba(10,38,71,0.9), rgba(46,139,87,0.15));
+      border: 1px solid rgba(46,139,87,0.3); border-radius: 14px;
+      padding: 1.75rem 2rem; margin-bottom: 2rem;
+    }
+    .checklist-title {
+      font-size: 1.4rem; font-weight: 800; color: #f1f5f9; margin-bottom: 0.5rem;
+    }
+    .checklist-desc { font-size: 0.9rem; color: #94a3b8; }
+
+    /* Toolbar */
+    .checklist-toolbar {
+      display: flex; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 1.75rem;
+    }
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.55rem 1.1rem; border-radius: 8px; font-size: 0.85rem;
+      font-weight: 600; cursor: pointer; border: none; transition: all 0.2s;
+      font-family: inherit;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #2E8B57, #1a5c3a);
+      color: #fff;
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(46,139,87,0.35); }
+    .btn-secondary {
+      background: rgba(46,139,87,0.1); border: 1px solid rgba(46,139,87,0.3);
+      color: #4ade80;
+    }
+    .btn-secondary:hover { background: rgba(46,139,87,0.2); }
+    .btn-accent {
+      background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.3);
+      color: #a5b4fc;
+    }
+    .btn-accent:hover { background: rgba(99,102,241,0.22); }
+    .btn-share {
+      background: rgba(59,130,246,0.12); border: 1px solid rgba(59,130,246,0.3);
+      color: #60a5fa;
+    }
+    .btn-share:hover { background: rgba(59,130,246,0.22); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* Progress tracker */
+    .progress-tracker {
+      background: rgba(15,23,42,0.5); border: 1px solid rgba(148,163,184,0.1);
+      border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 1.5rem;
+      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+    }
+    .progress-label { font-size: 0.85rem; color: #64748b; }
+    .progress-bar-wrap {
+      flex: 1; min-width: 140px;
+      background: rgba(148,163,184,0.1); border-radius: 50px; height: 8px;
+    }
+    .progress-bar-fill {
+      height: 100%; border-radius: 50px;
+      background: linear-gradient(90deg, #2E8B57, #4ade80);
+      transition: width 0.4s ease; width: 0%;
+    }
+    .progress-count { font-size: 0.85rem; font-weight: 700; color: #4ade80; }
+
+    /* Checklist item */
+    .checklist-item {
+      background: rgba(15,23,42,0.55);
+      border: 1px solid rgba(148,163,184,0.08);
+      border-radius: 12px; padding: 1.25rem 1.5rem;
+      margin-bottom: 0.85rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .checklist-item:hover { border-color: rgba(46,139,87,0.2); }
+    .checklist-item.completed {
+      border-color: rgba(46,139,87,0.35);
+      background: rgba(46,139,87,0.05);
+    }
+    .item-top { display: flex; align-items: flex-start; gap: 0.85rem; }
+    .item-checkbox {
+      width: 22px; height: 22px; border-radius: 6px; flex-shrink: 0; margin-top: 0.15rem;
+      background: rgba(148,163,184,0.08); border: 2px solid rgba(148,163,184,0.25);
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s; user-select: none;
+    }
+    .item-checkbox.checked {
+      background: #2E8B57; border-color: #2E8B57;
+    }
+    .item-checkbox.checked::after {
+      content: '✓'; color: #fff; font-size: 0.75rem; font-weight: 800;
+    }
+    .item-content { flex: 1; }
+    .item-num {
+      font-size: 0.72rem; font-weight: 700; color: #2E8B57;
+      text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.25rem;
+    }
+    .item-title {
+      font-size: 0.95rem; font-weight: 700; color: #e2e8f0;
+      margin-bottom: 0.35rem; line-height: 1.4;
+    }
+    .item-detail {
+      font-size: 0.82rem; color: #4ade80; font-style: italic; margin-bottom: 0.6rem;
+    }
+    .item-note-label {
+      font-size: 0.75rem; color: #64748b; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.3rem;
+    }
+    .item-note {
+      width: 100%; background: rgba(10,38,71,0.5);
+      border: 1px solid rgba(148,163,184,0.12); border-radius: 7px;
+      padding: 0.5rem 0.75rem; color: #cbd5e1; font-size: 0.85rem;
+      font-family: inherit; resize: vertical; min-height: 58px;
+      transition: border-color 0.2s;
+    }
+    .item-note:focus { outline: none; border-color: rgba(46,139,87,0.4); }
+    .item-note::placeholder { color: #475569; }
+
+    /* FREEMIUM GATE */
+    .freemium-gate {
+      background: linear-gradient(135deg, rgba(10,38,71,0.9), rgba(46,139,87,0.12));
+      border: 1px solid rgba(46,139,87,0.35); border-radius: 16px;
+      padding: 2.5rem 2rem; margin: 1rem 0 2rem; text-align: center;
+    }
+    .freemium-gate h3 {
+      font-size: 1.4rem; font-weight: 800; color: #f1f5f9; margin-bottom: 0.75rem;
+    }
+    .freemium-gate p { color: #94a3b8; margin-bottom: 1.5rem; font-size: 0.95rem; }
+    .freemium-form {
+      display: flex; gap: 0.6rem; flex-wrap: wrap; justify-content: center; max-width: 480px; margin: 0 auto;
+    }
+    .freemium-form input {
+      flex: 1; min-width: 200px; background: rgba(15,23,42,0.7);
+      border: 1px solid rgba(148,163,184,0.2); border-radius: 8px;
+      padding: 0.65rem 1rem; color: #f1f5f9; font-size: 0.9rem; font-family: inherit;
+    }
+    .freemium-form input:focus { outline: none; border-color: #2E8B57; }
+    .freemium-form input::placeholder { color: #475569; }
+    .freemium-divider {
+      display: flex; align-items: center; gap: 0.75rem;
+      margin: 1.25rem auto; max-width: 340px; color: #475569; font-size: 0.8rem;
+    }
+    .freemium-divider::before, .freemium-divider::after {
+      content: ''; flex: 1; height: 1px; background: rgba(148,163,184,0.15);
+    }
+    .locked-items-placeholder {
+      background: rgba(15,23,42,0.4); border: 1px dashed rgba(148,163,184,0.1);
+      border-radius: 12px; padding: 1.5rem; margin-bottom: 0.85rem;
+      display: flex; align-items: center; gap: 1rem; opacity: 0.5;
+    }
+    .lock-icon {
+      width: 32px; height: 32px; background: rgba(148,163,184,0.1);
+      border-radius: 8px; display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; font-size: 1rem; color: #64748b;
+    }
+    .locked-text { font-size: 0.85rem; color: #475569; }
+
+    /* ===== SUMMARY TABLE ===== */
+    .table-section { margin-top: 3rem; }
+    .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid rgba(46,139,87,0.15); }
+    table {
+      width: 100%; border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+    thead { background: linear-gradient(135deg, #0A2647, rgba(46,139,87,0.2)); }
+    thead th {
+      padding: 0.9rem 1rem; text-align: left;
+      color: #e2e8f0; font-weight: 700; font-size: 0.82rem;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      border-bottom: 1px solid rgba(46,139,87,0.2);
+    }
+    tbody tr { border-bottom: 1px solid rgba(148,163,184,0.06); transition: background 0.15s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: rgba(46,139,87,0.04); }
+    tbody td { padding: 0.75rem 1rem; color: #94a3b8; vertical-align: top; }
+    tbody td:first-child { font-weight: 600; color: #e2e8f0; width: 55%; }
+    tbody td:nth-child(2) { width: 10%; text-align: center; font-size: 1rem; }
+    tbody td:nth-child(3) { width: 35%; }
+    .table-note-input {
+      background: transparent; border: 1px solid transparent;
+      color: #94a3b8; font-size: 0.85rem; font-family: inherit;
+      width: 100%; min-height: 40px; padding: 0.25rem 0.4rem;
+      border-radius: 5px; resize: vertical; transition: border-color 0.2s;
+    }
+    .table-note-input:focus { outline: none; border-color: rgba(46,139,87,0.3); background: rgba(10,38,71,0.4); }
+    .table-note-input::placeholder { color: #334155; }
+    .checked-icon { color: #2E8B57; font-weight: 800; }
+    .unchecked-icon { color: #334155; }
+
+    /* ===== DOWNLOAD PDF FORM ===== */
+    .pdf-form-section {
+      background: linear-gradient(135deg, rgba(10,38,71,0.8), rgba(46,139,87,0.1));
+      border: 1px solid rgba(46,139,87,0.25); border-radius: 16px;
+      padding: 2.5rem 2rem; margin-top: 3rem; text-align: center;
+    }
+    .pdf-form-section h3 {
+      font-size: 1.35rem; font-weight: 800; color: #f1f5f9; margin-bottom: 0.6rem;
+    }
+    .pdf-form-section p { color: #94a3b8; margin-bottom: 1.75rem; font-size: 0.92rem; }
+    .pdf-form-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;
+      max-width: 520px; margin: 0 auto 1rem;
+    }
+    @media (max-width: 560px) { .pdf-form-grid { grid-template-columns: 1fr; } }
+    .pdf-form-grid input {
+      background: rgba(15,23,42,0.7); border: 1px solid rgba(148,163,184,0.2);
+      border-radius: 8px; padding: 0.7rem 1rem; color: #f1f5f9;
+      font-size: 0.9rem; font-family: inherit; width: 100%;
+    }
+    .pdf-form-grid input:focus { outline: none; border-color: #2E8B57; }
+    .pdf-form-grid input::placeholder { color: #475569; }
+
+    /* ===== AUDIO PLAYER ===== */
+    .audio-bar {
+      background: rgba(10,38,71,0.7); border: 1px solid rgba(99,102,241,0.2);
+      border-radius: 12px; padding: 1rem 1.5rem;
+      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+    .audio-bar-title { font-size: 0.85rem; font-weight: 600; color: #a5b4fc; flex: 1; min-width: 120px; }
+    .audio-status { font-size: 0.78rem; color: #64748b; min-width: 80px; }
+
+    /* ===== SCOPE BADGES ===== */
+    .scope-badges {
+      display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; margin: 2rem 0;
+    }
+    .scope-badge {
+      background: rgba(10,38,71,0.6); border: 1px solid rgba(46,139,87,0.2);
+      padding: 0.4rem 0.9rem; border-radius: 50px;
+      font-size: 0.78rem; font-weight: 700; color: #4ade80;
+      letter-spacing: 0.05em; text-transform: uppercase;
+    }
+    .scope-badge span { color: #94a3b8; font-weight: 400; }
+
+    /* ===== FOOTER ===== */
+    footer {
+      background: rgba(10,38,71,0.8); border-top: 1px solid rgba(46,139,87,0.15);
+      padding: 2.5rem 1.5rem; text-align: center; margin-top: 4rem;
+    }
+    .footer-logo { font-size: 1rem; font-weight: 800; color: #60a5fa; margin-bottom: 0.5rem; }
+    .footer-text { font-size: 0.82rem; color: #475569; }
+    .footer-links { display: flex; gap: 1.25rem; justify-content: center; flex-wrap: wrap; margin: 0.75rem 0; }
+    .footer-links a { color: #64748b; text-decoration: none; font-size: 0.82rem; }
+    .footer-links a:hover { color: #2E8B57; }
+
+    /* ===== TOAST ===== */
+    .toast {
+      position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9999;
+      background: rgba(46,139,87,0.9); color: #fff; padding: 0.75rem 1.25rem;
+      border-radius: 10px; font-size: 0.88rem; font-weight: 600;
+      transform: translateY(80px); opacity: 0;
+      transition: all 0.3s ease; pointer-events: none;
+      max-width: 300px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.error { background: rgba(220,38,38,0.9); }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in { animation: fadeInUp 0.6s ease-out both; }
+    .fade-in-1 { animation-delay: 0.1s; }
+    .fade-in-2 { animation-delay: 0.2s; }
+
+    /* ===== PDF CAPTURE TARGET ===== */
+    #pdf-capture-zone {
+      position: absolute; left: -9999px; top: 0;
+      width: 794px; background: #fff; color: #111;
+      font-family: 'Inter', sans-serif; padding: 40px;
+    }
+    .pdf-h1 { font-size: 22px; font-weight: 900; color: #0A2647; margin-bottom: 4px; }
+    .pdf-sub { font-size: 11px; color: #64748b; margin-bottom: 20px; }
+    .pdf-item-row { display: flex; gap: 10px; margin-bottom: 12px; align-items: flex-start; }
+    .pdf-cb { width: 16px; height: 16px; border: 2px solid #2E8B57; border-radius: 3px; flex-shrink: 0; margin-top: 2px; display: flex; align-items: center; justify-content: center; }
+    .pdf-cb.done { background: #2E8B57; }
+    .pdf-cb.done::after { content: '✓'; color: #fff; font-size: 9px; font-weight: 900; }
+    .pdf-item-text { flex: 1; }
+    .pdf-item-title { font-size: 11px; font-weight: 700; color: #0A2647; }
+    .pdf-item-detail { font-size: 9.5px; color: #2E8B57; font-style: italic; }
+    .pdf-item-note { font-size: 9.5px; color: #475569; margin-top: 2px; background: #f8fafc; padding: 2px 6px; border-radius: 3px; }
+    .pdf-table { width: 100%; border-collapse: collapse; margin-top: 24px; font-size: 10px; }
+    .pdf-table th { background: #0A2647; color: #fff; padding: 6px 8px; text-align: left; font-size: 9px; text-transform: uppercase; }
+    .pdf-table td { padding: 5px 8px; border-bottom: 1px solid #e2e8f0; color: #374151; }
+    .pdf-table tr:nth-child(even) td { background: #f8fafc; }
+    .pdf-footer-text { font-size: 9px; color: #94a3b8; margin-top: 20px; text-align: center; }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .checklist-toolbar { gap: 0.45rem; }
+      .btn { padding: 0.5rem 0.8rem; font-size: 0.8rem; }
+      .hero { padding: 3rem 1rem 1.5rem; }
+      .section-container { padding: 0 1rem 3rem; }
+    }
+    @media (max-width: 480px) {
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Reading progress bar -->
+<div id="progress-bar"></div>
+
+<!-- Toast notification -->
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<!-- ========== NAVBAR ========== -->
+<nav aria-label="Navigazione principale">
+  <div class="nav-inner">
+    <a class="nav-logo" href="https://securdata.pro" aria-label="SECURDATA.PRO Home">
+      <img src="../logo-00-securdata-pro.svg" alt="SECURDATA.PRO logo" onerror="this.src='../logo-securdata-originale.jpg'"/>
+      <span>SECURDATA<span style="color:#4ade80">.PRO</span></span>
+    </a>
+    <div class="nav-links" aria-label="Link navigazione">
+      <a href="https://securdata.pro/index.html">Home</a>
+      <a href="https://securdata.pro/blog.html">Blog</a>
+      <a href="https://securdata.pro/risorse-gratuite.html">Risorse</a>
+      <a href="https://securdata.pro/privacy-policy.html">Privacy</a>
+      <a href="https://securdata.pro/#contatti" class="nav-cta">Contattaci</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ========== HERO ========== -->
+<header class="hero fade-in" id="top">
+  <div class="hero-badge" aria-label="Categoria">
+    🛡️ Checklist &amp; Blog · Sicurezza PMI 2025
+  </div>
+  <h1>Checklist Sicurezza PMI 2025<br/><span>20 punti pratici per proteggere<br/>i dati della tua azienda</span></h1>
+  <div class="hero-meta">
+    <span>📅 Aprile 2025</span>
+    <span>⏱️ ~12 min lettura</span>
+    <span>👤 Team SECURDATA.PRO</span>
+    <span>🆓 Risorsa gratuita</span>
+  </div>
+  <p class="hero-desc">
+    Una guida operativa con i 20 controlli essenziali di cybersecurity che ogni PMI italiana
+    deve implementare nel 2025 per proteggere dati, clienti e reputazione.
+  </p>
+
+  <!-- SCOPE badges -->
+  <div class="scope-badges" aria-label="Metodologia S.C.O.P.E.">
+    <div class="scope-badge">S<span> – Sicurezza</span></div>
+    <div class="scope-badge">C<span> – Conformità</span></div>
+    <div class="scope-badge">O<span> – Operatività</span></div>
+    <div class="scope-badge">P<span> – Protezione</span></div>
+    <div class="scope-badge">E<span> – Efficienza</span></div>
+  </div>
+</header>
+
+<!-- ========== TABLE OF CONTENTS ========== -->
+<div class="section-container">
+  <nav class="toc-box fade-in fade-in-1" aria-label="Sommario articolo">
+    <h3>📋 Sommario</h3>
+    <ol>
+      <li><a href="#articolo">Articolo: perché la sicurezza PMI è urgente nel 2025</a></li>
+      <li><a href="#i-20-punti">I 20 punti pratici in dettaglio</a></li>
+      <li><a href="#checklist-interattiva">Checklist interattiva (spunta i tuoi progressi)</a></li>
+      <li><a href="#tabella-riassuntiva">Tabella riassuntiva</a></li>
+      <li><a href="#scarica-pdf">Scarica il PDF completo</a></li>
+    </ol>
+  </nav>
+</div>
+
+<!-- ========== BLOG ARTICLE ========== -->
+<main id="articolo" class="section-container" tabindex="-1">
+  <div class="section-header fade-in">
+    <div class="section-header-icon" aria-hidden="true">📰</div>
+    <div>
+      <div class="section-title">L'articolo completo</div>
+      <div class="section-subtitle">Perché la sicurezza informatica delle PMI è critica nel 2025</div>
+    </div>
+  </div>
+
+  <div class="article-point fade-in">
+    <p style="font-size:0.95rem;color:#94a3b8;line-height:1.8;">
+      Nel 2025, il 68% degli attacchi informatici documentati in Europa ha come bersaglio le piccole e medie imprese.
+      Non perché le PMI siano colpevoli di negligenza, ma perché rappresentano il bersaglio più redditizio: 
+      dati preziosi, sistemi spesso obsoleti e budget di sicurezza limitati. Il costo medio di una violazione
+      per una PMI italiana supera i <strong style="color:#e2e8f0">€ 180.000</strong> – tra downtime, sanzioni GDPR, 
+      danni reputazionali e recovery. <br/><br/>
+      Questa checklist nasce dalla metodologia <strong style="color:#4ade80">S.C.O.P.E.</strong> 
+      (Sicurezza, Conformità, Operatività, Protezione, Efficienza) sviluppata da SECURDATA.PRO: 
+      20 controlli pratici, prioritizzati per impatto e facilità di implementazione, che ogni PMI 
+      può adottare indipendentemente dalla propria dimensione o settore.
+    </p>
+  </div>
+
+  <div id="i-20-punti">
+    <!-- Point 1 -->
+    <article class="article-point fade-in" id="point-art-1">
+      <div class="point-num" aria-hidden="true">1</div>
+      <div class="point-title">Abilita l'autenticazione a più fattori (MFA) su tutti gli accessi</div>
+      <p class="point-body">
+        L'autenticazione a più fattori è il singolo intervento più efficace che puoi implementare oggi.
+        Secondo Microsoft, l'MFA blocca il <strong style="color:#e2e8f0">99,9% degli attacchi automatici</strong> 
+        basati su credenziali compromesse. Abilita l'MFA su email aziendale, VPN, gestionale, portale cloud 
+        e qualsiasi accesso remoto. Usa app authenticator (es. Microsoft Authenticator, Google Authenticator) 
+        anziché SMS, più vulnerabili al SIM swapping.
+      </p>
+      <div class="point-detail">💡 Blocca il 99,9% degli attacchi automatici alle credenziali.</div>
+      <span class="point-tag">🔐 SICUREZZA · PRIORITÀ MASSIMA</span>
+    </article>
+
+    <!-- Point 2 -->
+    <article class="article-point fade-in" id="point-art-2">
+      <div class="point-num" aria-hidden="true">2</div>
+      <div class="point-title">Esegui backup automatici e offline (regola 3-2-1)</div>
+      <p class="point-body">
+        Il ransomware colpisce un'azienda ogni 11 secondi nel mondo. L'unico rimedio certo è avere backup
+        integri e offline. La regola <strong style="color:#e2e8f0">3-2-1</strong> dice: 3 copie dei dati,
+        su 2 supporti diversi, di cui 1 completamente offline (air-gapped). Automatizza i backup con 
+        strumenti come Veeam, Acronis o Windows Server Backup. Testa il ripristino almeno ogni 90 giorni:
+        un backup mai testato è come non avere backup.
+      </p>
+      <div class="point-detail">💡 3 copie, 2 supporti, 1 offline (air-gapped).</div>
+      <span class="point-tag">💾 OPERATIVITÀ · PROTEZIONE</span>
+    </article>
+
+    <!-- Point 3 -->
+    <article class="article-point fade-in" id="point-art-3">
+      <div class="point-num" aria-hidden="true">3</div>
+      <div class="point-title">Mantieni aggiornati sistemi e software (patch management)</div>
+      <p class="point-body">
+        L'85% degli exploit sfruttati in attacchi reali usa vulnerabilità <em>già note e già patchate</em>
+        dai vendor. Un programma di patch management strutturato – con scansione settimanale, aggiornamento 
+        entro 72 ore per vulnerabilità critiche (CVSS ≥ 9.0) e inventario di tutti gli asset software –
+        riduce drasticamente la superficie di attacco. Usa strumenti come WSUS, Microsoft Endpoint Manager,
+        o soluzioni RMM per automatizzare il processo.
+      </p>
+      <div class="point-detail">💡 Le vulnerabilità note vengono patchate: elimina questa scusa.</div>
+      <span class="point-tag">🔄 OPERATIVITÀ · EFFICIENZA</span>
+    </article>
+
+    <!-- Point 4 -->
+    <article class="article-point fade-in" id="point-art-4">
+      <div class="point-num" aria-hidden="true">4</div>
+      <div class="point-title">Forma il personale con simulazioni di phishing</div>
+      <p class="point-body">
+        Il fattore umano è coinvolto nell'82% dei breach. La formazione classica (slide + quiz) non funziona:
+        serve un approccio basato sulla pratica. Le piattaforme di phishing simulation (KnowBe4, Proofpoint, 
+        Cofense) inviano email fasulle ai dipendenti e misurano chi clicca. Con un programma strutturato,
+        il <strong style="color:#e2e8f0">tasso di click scende dal 25% a meno del 5%</strong> in 12 mesi.
+        Forma su: riconoscimento link sospetti, urgenza artificiale, impersonation di CEO o fornitori.
+      </p>
+      <div class="point-detail">💡 Riduce il tasso di click da 25% a &lt;5% con training costante.</div>
+      <span class="point-tag">👥 SICUREZZA · CONFORMITÀ</span>
+    </article>
+
+    <!-- Point 5 -->
+    <article class="article-point fade-in" id="point-art-5">
+      <div class="point-num" aria-hidden="true">5</div>
+      <div class="point-title">Applica il principio del minimo privilegio (PoLP)</div>
+      <p class="point-body">
+        Il Principle of Least Privilege stabilisce che ogni utente, processo e sistema debba avere 
+        <strong style="color:#e2e8f0">solo i permessi strettamente necessari</strong> per svolgere il proprio 
+        compito. Nella pratica: niente account admin generici, revisione trimestrale dei permessi,
+        accesso privilegiato solo tramite PAM (Privileged Access Management), rimozione immediata degli 
+        accessi quando un dipendente lascia l'azienda. Il PoLP è anche un requisito esplicito del GDPR 
+        per il trattamento dei dati personali.
+      </p>
+      <div class="point-detail">💡 Solo i permessi indispensabili – niente di più, niente di meno.</div>
+      <span class="point-tag">🔑 CONFORMITÀ · PROTEZIONE</span>
+    </article>
+
+    <!-- Point 6 -->
+    <article class="article-point fade-in" id="point-art-6">
+      <div class="point-num" aria-hidden="true">6</div>
+      <div class="point-title">Crittografa i dati sensibili (a riposo e in transito)</div>
+      <p class="point-body">
+        La crittografia è la prima linea di difesa se qualcuno riesce ad accedere ai tuoi dati.
+        <strong style="color:#e2e8f0">A riposo</strong>: abilita BitLocker su tutti i PC e laptop,
+        crittografa i database che contengono dati personali (AES-256). 
+        <strong style="color:#e2e8f0">In transito</strong>: usa solo TLS 1.2/1.3 per comunicazioni web,
+        email cifrate (S/MIME o PGP) per comunicazioni sensibili. È anche un requisito GDPR (art. 32):
+        in caso di violazione, se i dati erano cifrati la sanzione è ridotta significativamente.
+      </p>
+      <div class="point-detail">💡 GDPR compliant: dati cifrati = sanzioni ridotte in caso di breach.</div>
+      <span class="point-tag">🔒 PROTEZIONE · CONFORMITÀ</span>
+    </article>
+
+    <!-- Point 7 -->
+    <article class="article-point fade-in" id="point-art-7">
+      <div class="point-num" aria-hidden="true">7</div>
+      <div class="point-title">Gestisci le password con un password manager aziendale</div>
+      <p class="point-body">
+        Il 61% dei breach coinvolge credenziali compromesse. La soluzione è un password manager aziendale
+        (1Password Business, Bitwarden Teams, LastPass Enterprise) che genera e memorizza credenziali 
+        uniche e complesse per ogni servizio. Vantaggi: zero password riusate, niente "Excel delle 
+        password", controllo centralizzato degli accessi, revoca immediata in caso di offboarding.
+        Abbina sempre al password manager l'MFA (vedi punto 1).
+      </p>
+      <div class="point-detail">💡 Genera credenziali uniche per ogni account: addio password riusate.</div>
+      <span class="point-tag">🗝️ SICUREZZA · OPERATIVITÀ</span>
+    </article>
+
+    <!-- Point 8 -->
+    <article class="article-point fade-in" id="point-art-8">
+      <div class="point-num" aria-hidden="true">8</div>
+      <div class="point-title">Monitora gli accessi anomali con logging centralizzato</div>
+      <p class="point-body">
+        Non puoi difendere ciò che non vedi. Un SIEM (Security Information and Event Management) o anche
+        una soluzione più semplice come Microsoft Sentinel, Elastic SIEM o Graylog raccoglie i log di tutti
+        i sistemi in un unico punto. Configura alert per: accessi fuori orario, login da IP insoliti,
+        tentativi di accesso falliti multipli, modifiche ai permessi di admin. Il tempo medio di rilevamento
+        di un attacco senza monitoraggio è <strong style="color:#e2e8f0">207 giorni</strong>.
+      </p>
+      <div class="point-detail">💡 Alert automatici per eventi critici: rilevamento in minuti, non mesi.</div>
+      <span class="point-tag">👁️ SICUREZZA · CONFORMITÀ</span>
+    </article>
+
+    <!-- Point 9 -->
+    <article class="article-point fade-in" id="point-art-9">
+      <div class="point-num" aria-hidden="true">9</div>
+      <div class="point-title">Isola la rete in VLAN e segmentazione</div>
+      <p class="point-body">
+        La segmentazione di rete limita il "movimento laterale" dei malware: se un dispositivo viene 
+        compromesso, l'attaccante non riesce ad accedere agli altri sistemi. Implementa VLAN separate per:
+        rete uffici, server, dispositivi IoT, ospiti Wi-Fi, sistemi OT/industriali. Usa firewall interni
+        (micro-segmentazione) per filtrare il traffico tra VLAN. I dispositivi IoT in particolare sono
+        spesso vulnerabili e non aggiornabili: isolali sempre dalla rete principale.
+      </p>
+      <div class="point-detail">💡 Evita il movimento laterale del malware con reti separate.</div>
+      <span class="point-tag">🌐 PROTEZIONE · OPERATIVITÀ</span>
+    </article>
+
+    <!-- Point 10 -->
+    <article class="article-point fade-in" id="point-art-10">
+      <div class="point-num" aria-hidden="true">10</div>
+      <div class="point-title">Adotta endpoint detection &amp; response (EDR)</div>
+      <p class="point-body">
+        L'antivirus tradizionale basato su firme non basta più. Le soluzioni EDR (CrowdStrike Falcon,
+        Microsoft Defender for Endpoint, SentinelOne) usano l'analisi comportamentale: identificano 
+        comportamenti anomali anche di malware sconosciuti (zero-day). Monitorano continuamente ogni 
+        endpoint (PC, server, laptop, mobile), correlano gli eventi e permettono una risposta automatica
+        o assistita. Fondamentale per PMI con dipendenti remoti e dispositivi non sempre sotto controllo fisico.
+      </p>
+      <div class="point-detail">💡 Analisi comportamentale: rileva minacce zero-day sconosciute all'antivirus.</div>
+      <span class="point-tag">🖥️ SICUREZZA · PROTEZIONE</span>
+    </article>
+
+    <!-- Point 11 -->
+    <article class="article-point fade-in" id="point-art-11">
+      <div class="point-num" aria-hidden="true">11</div>
+      <div class="point-title">Blocca l'uso di dispositivi USB non autorizzati</div>
+      <p class="point-body">
+        Le chiavette USB restano uno dei vettori più sottovalutati: un famoso test ha dimostrato che il 
+        45% delle chiavette trovate per terra viene inserita in un PC aziendale. Tramite Group Policy (GPO)
+        su Active Directory o strumenti MDM (Microsoft Intune, Jamf) puoi bloccare l'uso di storage USB
+        non approvati, consentendo solo dispositivi whitelist. Considera anche di disabilitare le porte USB
+        fisicamente sui PC dove non servono.
+      </p>
+      <div class="point-detail">💡 Policy di gruppo: solo dispositivi USB autorizzati e inventariati.</div>
+      <span class="point-tag">💼 SICUREZZA · CONFORMITÀ</span>
+    </article>
+
+    <!-- Point 12 -->
+    <article class="article-point fade-in" id="point-art-12">
+      <div class="point-num" aria-hidden="true">12</div>
+      <div class="point-title">Attiva il firewall applicativo (WAF) per i servizi web</div>
+      <p class="point-body">
+        Se la tua PMI ha un sito web, un portale clienti, un e-commerce o qualsiasi servizio esposto su 
+        internet, hai bisogno di un Web Application Firewall. Il WAF (Cloudflare WAF, AWS WAF, Sucuri)
+        filtra il traffico HTTP/HTTPS e blocca automaticamente i tentativi di 
+        <strong style="color:#e2e8f0">SQL injection</strong>, 
+        <strong style="color:#e2e8f0">Cross-Site Scripting (XSS)</strong>, 
+        attacchi CSRF, e bot malevoli. È anche un requisito de facto per la conformità PCI-DSS se accetti 
+        pagamenti online.
+      </p>
+      <div class="point-detail">💡 Blocca SQLi, XSS e bot malevoli prima che raggiungano l'applicazione.</div>
+      <span class="point-tag">🌍 PROTEZIONE · CONFORMITÀ</span>
+    </article>
+
+    <!-- Point 13 -->
+    <article class="article-point fade-in" id="point-art-13">
+      <div class="point-num" aria-hidden="true">13</div>
+      <div class="point-title">Definisci un piano di risposta agli incidenti (IRP)</div>
+      <p class="point-body">
+        Quando (non se) subisci un attacco, avere un Incident Response Plan prestabilito riduce i tempi 
+        di contenimento da settimane a ore. Il piano deve definire: chi fa cosa, comunicazione interna ed 
+        esterna, contatti del CSIRT/fornitore sicurezza, criteri di escalation, procedure di isolamento 
+        sistemi, obbligo di notifica al Garante entro 72 ore (art. 33 GDPR). Testa il piano con esercitazioni
+        tabletop almeno una volta l'anno.
+      </p>
+      <div class="point-detail">💡 Tempi di contenimento ridotti da settimane a ore con procedure chiare.</div>
+      <span class="point-tag">📋 OPERATIVITÀ · CONFORMITÀ</span>
+    </article>
+
+    <!-- Point 14 -->
+    <article class="article-point fade-in" id="point-art-14">
+      <div class="point-num" aria-hidden="true">14</div>
+      <div class="point-title">Verifica la sicurezza dei fornitori (vendor risk management)</div>
+      <p class="point-body">
+        Il <strong style="color:#e2e8f0">63% dei breach nelle PMI</strong> coinvolge terze parti: fornitori 
+        software, consulenti IT, MSP, studi legali, commercialisti con accesso ai tuoi sistemi. Ogni fornitore
+        con accesso ai tuoi dati è un potenziale vettore di attacco. Implementa: questionari di sicurezza 
+        fornitori, clausole contrattuali sulla sicurezza (DPA GDPR), revisione annuale degli accessi di terze 
+        parti, preferenza per fornitori certificati ISO 27001 o SOC 2.
+      </p>
+      <div class="point-detail">💡 63% dei breach parte da terze parti: audita i tuoi fornitori.</div>
+      <span class="point-tag">🤝 CONFORMITÀ · PROTEZIONE</span>
+    </article>
+
+    <!-- Point 15 -->
+    <article class="article-point fade-in" id="point-art-15">
+      <div class="point-num" aria-hidden="true">15</div>
+      <div class="point-title">Utilizza DNS filtering per bloccare siti malevoli</div>
+      <p class="point-body">
+        Il DNS filtering (Cisco Umbrella, Cloudflare Gateway, NextDNS) blocca la risoluzione DNS di domini
+        malevoli, siti di phishing e C&C (command and control) dei malware prima ancora che la connessione 
+        venga stabilita. È uno dei controlli più economici e con il miglior ROI: riduce le infezioni da 
+        malware del <strong style="color:#e2e8f0">70%</strong> con minimo impatto sulle performance.
+        Funziona su tutta la rete aziendale e anche sui dispositivi remoti tramite client.
+      </p>
+      <div class="point-detail">💡 Riduce le infezioni del 70% bloccando domini malevoli a livello DNS.</div>
+      <span class="point-tag">🔗 PROTEZIONE · EFFICIENZA</span>
+    </article>
+
+    <!-- Point 16 -->
+    <article class="article-point fade-in" id="point-art-16">
+      <div class="point-num" aria-hidden="true">16</div>
+      <div class="point-title">Disabilita macro e script non necessari</div>
+      <p class="point-body">
+        Le macro di Microsoft Office sono state il principale vettore di distribuzione malware per anni.
+        Tramite Group Policy, disabilita l'esecuzione di macro da internet e da fonti non fidate. 
+        Considera di abilitare solo macro firmate digitalmente con certificato aziendale. Lo stesso vale
+        per PowerShell: applica il policy di execution policy "RemoteSigned" o "AllSigned" e abilita il
+        logging di PowerShell per rilevare usi anomali. Blocca anche WScript e CScript dove non necessari.
+      </p>
+      <div class="point-detail">💡 Blocca i vettori Office: nessuna macro non firmata eseguita.</div>
+      <span class="point-tag">⚙️ SICUREZZA · OPERATIVITÀ</span>
+    </article>
+
+    <!-- Point 17 -->
+    <article class="article-point fade-in" id="point-art-17">
+      <div class="point-num" aria-hidden="true">17</div>
+      <div class="point-title">Effettua backup dei configuratori di rete e firewall</div>
+      <p class="point-body">
+        Quando un firewall o un router si guasta, senza backup della configurazione il ripristino può 
+        richiedere giorni, causando downtime che costano migliaia di euro l'ora. Automatizza l'esportazione
+        giornaliera delle configurazioni di switch, firewall (Fortinet, Palo Alto, pfSense), router e 
+        access point verso un repository separato e sicuro. Testa il ripristino da configurazione di backup
+        in ambiente di test almeno ogni 6 mesi.
+      </p>
+      <div class="point-detail">💡 Evita downtime da reset accidentale: backup config giornaliero.</div>
+      <span class="point-tag">🔧 OPERATIVITÀ · EFFICIENZA</span>
+    </article>
+
+    <!-- Point 18 -->
+    <article class="article-point fade-in" id="point-art-18">
+      <div class="point-num" aria-hidden="true">18</div>
+      <div class="point-title">Controlla i log di accesso ai dati sensibili (audit trail)</div>
+      <p class="point-body">
+        L'art. 32 del GDPR richiede misure tecniche per garantire la sicurezza del trattamento, inclusa
+        la capacità di ripristinare disponibilità e accesso ai dati. L'audit trail – registrazione di chi 
+        ha acceduto a quali dati, quando e cosa ha fatto – è fondamentale per rilevare accessi non 
+        autorizzati, investigare incidenti e dimostrare compliance al Garante. Configura audit log su 
+        Active Directory, database, applicativi gestionali e NAS/file server. Conserva i log per almeno 
+        12 mesi.
+      </p>
+      <div class="point-detail">💡 GDPR art. 32: audit trail obbligatorio per dati personali.</div>
+      <span class="point-tag">📊 CONFORMITÀ · SICUREZZA</span>
+    </article>
+
+    <!-- Point 19 -->
+    <article class="article-point fade-in" id="point-art-19">
+      <div class="point-num" aria-hidden="true">19</div>
+      <div class="point-title">Proteggi gli account di servizio e le credenziali "tecniche"</div>
+      <p class="point-body">
+        Gli account di servizio (utilizzati da applicazioni, script, job automatici) sono spesso dimenticati
+        e diventano punti ciechi nella sicurezza. Usa un <strong style="color:#e2e8f0">secret manager</strong>
+        (HashiCorp Vault, Azure Key Vault, AWS Secrets Manager) per gestire credenziali tecniche, chiavi API,
+        certificati e connection string. Non hard-codare mai credenziali nel codice o in file di configurazione
+        in chiaro. Ruota le credenziali di servizio regolarmente e monitora il loro utilizzo.
+      </p>
+      <div class="point-detail">💡 Usa un secret manager: niente credenziali in chiaro nel codice.</div>
+      <span class="point-tag">🔐 SICUREZZA · PROTEZIONE</span>
+    </article>
+
+    <!-- Point 20 -->
+    <article class="article-point fade-in" id="point-art-20">
+      <div class="point-num" aria-hidden="true">20</div>
+      <div class="point-title">Esegui un test di penetrazione annuale</div>
+      <p class="point-body">
+        Un penetration test (pentest) è un attacco simulato da parte di esperti etici che cercano 
+        vulnerabilità nei tuoi sistemi prima che lo facciano i criminali. È il modo più affidabile per
+        verificare l'efficacia di tutti i 19 controlli precedenti. Un pentest annuale (con scope su 
+        infrastruttura interna, applicazioni web, social engineering) ti fornisce un piano di remediation
+        prioritizzato. È anche richiesto da normative come PCI-DSS e consigliato dalle linee guida ACN 
+        (Agenzia per la Cybersicurezza Nazionale) per le PMI.
+      </p>
+      <div class="point-detail">💡 Scopri le vulnerabilità nascoste prima degli attaccanti: pentest annuale.</div>
+      <span class="point-tag">🏆 SICUREZZA · CONFORMITÀ · EFFICIENZA</span>
+    </article>
+  </div><!-- /#i-20-punti -->
+
+  <hr class="divider"/>
+
+  <!-- ========== CHECKLIST INTERATTIVA ========== -->
+  <section id="checklist-interattiva" tabindex="-1">
+    <div class="section-header">
+      <div class="section-header-icon" aria-hidden="true">✅</div>
+      <div>
+        <div class="section-title">Checklist Interattiva</div>
+        <div class="section-subtitle">Spunta i punti completati e aggiungi le tue note</div>
+      </div>
+    </div>
+
+    <!-- Audio player bar -->
+    <div class="audio-bar" role="region" aria-label="Lettore audio">
+      <span class="audio-bar-title">🔊 Ascolto checklist (Web Speech API)</span>
+      <button class="btn btn-accent" id="btn-audio-play" onclick="toggleAudio()" aria-label="Riproduci checklist ad alta voce">
+        ▶ Ascolta
+      </button>
+      <button class="btn btn-accent" id="btn-audio-stop" onclick="stopAudio()" style="display:none" aria-label="Ferma la riproduzione">
+        ⏹ Stop
+      </button>
+      <span class="audio-status" id="audio-status" aria-live="polite">Pronto</span>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="checklist-toolbar" role="toolbar" aria-label="Azioni checklist">
+      <button class="btn btn-primary" onclick="saveNotes()" aria-label="Salva note in localStorage">
+        💾 Salva le mie note
+      </button>
+      <button class="btn btn-primary" id="btn-pdf" onclick="downloadPDF()" aria-label="Scarica PDF completo">
+        📄 Scarica PDF completo
+      </button>
+      <button class="btn btn-share" onclick="shareResource()" aria-label="Condividi questa risorsa">
+        🔗 Condividi
+      </button>
+      <button class="btn btn-secondary" onclick="resetChecklist()" aria-label="Azzera checklist">
+        🔄 Azzera
+      </button>
+    </div>
+
+    <!-- Progress tracker -->
+    <div class="progress-tracker" role="status" aria-label="Progressi checklist">
+      <span class="progress-label">Completamento:</span>
+      <div class="progress-bar-wrap" aria-hidden="true">
+        <div class="progress-bar-fill" id="progress-fill"></div>
+      </div>
+      <span class="progress-count" id="progress-count" aria-live="polite">0 / 20</span>
+    </div>
+
+    <!-- FREE: Items 1–5 -->
+    <div id="free-items">
+      <!-- Items 1-5 rendered by JS -->
+    </div>
+
+    <!-- FREEMIUM GATE -->
+    <div class="freemium-gate" id="freemium-gate" aria-label="Sblocca checklist completa">
+      <div style="font-size:2.5rem;margin-bottom:0.75rem;">🔓</div>
+      <h3>Sblocca tutti i 20 punti</h3>
+      <p>Hai visto i primi 5 punti gratuitamente.<br/>Inserisci la tua email per sbloccare la checklist completa (nessuno spam, promesso).</p>
+      <div class="freemium-form">
+        <input type="text" id="gate-name" placeholder="Il tuo nome" autocomplete="given-name" aria-label="Il tuo nome"/>
+        <input type="email" id="gate-email" placeholder="Email aziendale" autocomplete="email" aria-label="La tua email"/>
+        <button class="btn btn-primary" onclick="unlockFull()" style="width:100%;justify-content:center;" aria-label="Sblocca checklist completa">
+          ✅ Sblocca checklist completa
+        </button>
+      </div>
+      <div class="freemium-divider">oppure</div>
+      <button class="btn btn-secondary" onclick="unlockFull(true)" style="margin:0 auto;display:flex;" aria-label="Visualizza direttamente senza email">
+        👁️ Visualizza senza email
+      </button>
+      <!-- Locked items preview -->
+      <div style="margin-top:1.5rem;text-align:left;">
+        <div class="locked-items-placeholder">
+          <div class="lock-icon">🔒</div>
+          <div class="locked-text">Punti 6–10: Crittografia, Password Manager, Logging, Segmentazione Rete, EDR...</div>
+        </div>
+        <div class="locked-items-placeholder">
+          <div class="lock-icon">🔒</div>
+          <div class="locked-text">Punti 11–15: USB policy, WAF, IRP, Vendor Risk, DNS Filtering...</div>
+        </div>
+        <div class="locked-items-placeholder">
+          <div class="lock-icon">🔒</div>
+          <div class="locked-text">Punti 16–20: Macro, Config Backup, Audit Trail, Secret Manager, Pentest...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LOCKED: Items 6–20 (hidden until unlocked) -->
+    <div id="locked-items" style="display:none;">
+      <!-- Rendered by JS -->
+    </div>
+
+  </section>
+
+  <hr class="divider"/>
+
+  <!-- ========== SUMMARY TABLE ========== -->
+  <section id="tabella-riassuntiva" tabindex="-1">
+    <div class="section-header">
+      <div class="section-header-icon" aria-hidden="true">📊</div>
+      <div>
+        <div class="section-title">Tabella Riassuntiva</div>
+        <div class="section-subtitle">Panoramica dei 20 controlli con stato e note</div>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table id="summary-table" role="table" aria-label="Tabella riassuntiva checklist sicurezza PMI">
+        <thead>
+          <tr>
+            <th scope="col">Checklist punto</th>
+            <th scope="col">✔</th>
+            <th scope="col">Note aggiuntive</th>
+          </tr>
+        </thead>
+        <tbody id="summary-tbody">
+          <!-- Rendered by JS -->
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <hr class="divider"/>
+
+  <!-- ========== PDF DOWNLOAD FORM ========== -->
+  <section id="scarica-pdf" class="pdf-form-section" tabindex="-1" aria-label="Scarica PDF completo">
+    <div style="font-size:2.5rem;margin-bottom:0.75rem;">📥</div>
+    <h3>Scarica il PDF Completo</h3>
+    <p>Il PDF includerà tutti i 20 punti, le tue note personalizzate,<br/>la tabella riassuntiva e la data di download.</p>
+    <div class="pdf-form-grid">
+      <input type="text" id="pdf-name" placeholder="Nome e Cognome" autocomplete="name" aria-label="Il tuo nome"/>
+      <input type="text" id="pdf-company" placeholder="Azienda" autocomplete="organization" aria-label="Nome azienda"/>
+      <input type="email" id="pdf-email" placeholder="Email" autocomplete="email" aria-label="La tua email" style="grid-column:1/-1"/>
+    </div>
+    <button class="btn btn-primary" style="margin:0 auto;display:flex;padding:0.75rem 2rem;font-size:0.95rem;" onclick="downloadPDFFromForm()" aria-label="Genera e scarica PDF">
+      📄 Genera e Scarica PDF Completo
+    </button>
+    <p style="font-size:0.75rem;color:#334155;margin-top:1rem;">
+      🔒 I tuoi dati non vengono inviati a nessun server. Il PDF viene generato localmente nel tuo browser.
+    </p>
+  </section>
+
+</main>
+
+<!-- ========== PDF CAPTURE ZONE (hidden, used for PDF generation) ========== -->
+<div id="pdf-capture-zone" aria-hidden="true">
+  <!-- Content generated by JS before PDF export -->
+</div>
+
+<!-- ========== FOOTER ========== -->
+<footer role="contentinfo">
+  <div class="footer-logo">🛡️ SECURDATA.PRO</div>
+  <p class="footer-text">Cybersecurity &amp; AI Intelligence per PMI italiane</p>
+  <nav class="footer-links" aria-label="Link footer">
+    <a href="https://securdata.pro">Home</a>
+    <a href="https://securdata.pro/blog.html">Blog</a>
+    <a href="https://securdata.pro/risorse-gratuite.html">Risorse Gratuite</a>
+    <a href="https://securdata.pro/privacy-policy.html">Privacy Policy</a>
+    <a href="https://securdata.pro/termini-di-servizio.html">Termini di Servizio</a>
+  </nav>
+  <p class="footer-text" style="margin-top:0.5rem;">
+    © 2025 SECURDATA.PRO – Tutti i diritti riservati · 
+    <a href="https://securdata.pro" style="color:#2E8B57;text-decoration:none;">securdata.pro</a>
+  </p>
+</footer>
+
+<!-- ========== JAVASCRIPT ========== -->
+<script>
+(function() {
+  'use strict';
+
+  // ===== DATA =====
+  const ITEMS = [
+    { id:1,  title:"Abilita l'autenticazione a più fattori (MFA) su tutti gli accessi",   detail:"Blocca il 99,9% degli attacchi automatici.",                      tag:"Sicurezza · Priorità Massima"  },
+    { id:2,  title:"Esegui backup automatici e offline (regola 3-2-1)",                   detail:"3 copie, 2 supporti, 1 offline.",                                  tag:"Operatività · Protezione"      },
+    { id:3,  title:"Mantieni aggiornati sistemi e software (patch management)",           detail:"Vulnerabilità note vengono patchate.",                             tag:"Operatività · Efficienza"      },
+    { id:4,  title:"Forma il personale con simulazioni di phishing",                      detail:"Riduce tasso di click da 25% a <5%.",                              tag:"Sicurezza · Conformità"        },
+    { id:5,  title:"Applica il principio del minimo privilegio (PoLP)",                   detail:"Solo permessi indispensabili.",                                    tag:"Conformità · Protezione"       },
+    { id:6,  title:"Crittografa i dati sensibili (a riposo e in transito)",               detail:"GDPR compliant – AES-256 e TLS 1.3.",                              tag:"Protezione · Conformità"       },
+    { id:7,  title:"Gestisci le password con un password manager aziendale",              detail:"Genera credenziali uniche per ogni account.",                      tag:"Sicurezza · Operatività"       },
+    { id:8,  title:"Monitora gli accessi anomali con logging centralizzato",              detail:"Alert automatici per eventi critici.",                             tag:"Sicurezza · Conformità"        },
+    { id:9,  title:"Isola la rete in VLAN e segmentazione",                               detail:"Evita movimento laterale malware.",                                tag:"Protezione · Operatività"      },
+    { id:10, title:"Adotta endpoint detection & response (EDR)",                          detail:"Analisi comportamentale, zero-day detection.",                     tag:"Sicurezza · Protezione"        },
+    { id:11, title:"Blocca l'uso di dispositivi USB non autorizzati",                     detail:"Policy di gruppo: solo dispositivi approvati.",                    tag:"Sicurezza · Conformità"        },
+    { id:12, title:"Attiva il firewall applicativo (WAF) per i servizi web",              detail:"Blocca SQLi, XSS e bot malevoli.",                                 tag:"Protezione · Conformità"       },
+    { id:13, title:"Definisci un piano di risposta agli incidenti (IRP)",                 detail:"Tempi di contenimento ridotti.",                                   tag:"Operatività · Conformità"      },
+    { id:14, title:"Verifica la sicurezza dei fornitori (vendor risk)",                   detail:"63% dei breach coinvolge terze parti.",                            tag:"Conformità · Protezione"       },
+    { id:15, title:"Utilizza DNS filtering per bloccare siti malevoli",                   detail:"Riduce infezioni del 70%.",                                        tag:"Protezione · Efficienza"       },
+    { id:16, title:"Disabilita macro e script non necessari",                             detail:"Blocca vettori Office e PowerShell.",                              tag:"Sicurezza · Operatività"       },
+    { id:17, title:"Effettua backup dei configuratori di rete e firewall",               detail:"Evita downtime da reset accidentale.",                             tag:"Operatività · Efficienza"      },
+    { id:18, title:"Controlla i log di accesso ai dati sensibili (audit trail)",          detail:"GDPR art. 32 – conserva per 12 mesi.",                             tag:"Conformità · Sicurezza"        },
+    { id:19, title:"Proteggi gli account di servizio e le credenziali tecniche",          detail:"Usa un secret manager (Vault, Key Vault).",                        tag:"Sicurezza · Protezione"        },
+    { id:20, title:"Esegui un test di penetrazione annuale",                              detail:"Scopri vulnerabilità nascoste prima degli attaccanti.",            tag:"Sicurezza · Conformità"        }
+  ];
+
+  // State
+  const state = {
+    checked: {},
+    notes: {},
+    unlocked: false
+  };
+
+  // ===== INIT =====
+  function init() {
+    loadFromStorage();
+    renderFreeItems();
+    renderLockedItems();
+    renderSummaryTable();
+    updateProgress();
+    setupReadingProgress();
+  }
+
+  // ===== STORAGE =====
+  function loadFromStorage() {
+    try {
+      const saved = JSON.parse(localStorage.getItem('sdp_checklist_2025') || '{}');
+      state.checked = saved.checked || {};
+      state.notes   = saved.notes   || {};
+      state.unlocked = saved.unlocked || false;
+      if (state.unlocked) showLockedItems();
+    } catch(e) { /* ignore */ }
+  }
+
+  window.saveNotes = function() {
+    // collect current note values
+    document.querySelectorAll('.item-note').forEach(function(el) {
+      const id = el.dataset.id;
+      if (id) state.notes[id] = el.value;
+    });
+    document.querySelectorAll('.table-note-input').forEach(function(el) {
+      const id = el.dataset.id;
+      if (id) state.notes[id] = el.value;
+    });
+    try {
+      localStorage.setItem('sdp_checklist_2025', JSON.stringify({
+        checked: state.checked,
+        notes:   state.notes,
+        unlocked: state.unlocked
+      }));
+      showToast('✅ Note salvate con successo!');
+    } catch(e) {
+      showToast('❌ Errore nel salvataggio', true);
+    }
+  };
+
+  // ===== RENDER CHECKLIST ITEMS =====
+  function renderFreeItems() {
+    const container = document.getElementById('free-items');
+    container.innerHTML = '';
+    ITEMS.slice(0, 5).forEach(function(item) {
+      container.appendChild(buildItemEl(item));
+    });
+  }
+
+  function renderLockedItems() {
+    const container = document.getElementById('locked-items');
+    container.innerHTML = '';
+    ITEMS.slice(5).forEach(function(item) {
+      container.appendChild(buildItemEl(item));
+    });
+  }
+
+  function buildItemEl(item) {
+    const div = document.createElement('div');
+    div.className = 'checklist-item' + (state.checked[item.id] ? ' completed' : '');
+    div.id = 'checklist-item-' + item.id;
+    const noteVal = state.notes[item.id] || '';
+    div.innerHTML =
+      '<div class="item-top">' +
+        '<div class="item-checkbox' + (state.checked[item.id] ? ' checked' : '') + '" ' +
+             'role="checkbox" aria-checked="' + (state.checked[item.id] ? 'true' : 'false') + '" ' +
+             'tabindex="0" aria-label="Punto ' + item.id + '" ' +
+             'onclick="toggleItem(' + item.id + ')" ' +
+             'onkeydown="if(event.key===\'Enter\'||event.key===\' \')toggleItem(' + item.id + ')" ' +
+             'id="cb-' + item.id + '">' +
+        '</div>' +
+        '<div class="item-content">' +
+          '<div class="item-num">Punto ' + item.id + ' / 20</div>' +
+          '<div class="item-title">' + escHtml(item.title) + '</div>' +
+          '<div class="item-detail">💡 ' + escHtml(item.detail) + '</div>' +
+          '<div class="item-note-label">Note aggiuntive</div>' +
+          '<textarea class="item-note" data-id="' + item.id + '" ' +
+                    'placeholder="Scrivi note, responsabile, scadenza..." ' +
+                    'aria-label="Note per punto ' + item.id + '">' + escHtml(noteVal) + '</textarea>' +
+        '</div>' +
+      '</div>';
+    // sync note input to state
+    div.querySelector('.item-note').addEventListener('input', function(e) {
+      state.notes[item.id] = e.target.value;
+      syncTableNote(item.id, e.target.value);
+    });
+    return div;
+  }
+
+  window.toggleItem = function(id) {
+    state.checked[id] = !state.checked[id];
+    const cb = document.getElementById('cb-' + id);
+    const item = document.getElementById('checklist-item-' + id);
+    if (cb) {
+      cb.classList.toggle('checked', state.checked[id]);
+      cb.setAttribute('aria-checked', state.checked[id] ? 'true' : 'false');
+    }
+    if (item) item.classList.toggle('completed', state.checked[id]);
+    updateProgress();
+    updateTableRow(id);
+    // auto-save
+    try {
+      localStorage.setItem('sdp_checklist_2025', JSON.stringify({
+        checked: state.checked, notes: state.notes, unlocked: state.unlocked
+      }));
+    } catch(e) {}
+  };
+
+  // ===== PROGRESS =====
+  function updateProgress() {
+    const done = Object.values(state.checked).filter(Boolean).length;
+    const total = 20;
+    document.getElementById('progress-count').textContent = done + ' / ' + total;
+    document.getElementById('progress-fill').style.width = ((done/total)*100) + '%';
+  }
+
+  // ===== SUMMARY TABLE =====
+  function renderSummaryTable() {
+    const tbody = document.getElementById('summary-tbody');
+    tbody.innerHTML = '';
+    ITEMS.forEach(function(item) {
+      const tr = document.createElement('tr');
+      const noteVal = state.notes[item.id] || '';
+      const checked = state.checked[item.id];
+      tr.id = 'table-row-' + item.id;
+      tr.innerHTML =
+        '<td><strong>' + item.id + '.</strong> ' + escHtml(item.title) + '</td>' +
+        '<td><span class="' + (checked ? 'checked-icon' : 'unchecked-icon') + '" id="table-cb-' + item.id + '">' +
+             (checked ? '✅' : '☐') + '</span></td>' +
+        '<td><textarea class="table-note-input" data-id="' + item.id + '" ' +
+             'placeholder="Note..." aria-label="Note tabella punto ' + item.id + '">' + escHtml(noteVal) + '</textarea></td>';
+      tbody.appendChild(tr);
+      tr.querySelector('.table-note-input').addEventListener('input', function(e) {
+        state.notes[item.id] = e.target.value;
+        syncChecklistNote(item.id, e.target.value);
+      });
+    });
+  }
+
+  function updateTableRow(id) {
+    const cbEl = document.getElementById('table-cb-' + id);
+    if (cbEl) {
+      cbEl.textContent = state.checked[id] ? '✅' : '☐';
+      cbEl.className = state.checked[id] ? 'checked-icon' : 'unchecked-icon';
+    }
+  }
+
+  function syncTableNote(id, val) {
+    const el = document.querySelector('#summary-tbody .table-note-input[data-id="' + id + '"]');
+    if (el && el.value !== val) el.value = val;
+  }
+
+  function syncChecklistNote(id, val) {
+    const el = document.querySelector('.item-note[data-id="' + id + '"]');
+    if (el && el.value !== val) el.value = val;
+  }
+
+  // ===== FREEMIUM GATE =====
+  window.unlockFull = function(skipEmail) {
+    const email = document.getElementById('gate-email').value.trim();
+    const name  = document.getElementById('gate-name').value.trim();
+    if (!skipEmail && !validateEmail(email)) {
+      showToast('⚠️ Inserisci un\'email valida', true);
+      document.getElementById('gate-email').focus();
+      return;
+    }
+    if (!skipEmail) {
+      // Simulate registration
+      showToast('🎉 Accesso sbloccato! Benvenuto/a' + (name ? ', ' + name : '') + '!');
+    }
+    showLockedItems();
+    state.unlocked = true;
+    try {
+      localStorage.setItem('sdp_checklist_2025', JSON.stringify({
+        checked: state.checked, notes: state.notes, unlocked: true
+      }));
+    } catch(e) {}
+  };
+
+  function showLockedItems() {
+    document.getElementById('freemium-gate').style.display = 'none';
+    document.getElementById('locked-items').style.display = 'block';
+  }
+
+  // ===== RESET =====
+  window.resetChecklist = function() {
+    if (!confirm('Vuoi davvero azzerare tutta la checklist e le note?')) return;
+    state.checked = {};
+    state.notes = {};
+    document.querySelectorAll('.item-checkbox').forEach(function(el) {
+      el.classList.remove('checked');
+      el.setAttribute('aria-checked', 'false');
+    });
+    document.querySelectorAll('.checklist-item').forEach(function(el) {
+      el.classList.remove('completed');
+    });
+    document.querySelectorAll('.item-note, .table-note-input').forEach(function(el) {
+      el.value = '';
+    });
+    ITEMS.forEach(function(item) { updateTableRow(item.id); });
+    updateProgress();
+    try { localStorage.removeItem('sdp_checklist_2025'); } catch(e) {}
+    showToast('🔄 Checklist azzerata');
+  };
+
+  // ===== PDF GENERATION =====
+  function collectCurrentNotes() {
+    document.querySelectorAll('.item-note').forEach(function(el) {
+      const id = el.dataset.id;
+      if (id) state.notes[id] = el.value;
+    });
+    document.querySelectorAll('.table-note-input').forEach(function(el) {
+      const id = el.dataset.id;
+      if (id) state.notes[id] = el.value;
+    });
+  }
+
+  function buildPDFZone(userName, userCompany) {
+    const zone = document.getElementById('pdf-capture-zone');
+    const now = new Date().toLocaleDateString('it-IT', { day:'2-digit', month:'long', year:'numeric' });
+    let html = '';
+    html += '<div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">';
+    html += '<div style="width:40px;height:40px;background:#0A2647;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;">🛡️</div>';
+    html += '<div>';
+    html += '<div class="pdf-h1">Checklist Sicurezza PMI 2025</div>';
+    const userLine = [now, userName ? escHtml(userName) : '', userCompany ? escHtml(userCompany) : ''].filter(Boolean).join(' · ');
+    html += `<div class="pdf-sub">SECURDATA.PRO · securdata.pro · Generato il ${userLine}</div>`;
+    html += '</div></div>';
+    html += '<div style="height:1px;background:#0A2647;opacity:0.2;margin-bottom:16px;"></div>';
+    ITEMS.forEach(function(item) {
+      const done = !!state.checked[item.id];
+      const note = state.notes[item.id] || '';
+      html += '<div class="pdf-item-row">';
+      html += '<div class="pdf-cb' + (done ? ' done' : '') + '"></div>';
+      html += '<div class="pdf-item-text">';
+      html += '<div class="pdf-item-title">' + item.id + '. ' + escHtml(item.title) + '</div>';
+      html += '<div class="pdf-item-detail">💡 ' + escHtml(item.detail) + '</div>';
+      if (note) html += '<div class="pdf-item-note">📝 ' + escHtml(note) + '</div>';
+      html += '</div></div>';
+    });
+    // Table
+    html += '<div style="margin-top:20px;"><strong style="font-size:12px;color:#0A2647;">Tabella Riassuntiva</strong></div>';
+    html += '<table class="pdf-table"><thead><tr>';
+    html += '<th>Checklist Punto</th><th>✔</th><th>Note Aggiuntive</th>';
+    html += '</tr></thead><tbody>';
+    ITEMS.forEach(function(item) {
+      const note = state.notes[item.id] || '';
+      html += '<tr><td><strong>' + item.id + '.</strong> ' + escHtml(item.title) + '</td>';
+      html += '<td style="text-align:center">' + (state.checked[item.id] ? '✓' : '☐') + '</td>';
+      html += '<td>' + escHtml(note) + '</td></tr>';
+    });
+    html += '</tbody></table>';
+    const done = Object.values(state.checked).filter(Boolean).length;
+    html += '<div class="pdf-footer-text">Punti completati: ' + done + '/20 · © 2025 SECURDATA.PRO · securdata.pro</div>';
+    zone.innerHTML = html;
+  }
+
+  window.downloadPDF = function() {
+    collectCurrentNotes();
+    _generatePDF('', '');
+  };
+
+  window.downloadPDFFromForm = function() {
+    const name    = document.getElementById('pdf-name').value.trim();
+    const company = document.getElementById('pdf-company').value.trim();
+    const email   = document.getElementById('pdf-email').value.trim();
+    if (email && !validateEmail(email)) {
+      showToast('⚠️ Email non valida', true);
+      return;
+    }
+    collectCurrentNotes();
+    if (name || email) {
+      showToast('✅ PDF preparato per ' + (name || email));
+    }
+    _generatePDF(name, company);
+  };
+
+  function _generatePDF(userName, userCompany) {
+    const btn = document.getElementById('btn-pdf');
+    if (btn) { btn.disabled = true; btn.textContent = '⏳ Generando PDF...'; }
+    buildPDFZone(userName, userCompany);
+    const zone = document.getElementById('pdf-capture-zone');
+    zone.style.left = '-9999px';
+    zone.style.position = 'absolute';
+
+    // Use html2canvas + jsPDF
+    if (typeof html2canvas !== 'undefined' && typeof window.jspdf !== 'undefined') {
+      html2canvas(zone, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        logging: false
+      }).then(function(canvas) {
+        const jsPDF = window.jspdf.jsPDF;
+        const pdf = new jsPDF({ unit: 'pt', format: 'a4', orientation: 'portrait' });
+        const pageW = pdf.internal.pageSize.getWidth();
+        const pageH = pdf.internal.pageSize.getHeight();
+        const imgW = pageW;
+        const imgH = (canvas.height * pageW) / canvas.width;
+        let heightLeft = imgH;
+        let position = 0;
+        const imgData = canvas.toDataURL('image/jpeg', 0.92);
+        pdf.addImage(imgData, 'JPEG', 0, position, imgW, imgH);
+        heightLeft -= pageH;
+        while (heightLeft > 0) {
+          position = heightLeft - imgH;
+          pdf.addPage();
+          pdf.addImage(imgData, 'JPEG', 0, position, imgW, imgH);
+          heightLeft -= pageH;
+        }
+        const now = new Date();
+        const fname = 'checklist-sicurezza-pmi-2025-' +
+          now.getFullYear() + ('0'+(now.getMonth()+1)).slice(-2) + ('0'+now.getDate()).slice(-2) + '.pdf';
+        pdf.save(fname);
+        showToast('📄 PDF scaricato con successo!');
+        if (btn) { btn.disabled = false; btn.textContent = '📄 Scarica PDF completo'; }
+      }).catch(function(err) {
+        console.error('html2canvas error:', err);
+        fallbackPDF(userName, userCompany);
+        if (btn) { btn.disabled = false; btn.textContent = '📄 Scarica PDF completo'; }
+      });
+    } else {
+      fallbackPDF(userName, userCompany);
+      if (btn) { btn.disabled = false; btn.textContent = '📄 Scarica PDF completo'; }
+    }
+  }
+
+  // Fallback: pure jsPDF text-based PDF
+  function fallbackPDF(userName, userCompany) {
+    if (typeof window.jspdf === 'undefined') {
+      showToast('⚠️ PDF non disponibile. Ricarica la pagina.', true);
+      return;
+    }
+    const jsPDF = window.jspdf.jsPDF;
+    const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('it-IT');
+    let y = 20;
+    const pageH = doc.internal.pageSize.getHeight();
+    const marginB = 20;
+
+    function checkPage(needed) {
+      if (y + needed > pageH - marginB) {
+        doc.addPage();
+        y = 20;
+      }
+    }
+
+    // Header
+    doc.setFillColor(10, 38, 71);
+    doc.rect(0, 0, 210, 30, 'F');
+    doc.setTextColor(255,255,255);
+    doc.setFontSize(14); doc.setFont('helvetica','bold');
+    doc.text('SECURDATA.PRO', 14, 12);
+    doc.setFontSize(8); doc.setFont('helvetica','normal');
+    doc.text('Checklist Sicurezza PMI 2025  |  securdata.pro', 14, 20);
+    const headerLine = `Generato il ${dateStr}${userName ? '  |  ' + userName : ''}${userCompany ? '  –  ' + userCompany : ''}`;
+    doc.text(headerLine, 14, 27);
+    y = 40;
+
+    doc.setTextColor(10,38,71);
+    doc.setFontSize(16); doc.setFont('helvetica','bold');
+    doc.text('Checklist Sicurezza PMI 2025', 14, y); y += 8;
+    doc.setFontSize(10); doc.setFont('helvetica','normal');
+    doc.setTextColor(100,116,139);
+    doc.text('20 punti pratici per proteggere i dati della tua azienda', 14, y); y += 12;
+
+    const done = Object.values(state.checked).filter(Boolean).length;
+    doc.setFontSize(9); doc.setTextColor(46,139,87);
+    doc.text('Completamento: ' + done + '/20 punti', 14, y); y += 10;
+
+    // Items
+    ITEMS.forEach(function(item) {
+      checkPage(22);
+      const checked = !!state.checked[item.id];
+      const note = state.notes[item.id] || '';
+      // Checkbox
+      doc.setFillColor(checked ? 46 : 245, checked ? 139 : 247, checked ? 87 : 250);
+      doc.setDrawColor(46,139,87);
+      doc.rect(14, y-3.5, 4.5, 4.5, checked ? 'FD' : 'D');
+      if (checked) {
+        doc.setTextColor(255,255,255);
+        doc.setFontSize(7); doc.setFont('helvetica','bold');
+        doc.text('✓', 15.5, y);
+      }
+      // Title
+      doc.setTextColor(30,41,59);
+      doc.setFontSize(9.5); doc.setFont('helvetica','bold');
+      const titleLines = doc.splitTextToSize(item.id + '. ' + item.title, 170);
+      doc.text(titleLines, 21, y);
+      y += titleLines.length * 4.5;
+      // Detail
+      doc.setTextColor(46,139,87);
+      doc.setFontSize(8); doc.setFont('helvetica','italic');
+      doc.text('  ' + item.detail, 21, y); y += 4.5;
+      // Note
+      if (note) {
+        checkPage(8);
+        doc.setTextColor(100,116,139);
+        doc.setFontSize(8); doc.setFont('helvetica','normal');
+        const noteLines = doc.splitTextToSize('  📝 ' + note, 168);
+        doc.text(noteLines, 21, y);
+        y += noteLines.length * 4;
+      }
+      y += 2.5;
+    });
+
+    // Summary table
+    checkPage(30);
+    y += 5;
+    doc.setFillColor(10,38,71);
+    doc.rect(0, y-5, 210, 8, 'F');
+    doc.setTextColor(255,255,255);
+    doc.setFontSize(10); doc.setFont('helvetica','bold');
+    doc.text('Tabella Riassuntiva', 14, y); y += 10;
+
+    doc.setTextColor(30,41,59); doc.setFontSize(8); doc.setFont('helvetica','bold');
+    doc.text('Punto', 14, y);
+    doc.text('✔', 130, y);
+    doc.text('Note', 140, y);
+    doc.setDrawColor(200,200,200);
+    doc.line(14, y+1, 200, y+1);
+    y += 5;
+    doc.setFont('helvetica','normal');
+    ITEMS.forEach(function(item) {
+      checkPage(8);
+      doc.setTextColor(30,41,59);
+      const rowText = item.id + '. ' + item.title;
+      const lines = doc.splitTextToSize(rowText, 112);
+      doc.text(lines, 14, y);
+      doc.setTextColor(46,139,87);
+      doc.text(state.checked[item.id] ? '✓' : '–', 130, y);
+      doc.setTextColor(100,116,139);
+      const noteText = state.notes[item.id] || '';
+      if (noteText) {
+        const nLines = doc.splitTextToSize(noteText, 56);
+        doc.text(nLines, 140, y);
+        y += Math.max(lines.length, nLines.length) * 4.2;
+      } else {
+        y += lines.length * 4.2;
+      }
+      doc.setDrawColor(240,240,240);
+      doc.line(14, y, 200, y);
+      y += 1.5;
+    });
+
+    // Footer
+    doc.setFillColor(10,38,71);
+    doc.rect(0, pageH-14, 210, 14, 'F');
+    doc.setTextColor(148,163,184);
+    doc.setFontSize(7); doc.setFont('helvetica','normal');
+    doc.text('© 2025 SECURDATA.PRO · securdata.pro · Tutti i diritti riservati', 14, pageH-5);
+
+    const fname = 'checklist-sicurezza-pmi-2025-' +
+      now.getFullYear() + ('0'+(now.getMonth()+1)).slice(-2) + ('0'+now.getDate()).slice(-2) + '.pdf';
+    doc.save(fname);
+    showToast('📄 PDF scaricato!');
+  }
+
+  // ===== AUDIO =====
+  let synth = window.speechSynthesis;
+  let utterance = null;
+  let isPlaying = false;
+
+  window.toggleAudio = function() {
+    if (!synth) { showToast('⚠️ Web Speech API non supportata', true); return; }
+    if (isPlaying) {
+      synth.pause();
+      isPlaying = false;
+      document.getElementById('btn-audio-play').textContent = '▶ Riprendi';
+      document.getElementById('audio-status').textContent = 'In pausa';
+      return;
+    }
+    if (synth.paused && utterance) {
+      synth.resume();
+      isPlaying = true;
+      document.getElementById('btn-audio-play').textContent = '⏸ Pausa';
+      document.getElementById('audio-status').textContent = 'In riproduzione...';
+      return;
+    }
+    // Build text
+    let text = 'Checklist Sicurezza PMI 2025. 20 punti pratici per proteggere i dati della tua azienda. ';
+    ITEMS.forEach(function(item) {
+      text += 'Punto ' + item.id + ': ' + item.title + '. ' + item.detail + '. ';
+    });
+    utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'it-IT';
+    utterance.rate = 0.95;
+    utterance.pitch = 1;
+    utterance.onend = function() {
+      isPlaying = false;
+      document.getElementById('btn-audio-play').textContent = '▶ Ascolta';
+      document.getElementById('btn-audio-stop').style.display = 'none';
+      document.getElementById('audio-status').textContent = 'Completato';
+    };
+    utterance.onerror = function() {
+      isPlaying = false;
+      document.getElementById('btn-audio-play').textContent = '▶ Ascolta';
+      document.getElementById('btn-audio-stop').style.display = 'none';
+      document.getElementById('audio-status').textContent = 'Errore';
+    };
+    synth.cancel();
+    synth.speak(utterance);
+    isPlaying = true;
+    document.getElementById('btn-audio-play').textContent = '⏸ Pausa';
+    document.getElementById('btn-audio-stop').style.display = 'inline-flex';
+    document.getElementById('audio-status').textContent = 'In riproduzione...';
+  };
+
+  window.stopAudio = function() {
+    if (synth) { synth.cancel(); }
+    isPlaying = false;
+    utterance = null;
+    document.getElementById('btn-audio-play').textContent = '▶ Ascolta';
+    document.getElementById('btn-audio-stop').style.display = 'none';
+    document.getElementById('audio-status').textContent = 'Fermato';
+  };
+
+  // ===== SHARE =====
+  window.shareResource = function() {
+    const data = {
+      title: 'Checklist Sicurezza PMI 2025 – 20 punti pratici | SECURDATA.PRO',
+      text:  'Scopri i 20 controlli essenziali di cybersecurity per proteggere la tua PMI nel 2025.',
+      url:   window.location.href
+    };
+    if (navigator.share) {
+      navigator.share(data).catch(function() {});
+    } else {
+      // Fallback: copy link
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(window.location.href).then(function() {
+          showToast('🔗 Link copiato negli appunti!');
+        }).catch(function() {
+          prompt('Copia questo link:', window.location.href);
+        });
+      } else {
+        prompt('Copia questo link:', window.location.href);
+      }
+    }
+  };
+
+  // ===== READING PROGRESS BAR =====
+  function setupReadingProgress() {
+    window.addEventListener('scroll', function() {
+      const docH = document.documentElement.scrollHeight - window.innerHeight;
+      const pct  = docH > 0 ? (window.scrollY / docH) * 100 : 0;
+      document.getElementById('progress-bar').style.width = pct + '%';
+    }, { passive: true });
+  }
+
+  // ===== TOAST =====
+  window.showToast = function(msg, isError) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className = 'toast' + (isError ? ' error' : '');
+    el.classList.add('show');
+    clearTimeout(el._timer);
+    el._timer = setTimeout(function() { el.classList.remove('show'); }, 3200);
+  };
+
+  // ===== HELPERS =====
+  function escHtml(s) {
+    return String(s)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+  }
+
+  function validateEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  // ===== BOOT =====
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+})();
+</script>
+
+</body>
+</html>
