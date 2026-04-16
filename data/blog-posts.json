@@ -1,5 +1,20 @@
 [
   {
+    "id": "8",
+    "slug": "checklist-sicurezza-pmi-2025",
+    "title": "✅ Checklist Sicurezza PMI 2025: 20 Punti per Proteggere la Tua Azienda",
+    "excerpt": "Scarica e usa gratuitamente la nostra checklist interattiva in 20 punti per valutare e migliorare il livello di sicurezza informatica della tua PMI. Zero tecnicismi, solo azioni pratiche e immediate.",
+    "content": "## Perché Serve una Checklist di Sicurezza?\n\nLe piccole e medie imprese italiane sono sempre più nel mirino dei cybercriminali. Non per mancanza di valore, ma perché spesso non hanno le risorse per strutturare una difesa adeguata.\n\nUna checklist di sicurezza è il punto di partenza ideale: ti permette di fotografare la situazione attuale e identificare le lacune più urgenti.\n\n## I 5 Macro-Aree della Checklist\n\n**1. Gestione Accessi e Password**\nPassword complesse, autenticazione a due fattori, policy di scadenza: le basi che molte aziende trascurano.\n\n**2. Backup e Recovery dei Dati**\nLa regola 3-2-1 applicata correttamente: 3 copie, 2 supporti diversi, 1 offsite. Testata e funzionante.\n\n**3. Sicurezza della Rete**\nFirewall aggiornato, segmentazione della rete, VPN per il lavoro remoto.\n\n**4. Protezione degli Endpoint**\nAntivirus/EDR su tutti i dispositivi, patch management sistematico.\n\n**5. Consapevolezza del Personale**\nFormazione anti-phishing, policy BYOD, gestione degli incidenti.\n\n## Come Usare la Checklist\n\nLa checklist è interattiva: puoi spuntare ogni punto completato e vedere il tuo punteggio di sicurezza in tempo reale. Nessuna registrazione richiesta, nessun dato raccolto.\n\n**Accedi ora alla checklist gratuita →**\n\nCompleta la valutazione in 10-15 minuti. Alla fine riceverai un punteggio e le priorità di intervento per la tua azienda.",
+    "author": "Vito Iacobellis",
+    "date": "2025-04-15",
+    "tags": ["Checklist", "Sicurezza PMI", "Cybersecurity", "Best Practice", "Gratuito"],
+    "category": "Risorse & Strumenti",
+    "featured": true,
+    "image": "",
+    "readTime": "3 min",
+    "url": "./checklist/checklist-sicurezza-pmi-2025.html"
+  },
+  {
     "id": "7",
     "slug": "risorse-gratuite",
     "title": "🎁 Risorse Gratuite SECURDATA.PRO: Strumenti Pratici per la Tua Impresa",
