@@ -630,7 +630,7 @@ function renderDir() {
       <div class="cat-item">
         <div>
           <span class="cat-name">📁 ${esc(c)}</span>
-          <span class="cat-count">${count} task${count !== 1 ? '' : ''} attivi</span>
+          <span class="cat-count">${count} task${count !== 1 ? 's' : ''} attivi</span>
         </div>
         <div style="display:flex;gap:0.4rem">
           <button class="btn btn-ghost" style="font-size:0.72rem;padding:0.25rem 0.6rem" onclick="filterByCat('${esc(c)}')">Visualizza</button>
