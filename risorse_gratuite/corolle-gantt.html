@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gantt COROLLE Project — Promemoria | SECURDATA.PRO</title>
+  <meta name="description" content="Diagramma di Gantt del progetto COROLLE. Traccia le attività, le dipendenze e lo stato di avanzamento del progetto.">
+  <link rel="icon" href="../logo-00-securdata-pro.svg" type="image/svg+xml">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    :root {
+      --bg:     #0f172a;
+      --bg2:    #1e293b;
+      --border: rgba(148,163,184,0.12);
+      --borda:  rgba(99,102,241,0.35);
+      --indigo: #6366f1;
+      --purple: #a855f7;
+      --text:   #e2e8f0;
+      --muted:  #94a3b8;
+      --dim:    #64748b;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, var(--bg) 0%, var(--bg2) 50%, var(--bg) 100%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    ::-webkit-scrollbar { width: 7px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--indigo); border-radius: 4px; }
+
+    /* ── NAVBAR ── */
+    .navbar {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(10,14,26,0.93); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border); padding: 0.65rem 1.5rem;
+    }
+    .nav-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; flex-wrap: wrap; }
+    .nav-logo { display: flex; align-items: center; gap: 0.5rem; text-decoration: none; }
+    .nav-logo img { width: 32px; height: 32px; border-radius: 50%; filter: drop-shadow(0 0 5px rgba(99,102,241,0.5)); }
+    .nav-title { font-size: 0.87rem; font-weight: 800; color: #fff; }
+    .nav-sub { font-size: 0.68rem; color: var(--muted); }
+    .nav-right { display: flex; align-items: center; gap: 0.55rem; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      padding: 0.35rem 0.85rem; border-radius: 8px; font-size: 0.78rem; font-weight: 700;
+      cursor: pointer; border: none; text-decoration: none; transition: all 0.18s;
+    }
+    .btn-indigo { background: linear-gradient(135deg, var(--indigo), var(--purple)); color: #fff; }
+    .btn-indigo:hover { opacity: 0.88; transform: translateY(-1px); }
+    .btn-outline { background: transparent; border: 1px solid var(--borda); color: #a5b4fc; }
+    .btn-outline:hover { background: rgba(99,102,241,0.1); }
+    .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); }
+    .btn-ghost:hover { border-color: var(--borda); color: #a5b4fc; }
+    .btn-emerald { background: linear-gradient(135deg, #059669, #10b981); color: #fff; }
+    .btn-emerald:hover { opacity: 0.88; }
+
+    /* ── MAIN ── */
+    .main { max-width: 1100px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+
+    /* ── HERO ── */
+    .hero {
+      background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(168,85,247,0.06));
+      border: 1px solid var(--borda); border-radius: 16px;
+      padding: 1.5rem 1.75rem; margin-bottom: 2rem;
+      display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+    }
+    .hero h1 { font-size: 1.4rem; font-weight: 900; color: #fff; margin-bottom: 0.3rem; }
+    .hero h1 span { background: linear-gradient(135deg, #818cf8, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero p { color: var(--muted); font-size: 0.84rem; max-width: 520px; line-height: 1.6; }
+    .hero-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center; }
+
+    /* ── REMINDER BANNER ── */
+    .reminder {
+      background: rgba(16,185,129,0.07);
+      border: 1px solid rgba(16,185,129,0.25);
+      border-left: 3px solid #10b981;
+      border-radius: 10px;
+      padding: 0.85rem 1.1rem;
+      margin-bottom: 1.75rem;
+      font-size: 0.83rem;
+    }
+    .reminder strong { color: #6ee7b7; }
+
+    /* ── TABLE ── */
+    .table-wrap { overflow-x: auto; border-radius: 14px; border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+    thead th {
+      background: rgba(15,23,42,0.95);
+      text-align: left; padding: 0.7rem 0.9rem;
+      font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--muted);
+      border-bottom: 1px solid var(--border); white-space: nowrap;
+    }
+    tbody tr { transition: background 0.12s; }
+    tbody tr:hover td { background: rgba(99,102,241,0.04); }
+    tbody td {
+      padding: 0.65rem 0.9rem; border-bottom: 1px solid rgba(148,163,184,0.06);
+      vertical-align: middle;
+    }
+    tbody tr:last-child td { border-bottom: none; }
+
+    /* ── STATUS BADGES ── */
+    .badge {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      padding: 2px 9px; border-radius: 99px;
+      font-size: 0.68rem; font-weight: 700; white-space: nowrap;
+    }
+    .b-done  { background: rgba(16,185,129,0.15); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.3); }
+    .b-wip   { background: rgba(245,158,11,0.15);  color: #fcd34d; border: 1px solid rgba(245,158,11,0.3); }
+    .b-todo  { background: rgba(99,102,241,0.15);  color: #a5b4fc; border: 1px solid rgba(99,102,241,0.3); }
+    .b-block { background: rgba(239,68,68,0.13);   color: #fca5a5; border: 1px solid rgba(239,68,68,0.28); }
+
+    /* ── BAR CHART ── */
+    .bar-wrap { min-width: 120px; max-width: 200px; }
+    .bar-bg { background: rgba(148,163,184,0.08); border-radius: 4px; height: 7px; position: relative; }
+    .bar-fg { height: 7px; border-radius: 4px; transition: width 0.4s ease; }
+
+    /* ── MILESTONE ── */
+    .milestone-row td { background: rgba(99,102,241,0.06) !important; font-weight: 700; }
+    .milestone-row td:first-child { border-left: 3px solid var(--indigo); }
+
+    /* ── PROGRESS SUMMARY ── */
+    .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.85rem; margin-bottom: 1.75rem; }
+    .sum-card {
+      background: rgba(15,23,42,0.7); border: 1px solid var(--border); border-radius: 12px;
+      padding: 0.9rem 1rem;
+    }
+    .sum-val { font-size: 1.6rem; font-weight: 900; }
+    .sum-lbl { font-size: 0.7rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px; }
+
+    /* ── ADD ROW FORM (admin only) ── */
+    #add-row-form {
+      display: none;
+      background: rgba(15,23,42,0.9); border: 1px solid var(--borda); border-radius: 14px;
+      padding: 1.25rem; margin-bottom: 1.5rem;
+    }
+    #add-row-form.open { display: block; }
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.7rem; }
+    .fg { display: flex; flex-direction: column; gap: 0.3rem; }
+    label { font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    input[type="text"], input[type="date"], select, input[type="number"] {
+      background: rgba(30,41,59,0.8); border: 1px solid var(--border);
+      border-radius: 8px; padding: 0.48rem 0.7rem; color: var(--text);
+      font-size: 0.8rem; font-family: inherit; outline: none; transition: border-color 0.2s; width: 100%;
+    }
+    input:focus, select:focus { border-color: var(--indigo); }
+    select option { background: #1e293b; }
+    .form-actions { display: flex; gap: 0.6rem; margin-top: 0.85rem; flex-wrap: wrap; }
+
+    /* ── TOAST ── */
+    #toast {
+      position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9999;
+      background: rgba(30,41,59,0.97); border: 1px solid var(--borda);
+      border-radius: 10px; padding: 0.75rem 1.1rem; font-size: 0.82rem; color: var(--text);
+      display: none; box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+    }
+
+    /* ── ACTION BTNS IN TABLE ── */
+    .row-actions { display: flex; gap: 0.3rem; }
+    .icon-btn { background: none; border: none; cursor: pointer; padding: 3px 6px; border-radius: 5px; font-size: 0.78rem; color: var(--muted); transition: all 0.15s; }
+    .icon-btn:hover { background: rgba(99,102,241,0.15); color: #a5b4fc; }
+    .icon-btn.del:hover { background: rgba(239,68,68,0.15); color: #fca5a5; }
+
+    .empty { text-align: center; padding: 2rem; color: var(--dim); font-size: 0.82rem; }
+
+    /* ── LEGEND ── */
+    .legend { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+    .legend-item { display: flex; align-items: center; gap: 0.4rem; font-size: 0.75rem; color: var(--muted); }
+
+    footer { text-align: center; padding: 2rem; color: var(--dim); font-size: 0.75rem; border-top: 1px solid var(--border); margin-top: 3rem; }
+    footer a { color: var(--muted); text-decoration: none; }
+    footer a:hover { color: var(--indigo); }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-in { animation: fadeIn 0.4s ease-out both; }
+  </style>
+</head>
+<body>
+
+<!-- ── NAVBAR ── -->
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="../index.html" class="nav-logo">
+      <img src="../logo-00-securdata-pro.svg" alt="SECURDATA.PRO">
+      <div>
+        <div class="nav-title">SECURDATA.PRO</div>
+        <div class="nav-sub">COROLLE Gantt</div>
+      </div>
+    </a>
+    <div class="nav-right">
+      <a href="../risorse-gratuite.html" class="btn btn-ghost">← Risorse</a>
+      <a href="corolle-dashboard.html" class="btn btn-outline">🎯 Dashboard</a>
+      <a href="corolle-admin.html" class="btn btn-outline" id="admin-link" style="display:none">⚙️ Admin</a>
+      <a href="../login-utente.html" class="btn btn-indigo" id="nav-login" >🔐 Accedi</a>
+      <button class="btn btn-ghost" id="nav-logout" style="display:none" onclick="doLogout()">Esci</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ── MAIN ── -->
+<main class="main">
+
+  <!-- Reminder banner -->
+  <div class="reminder animate-in">
+    📅 <strong>Promemoria Gantt:</strong> Hai completato <strong>"MVP funzionante (locale)"</strong>. Ricordati di aggiornare il Gantt! &nbsp;
+    <span id="add-reminder-btn" style="display:none">→ <a href="#" onclick="toggleAddForm();return false" style="color:#6ee7b7">Aggiorna ora</a></span>
+  </div>
+
+  <!-- Hero -->
+  <div class="hero animate-in">
+    <div>
+      <h1>📊 Diagramma di Gantt<br><span>COROLLE Project</span></h1>
+      <p>Traccia attività, dipendenze e stato di avanzamento del progetto COROLLE. Visualizza la timeline e monitora le milestone chiave.</p>
+    </div>
+    <div class="hero-actions">
+      <button class="btn btn-emerald" id="add-row-btn" style="display:none" onclick="toggleAddForm()">➕ Aggiungi Attività</button>
+      <button class="btn btn-outline" onclick="exportCSV()">⬇️ Esporta CSV</button>
+    </div>
+  </div>
+
+  <!-- Summary stats -->
+  <div class="summary-grid animate-in" id="summary-grid"></div>
+
+  <!-- Legend -->
+  <div class="legend">
+    <div class="legend-item"><span class="badge b-done">✅ Fatto</span> Completato</div>
+    <div class="legend-item"><span class="badge b-wip">⏳ WiP</span> Work in Progress</div>
+    <div class="legend-item"><span class="badge b-todo">🔄 Da fare</span> Non iniziato</div>
+    <div class="legend-item"><span class="badge b-block">⛔ Bloccato</span> Bloccato</div>
+  </div>
+
+  <!-- Add Row Form -->
+  <div id="add-row-form">
+    <h3 style="font-size:0.92rem;font-weight:800;color:#fff;margin-bottom:1rem">➕ Aggiungi Attività al Gantt</h3>
+    <div class="form-grid">
+      <div class="fg" style="grid-column:1/-1">
+        <label>Nome Attività *</label>
+        <input type="text" id="g-name" placeholder="Es. Setup struttura file" maxlength="120">
+      </div>
+      <div class="fg">
+        <label>Data Inizio</label>
+        <input type="text" id="g-start" placeholder="DD/MM/YYYY">
+      </div>
+      <div class="fg">
+        <label>Durata (giorni)</label>
+        <input type="number" id="g-duration" placeholder="1" min="1">
+      </div>
+      <div class="fg">
+        <label>Dipendenze</label>
+        <input type="text" id="g-deps" placeholder="Es. Calendar, MVP">
+      </div>
+      <div class="fg">
+        <label>Stato</label>
+        <select id="g-status">
+          <option value="todo">🔄 Da fare</option>
+          <option value="wip">⏳ Work in Progress</option>
+          <option value="done">✅ Fatto</option>
+          <option value="blocked">⛔ Bloccato</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Categoria</label>
+        <input type="text" id="g-cat" placeholder="Es. Dev, Marketing">
+      </div>
+      <div class="fg">
+        <label>Note</label>
+        <input type="text" id="g-notes" placeholder="Note opzionali">
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-emerald" onclick="addRow()">✅ Aggiungi</button>
+      <button class="btn btn-ghost" onclick="toggleAddForm()">Annulla</button>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrap animate-in">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Attività</th>
+          <th>Inizio</th>
+          <th>Durata</th>
+          <th>Fine (calc.)</th>
+          <th>Dipendenze</th>
+          <th>Stato</th>
+          <th>Progresso</th>
+          <th id="actions-col" style="display:none">Azioni</th>
+        </tr>
+      </thead>
+      <tbody id="gantt-tbody"></tbody>
+    </table>
+    <div class="empty" id="gantt-empty" style="display:none"><div style="font-size:2rem;margin-bottom:0.5rem">📅</div>Nessuna attività</div>
+  </div>
+
+</main>
+
+<div id="toast"></div>
+
+<footer>
+  <p>📊 COROLLE Gantt &mdash; <a href="../index.html">SECURDATA.PRO</a> &mdash; <a href="corolle-dashboard.html">Dashboard Priorità</a></p>
+</footer>
+
+<script>
+// ── CONSTANTS ─────────────────────────────────────────────────────────
+const GANTT_KEY = 'corolle_gantt_v2';
+const AUTH_KEY  = 'sdp_user_session';
+
+let rows = [];
+let isAdmin = false;
+
+// ── DEFAULT DATA ───────────────────────────────────────────────────────
+const DEFAULT_ROWS = [
+  { id: uid(), name: 'Setup struttura file',                        start: '10/04/2026', duration: 1,  deps: '–',              status: 'done',    cat: 'Dev',       notes: '' },
+  { id: uid(), name: 'Integrazione Google Calendar in Accordly',    start: '15/04/2026', duration: 5,  deps: '–',              status: 'todo',    cat: 'Dev',       notes: '' },
+  { id: uid(), name: 'MVP Accordly (test campione)',                 start: '20/04/2026', duration: 7,  deps: 'Calendar',       status: 'wip',     cat: 'Dev',       notes: '⏳ Work in Progress' },
+  { id: uid(), name: 'Sito securdata.pro',                          start: '22/04/2026', duration: 10, deps: '–',              status: 'wip',     cat: 'Sito',      notes: '' },
+  { id: uid(), name: 'PR eventi (Mantova)',                         start: '05/05/2026', duration: 3,  deps: 'Sito',           status: 'wip',     cat: 'Marketing', notes: '' },
+  { id: uid(), name: 'Videochiamate (Jitsi embed)',                  start: '10/05/2026', duration: 4,  deps: 'MVP',            status: 'wip',     cat: 'Dev',       notes: '' },
+  { id: uid(), name: 'INTERNET e HARDWARE PRIVATO (min investimento max resa)', start: '25/04/2026', duration: 5, deps: 'PC x LLM privato', status: 'todo', cat: 'Infra', notes: '' },
+  { id: uid(), name: 'MVP funzionante (locale)',                     start: '16/04/2026', duration: 1,  deps: 'Setup',          status: 'done',    cat: 'Dev',       notes: '✅ Completato!' },
+  { id: uid(), name: 'COROLLE Dashboard online',                    start: '16/04/2026', duration: 1,  deps: 'Sito',           status: 'done',    cat: 'Sito',      notes: 'Pubblicato su securdata.pro' },
+];
+
+function uid() { return '_' + Math.random().toString(36).slice(2, 11); }
+function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ── DATES ─────────────────────────────────────────────────────────────
+function parseDate(s) {
+  if (!s || s === '–') return null;
+  const p = s.split('/');
+  if (p.length === 3) return new Date(parseInt(p[2]), parseInt(p[1])-1, parseInt(p[0]));
+  return null;
+}
+
+function formatDate(d) {
+  if (!d) return '—';
+  return d.toLocaleDateString('it-IT', { day:'2-digit', month:'2-digit', year:'numeric' });
+}
+
+function calcEnd(start, dur) {
+  const d = parseDate(start);
+  if (!d) return '—';
+  d.setDate(d.getDate() + (parseInt(dur)||1) - 1);
+  return formatDate(d);
+}
+
+// ── STATUS ─────────────────────────────────────────────────────────────
+function statusBadge(s) {
+  const map = {
+    done:    ['b-done',  '✅ Fatto'],
+    wip:     ['b-wip',   '⏳ WiP'],
+    todo:    ['b-todo',  '🔄 Da fare'],
+    blocked: ['b-block', '⛔ Bloccato'],
+  };
+  const [cls, label] = map[s] || map.todo;
+  return `<span class="badge ${cls}">${label}</span>`;
+}
+
+function progressPct(status) {
+  return { done: 100, wip: 50, todo: 0, blocked: 10 }[status] || 0;
+}
+
+function barColor(status) {
+  return { done: '#10b981', wip: '#f59e0b', todo: '#6366f1', blocked: '#ef4444' }[status] || '#6366f1';
+}
+
+// ── AUTH ───────────────────────────────────────────────────────────────
+function checkAuth() {
+  const user = sessionStorage.getItem(AUTH_KEY);
+  isAdmin = !!user;
+  document.getElementById('nav-login').style.display   = isAdmin ? 'none' : 'inline-flex';
+  document.getElementById('nav-logout').style.display  = isAdmin ? 'inline-flex' : 'none';
+  document.getElementById('admin-link').style.display  = isAdmin ? 'inline-flex' : 'none';
+  document.getElementById('add-row-btn').style.display = isAdmin ? 'inline-flex' : 'none';
+  document.getElementById('add-reminder-btn').style.display = isAdmin ? 'inline' : 'none';
+  if (isAdmin) document.getElementById('actions-col').style.display = '';
+}
+
+function doLogout() { sessionStorage.removeItem(AUTH_KEY); location.reload(); }
+
+// ── LOAD / SAVE ────────────────────────────────────────────────────────
+function load() {
+  const saved = localStorage.getItem(GANTT_KEY);
+  rows = saved ? JSON.parse(saved) : [...DEFAULT_ROWS];
+}
+
+function save() { localStorage.setItem(GANTT_KEY, JSON.stringify(rows)); }
+
+// ── RENDER ─────────────────────────────────────────────────────────────
+function render() {
+  const tbody = document.getElementById('gantt-tbody');
+  const empty = document.getElementById('gantt-empty');
+  tbody.innerHTML = '';
+
+  if (!rows.length) { empty.style.display = 'block'; renderSummary(); return; }
+  empty.style.display = 'none';
+
+  rows.forEach((r, i) => {
+    const pct = progressPct(r.status);
+    const isDone = r.status === 'done';
+    const tr = document.createElement('tr');
+    if (isDone) tr.style.opacity = '0.75';
+    tr.innerHTML = `
+      <td style="color:var(--dim);font-weight:700">${i+1}</td>
+      <td>
+        <div style="font-weight:600;color:${isDone?'var(--muted)':'var(--text)'}">${esc(r.name)}</div>
+        ${r.cat ? `<span style="font-size:0.68rem;color:var(--dim)">#${esc(r.cat)}</span>` : ''}
+        ${r.notes ? `<div style="font-size:0.7rem;color:var(--dim);margin-top:2px">${esc(r.notes)}</div>` : ''}
+      </td>
+      <td style="white-space:nowrap;color:var(--muted)">${esc(r.start)||'—'}</td>
+      <td style="color:var(--muted)">${r.duration||'—'} gg</td>
+      <td style="white-space:nowrap;color:var(--muted)">${calcEnd(r.start, r.duration)}</td>
+      <td style="color:var(--dim);font-size:0.78rem">${esc(r.deps||'–')}</td>
+      <td>${statusBadge(r.status)}</td>
+      <td>
+        <div class="bar-wrap">
+          <div style="font-size:0.68rem;color:var(--dim);margin-bottom:3px">${pct}%</div>
+          <div class="bar-bg">
+            <div class="bar-fg" style="width:${pct}%;background:${barColor(r.status)}"></div>
+          </div>
+        </div>
+      </td>
+      ${isAdmin ? `<td>
+        <div class="row-actions">
+          <button class="icon-btn" onclick="cycleStatus('${r.id}')" title="Cambia stato">🔄</button>
+          <button class="icon-btn" onclick="editRow('${r.id}')" title="Modifica">✏️</button>
+          <button class="icon-btn del" onclick="deleteRow('${r.id}')" title="Elimina">🗑</button>
+        </div>
+      </td>` : ''}
+    `;
+    tbody.appendChild(tr);
+  });
+
+  renderSummary();
+}
+
+function renderSummary() {
+  const el = document.getElementById('summary-grid');
+  const total  = rows.length;
+  const done   = rows.filter(r => r.status === 'done').length;
+  const wip    = rows.filter(r => r.status === 'wip').length;
+  const todo   = rows.filter(r => r.status === 'todo').length;
+  const pct    = total ? Math.round(done / total * 100) : 0;
+
+  el.innerHTML = `
+    <div class="sum-card"><div class="sum-val" style="color:#818cf8">${total}</div><div class="sum-lbl">Attività Totali</div></div>
+    <div class="sum-card"><div class="sum-val" style="color:#6ee7b7">${done}</div><div class="sum-lbl">✅ Completate</div></div>
+    <div class="sum-card"><div class="sum-val" style="color:#fcd34d">${wip}</div><div class="sum-lbl">⏳ In Corso</div></div>
+    <div class="sum-card"><div class="sum-val" style="color:#a5b4fc">${todo}</div><div class="sum-lbl">🔄 Da Fare</div></div>
+    <div class="sum-card"><div class="sum-val" style="color:#c084fc">${pct}%</div><div class="sum-lbl">Avanzamento</div></div>
+  `;
+}
+
+// ── ACTIONS ───────────────────────────────────────────────────────────
+function toggleAddForm() {
+  const f = document.getElementById('add-row-form');
+  f.classList.toggle('open');
+  if (f.classList.contains('open')) document.getElementById('g-name').focus();
+}
+
+function addRow() {
+  const name = document.getElementById('g-name').value.trim();
+  if (!name) { showToast('⚠️ Inserisci il nome dell\'attività'); return; }
+  const r = {
+    id:       uid(),
+    name,
+    start:    document.getElementById('g-start').value.trim(),
+    duration: parseInt(document.getElementById('g-duration').value) || 1,
+    deps:     document.getElementById('g-deps').value.trim() || '–',
+    status:   document.getElementById('g-status').value,
+    cat:      document.getElementById('g-cat').value.trim(),
+    notes:    document.getElementById('g-notes').value.trim(),
+  };
+  rows.push(r);
+  save(); render();
+  ['g-name','g-start','g-deps','g-cat','g-notes'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('g-duration').value = '';
+  document.getElementById('g-status').value = 'todo';
+  document.getElementById('add-row-form').classList.remove('open');
+  showToast('✅ Attività aggiunta');
+}
+
+function cycleStatus(id) {
+  const r = rows.find(x => x.id === id);
+  if (!r) return;
+  const cycle = ['todo','wip','done','blocked'];
+  const idx = cycle.indexOf(r.status);
+  r.status = cycle[(idx + 1) % cycle.length];
+  save(); render();
+  showToast('🔄 Stato aggiornato');
+}
+
+function editRow(id) {
+  const r = rows.find(x => x.id === id);
+  if (!r) return;
+  const newName = prompt('Nome attività:', r.name);
+  if (newName === null) return;
+  if (newName.trim()) { r.name = newName.trim(); save(); render(); showToast('✏️ Attività aggiornata'); }
+}
+
+function deleteRow(id) {
+  if (!confirm('Eliminare questa attività dal Gantt?')) return;
+  rows = rows.filter(r => r.id !== id);
+  save(); render();
+  showToast('🗑 Attività eliminata');
+}
+
+function exportCSV() {
+  const headers = ['#','Attività','Inizio','Durata (gg)','Fine','Dipendenze','Stato','Categoria','Note'];
+  const statusLabel = { done: '✅ Fatto', wip: '⏳ WiP', todo: '🔄 Da fare', blocked: '⛔ Bloccato' };
+  const csvRows = [headers.join('\t')];
+  rows.forEach((r, i) => {
+    csvRows.push([
+      i+1, r.name, r.start||'', r.duration||'', calcEnd(r.start,r.duration),
+      r.deps||'', statusLabel[r.status]||r.status, r.cat||'', r.notes||''
+    ].map(v => `"${String(v).replace(/"/g,'""')}"`).join('\t'));
+  });
+  const blob = new Blob([csvRows.join('\n')], { type: 'text/tab-separated-values;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = 'corolle-gantt.tsv'; a.click();
+  URL.revokeObjectURL(url);
+  showToast('⬇️ Esportazione completata');
+}
+
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.style.display = 'block';
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.style.display = 'none', 2800);
+}
+
+// ── INIT ───────────────────────────────────────────────────────────────
+checkAuth(); load(); render();
+</script>
+</body>
+</html>
