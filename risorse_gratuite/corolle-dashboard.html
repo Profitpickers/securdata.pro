@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestione Priorità — COROLLE Dashboard | SECURDATA.PRO</title>
+  <meta name="description" content="Dashboard interattiva COROLLE per la gestione delle priorità quotidiane e settimanali. Classifica task per urgenza e importanza, gestisci il tuo tempo in modo strategico.">
+  <link rel="icon" href="../logo-00-securdata-pro.svg" type="image/svg+xml">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    :root {
+      --bg:       #0f172a;
+      --bg2:      #1e293b;
+      --bg3:      #0a0e1a;
+      --border:   rgba(148,163,184,0.12);
+      --border-a: rgba(99,102,241,0.35);
+      --indigo:   #6366f1;
+      --purple:   #a855f7;
+      --emerald:  #10b981;
+      --amber:    #f59e0b;
+      --red:      #ef4444;
+      --text:     #e2e8f0;
+      --muted:    #94a3b8;
+      --dim:      #64748b;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, var(--bg) 0%, var(--bg2) 50%, var(--bg) 100%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    ::-webkit-scrollbar { width: 7px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--indigo); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--purple); }
+
+    /* ── NAVBAR ── */
+    .navbar {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(10,14,26,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0.7rem 1.5rem;
+    }
+    .nav-inner {
+      max-width: 1280px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+    }
+    .nav-logo { display: flex; align-items: center; gap: 0.6rem; text-decoration: none; }
+    .nav-logo img { width: 36px; height: 36px; border-radius: 50%; filter: drop-shadow(0 0 6px rgba(99,102,241,0.5)); }
+    .nav-logo-text { font-size: 0.9rem; font-weight: 800; color: #fff; letter-spacing: 0.03em; }
+    .nav-logo-sub { font-size: 0.7rem; color: var(--muted); }
+    .nav-right { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .nav-link { color: var(--muted); text-decoration: none; font-size: 0.82rem; font-weight: 500; transition: color 0.2s; }
+    .nav-link:hover { color: var(--indigo); }
+    .btn-sm {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.35rem 0.9rem; border-radius: 7px; font-size: 0.78rem; font-weight: 700;
+      cursor: pointer; border: none; text-decoration: none; transition: all 0.2s;
+    }
+    .btn-indigo { background: linear-gradient(135deg, var(--indigo), var(--purple)); color: #fff; }
+    .btn-indigo:hover { opacity: 0.88; transform: translateY(-1px); }
+    .btn-outline { background: transparent; border: 1px solid var(--border-a); color: #a5b4fc; }
+    .btn-outline:hover { background: rgba(99,102,241,0.1); }
+    .btn-emerald { background: linear-gradient(135deg, #059669, #10b981); color: #fff; }
+    .btn-emerald:hover { opacity: 0.88; transform: translateY(-1px); }
+    .btn-red { background: linear-gradient(135deg, #dc2626, #ef4444); color: #fff; }
+    .btn-red:hover { opacity: 0.88; transform: translateY(-1px); }
+    .btn-amber { background: linear-gradient(135deg, #d97706, #f59e0b); color: #fff; }
+    .btn-amber:hover { opacity: 0.88; transform: translateY(-1px); }
+
+    /* ── MAIN LAYOUT ── */
+    .main { max-width: 1280px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+
+    /* ── HERO STRIP ── */
+    .hero {
+      background: linear-gradient(135deg, rgba(99,102,241,0.12) 0%, rgba(168,85,247,0.08) 100%);
+      border: 1px solid var(--border-a);
+      border-radius: 18px;
+      padding: 1.75rem 2rem;
+      margin-bottom: 2rem;
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.25rem;
+    }
+    .hero-left h1 { font-size: 1.6rem; font-weight: 900; color: #fff; line-height: 1.25; margin-bottom: 0.35rem; }
+    .hero-left h1 span { background: linear-gradient(135deg, #818cf8, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-left p { color: var(--muted); font-size: 0.88rem; max-width: 500px; line-height: 1.6; }
+    .hero-right { display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; }
+
+    /* ── AUTH BANNER ── */
+    #auth-banner {
+      background: rgba(99,102,241,0.08);
+      border: 1px solid rgba(99,102,241,0.25);
+      border-radius: 12px;
+      padding: 0.9rem 1.25rem;
+      margin-bottom: 1.5rem;
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem;
+    }
+    #auth-banner p { font-size: 0.83rem; color: #a5b4fc; }
+    #auth-banner a { color: #818cf8; text-decoration: underline; }
+
+    /* ── STATS ROW ── */
+    .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.85rem; margin-bottom: 2rem; }
+    .stat-card {
+      background: rgba(15,23,42,0.7);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1.1rem;
+      display: flex; flex-direction: column; gap: 0.25rem;
+    }
+    .stat-card .stat-val { font-size: 1.6rem; font-weight: 900; }
+    .stat-card .stat-lbl { font-size: 0.72rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+
+    /* ── MATRIX VIEW ── */
+    .matrix-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    @media (max-width: 700px) { .matrix-grid { grid-template-columns: 1fr; } }
+
+    .quadrant {
+      background: rgba(15,23,42,0.65);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.1rem;
+      min-height: 180px;
+      transition: border-color 0.2s;
+    }
+    .quadrant:hover { border-color: var(--border-a); }
+    .quadrant-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.85rem; }
+    .quadrant-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .quadrant-header h3 { font-size: 0.82rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; }
+    .quadrant-sub { font-size: 0.68rem; color: var(--muted); margin-left: auto; }
+
+    /* Quadrant colors */
+    .q-do     { border-top: 2px solid #ef4444; }
+    .q-plan   { border-top: 2px solid #f59e0b; }
+    .q-del    { border-top: 2px solid #3b82f6; }
+    .q-drop   { border-top: 2px solid #64748b; }
+    .dot-do   { background: #ef4444; }
+    .dot-plan { background: #f59e0b; }
+    .dot-del  { background: #3b82f6; }
+    .dot-drop { background: #64748b; }
+    .txt-do   { color: #fca5a5; }
+    .txt-plan { color: #fcd34d; }
+    .txt-del  { color: #93c5fd; }
+    .txt-drop { color: #94a3b8; }
+
+    /* ── TASK ITEMS ── */
+    .task-list { list-style: none; display: flex; flex-direction: column; gap: 0.45rem; }
+    .task-item {
+      display: flex; align-items: center; gap: 0.6rem;
+      background: rgba(30,41,59,0.55);
+      border: 1px solid rgba(148,163,184,0.08);
+      border-radius: 8px;
+      padding: 0.55rem 0.75rem;
+      font-size: 0.8rem;
+      cursor: default;
+      transition: background 0.15s, border-color 0.15s;
+      position: relative;
+    }
+    .task-item:hover { background: rgba(99,102,241,0.08); border-color: rgba(99,102,241,0.2); }
+    .task-item.done { opacity: 0.45; text-decoration: line-through; }
+    .task-cb { width: 15px; height: 15px; border-radius: 4px; border: 1.5px solid var(--dim); cursor: pointer; flex-shrink: 0; accent-color: var(--indigo); }
+    .task-text { flex: 1; color: var(--text); word-break: break-word; }
+    .task-actions { display: none; align-items: center; gap: 0.3rem; }
+    .task-item:hover .task-actions { display: flex; }
+    .task-btn {
+      background: none; border: none; color: var(--muted); cursor: pointer; font-size: 0.75rem; padding: 2px 5px;
+      border-radius: 4px; transition: all 0.15s;
+    }
+    .task-btn:hover { background: rgba(99,102,241,0.2); color: #a5b4fc; }
+    .task-btn.del:hover { background: rgba(239,68,68,0.15); color: #fca5a5; }
+    .task-drag-handle { color: var(--dim); cursor: grab; font-size: 0.9rem; }
+    .task-drag-handle:active { cursor: grabbing; }
+    .task-badge {
+      font-size: 0.6rem; font-weight: 700; padding: 1px 6px; border-radius: 99px;
+      text-transform: uppercase; letter-spacing: 0.04em; flex-shrink: 0;
+    }
+
+    /* ── ADD TASK FORM ── */
+    .add-form {
+      display: none;
+      background: rgba(15,23,42,0.9);
+      border: 1px solid var(--border-a);
+      border-radius: 14px;
+      padding: 1.25rem;
+      margin-bottom: 2rem;
+    }
+    .add-form.open { display: block; }
+    .add-form h3 { font-size: 0.92rem; font-weight: 800; color: #fff; margin-bottom: 1rem; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+    @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
+    .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
+    .form-group.full { grid-column: 1 / -1; }
+    label { font-size: 0.75rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    input[type="text"], textarea, select {
+      background: rgba(30,41,59,0.8);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.55rem 0.8rem;
+      color: var(--text);
+      font-size: 0.83rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input[type="text"]:focus, textarea:focus, select:focus { border-color: var(--indigo); }
+    select option { background: #1e293b; }
+    textarea { resize: vertical; min-height: 70px; }
+    .form-actions { display: flex; gap: 0.6rem; margin-top: 0.85rem; }
+
+    /* ── LIST VIEW ── */
+    .section-header {
+      display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+      margin-bottom: 1rem; flex-wrap: wrap;
+    }
+    .section-title { font-size: 1rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 0.5rem; }
+    .section-title-bar { width: 3px; height: 20px; border-radius: 2px; background: linear-gradient(to bottom, var(--indigo), var(--purple)); flex-shrink: 0; }
+
+    /* ── TABS ── */
+    .tabs { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+    .tab-btn {
+      padding: 0.4rem 0.9rem; border-radius: 8px; font-size: 0.78rem; font-weight: 700;
+      cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--muted);
+      transition: all 0.18s;
+    }
+    .tab-btn.active {
+      background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(168,85,247,0.15));
+      border-color: var(--border-a); color: #a5b4fc;
+    }
+    .tab-btn:hover:not(.active) { border-color: rgba(99,102,241,0.25); color: #cbd5e1; }
+
+    /* ── TRASH ── */
+    #trash-section {
+      background: rgba(239,68,68,0.05);
+      border: 1px solid rgba(239,68,68,0.2);
+      border-radius: 14px;
+      padding: 1.1rem;
+      margin-top: 2rem;
+    }
+    #trash-section h3 { font-size: 0.88rem; font-weight: 800; color: #fca5a5; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.4rem; }
+
+    /* ── EMPTY STATE ── */
+    .empty-state { text-align: center; padding: 2rem 1rem; color: var(--dim); font-size: 0.82rem; }
+    .empty-state .emoji { font-size: 2rem; margin-bottom: 0.5rem; }
+
+    /* ── LOCKED OVERLAY ── */
+    .locked-notice {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-size: 0.75rem; color: var(--dim);
+      padding: 0.5rem 0.75rem;
+      background: rgba(100,116,139,0.08);
+      border: 1px dashed rgba(100,116,139,0.2);
+      border-radius: 8px;
+      margin-top: 0.5rem;
+    }
+
+    /* ── TOAST ── */
+    #toast {
+      position: fixed; bottom: 1.5rem; right: 1.5rem;
+      background: rgba(30,41,59,0.95); border: 1px solid var(--border-a);
+      border-radius: 10px; padding: 0.75rem 1.1rem;
+      font-size: 0.82rem; color: var(--text);
+      display: none; z-index: 9999;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+    }
+
+    /* ── FOOTER ── */
+    footer { text-align: center; padding: 2rem 1rem; color: var(--dim); font-size: 0.75rem; border-top: 1px solid var(--border); margin-top: 3rem; }
+    footer a { color: var(--muted); text-decoration: none; }
+    footer a:hover { color: var(--indigo); }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-in { animation: fadeIn 0.4s ease-out both; }
+
+    /* dragging */
+    .task-item.dragging { opacity: 0.5; }
+    .task-item.drag-over { border-color: var(--indigo) !important; background: rgba(99,102,241,0.1) !important; }
+  </style>
+</head>
+<body>
+
+<!-- ── NAVBAR ── -->
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="../index.html" class="nav-logo">
+      <img src="../logo-00-securdata-pro.svg" alt="SECURDATA.PRO">
+      <div>
+        <div class="nav-logo-text">SECURDATA.PRO</div>
+        <div class="nav-logo-sub">COROLLE Dashboard</div>
+      </div>
+    </a>
+    <div class="nav-right">
+      <a href="../risorse-gratuite.html" class="nav-link">← Risorse Gratuite</a>
+      <a href="corolle-gantt.html" class="btn-sm btn-outline">📅 Gantt</a>
+      <a href="corolle-admin.html" class="btn-sm btn-outline" id="admin-nav-btn" style="display:none">⚙️ Admin</a>
+      <a href="../login-utente.html" class="btn-sm btn-indigo" id="nav-login-btn">🔐 Accedi</a>
+      <button class="btn-sm btn-outline" id="nav-logout-btn" style="display:none" onclick="logout()">Esci</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ── MAIN ── -->
+<main class="main">
+
+  <!-- Auth banner (for guests) -->
+  <div id="auth-banner">
+    <p>👀 Stai visualizzando il dashboard in modalità <strong>sola lettura</strong>. <a href="../login-utente.html">Accedi o registrati</a> per gestire le priorità, aggiungere task e modificare le liste.</p>
+    <a href="../login-utente.html" class="btn-sm btn-indigo" style="flex-shrink:0">Accedi →</a>
+  </div>
+
+  <!-- Hero -->
+  <div class="hero animate-in">
+    <div class="hero-left">
+      <h1>🎯 Gestione Priorità<br><span>COROLLE Dashboard</span></h1>
+      <p>Classifica le attività per urgenza e importanza, mantieni il focus su ciò che conta davvero ed evita la trappola delle "urgenze false". Basato sulla metodologia COROLLE.</p>
+    </div>
+    <div class="hero-right">
+      <button class="btn-sm btn-emerald" id="add-task-btn" style="display:none" onclick="toggleAddForm()">➕ Nuovo Task</button>
+      <a href="corolle-admin.html" class="btn-sm btn-outline" id="hero-admin-btn" style="display:none">⚙️ Gestione Avanzata</a>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row animate-in" id="stats-row">
+    <div class="stat-card">
+      <span class="stat-val" id="stat-total" style="color:#818cf8">0</span>
+      <span class="stat-lbl">Task Totali</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-val" id="stat-do" style="color:#fca5a5">0</span>
+      <span class="stat-lbl">⚡ Urgenti</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-val" id="stat-plan" style="color:#fcd34d">0</span>
+      <span class="stat-lbl">📅 Da Pianificare</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-val" id="stat-done" style="color:#6ee7b7">0</span>
+      <span class="stat-lbl">✅ Completati</span>
+    </div>
+  </div>
+
+  <!-- Add Task Form (admin only) -->
+  <div class="add-form" id="add-form">
+    <h3>➕ Aggiungi nuovo task</h3>
+    <div class="form-grid">
+      <div class="form-group full">
+        <label>Titolo task *</label>
+        <input type="text" id="new-title" placeholder="Es. Preparare report vendite Q2" maxlength="120">
+      </div>
+      <div class="form-group full">
+        <label>Descrizione (opzionale)</label>
+        <textarea id="new-desc" placeholder="Dettagli aggiuntivi..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Urgenza</label>
+        <select id="new-urgency">
+          <option value="high">🔴 Alta</option>
+          <option value="low" selected>🟡 Bassa</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Importanza</label>
+        <select id="new-importance">
+          <option value="high">⭐ Alta</option>
+          <option value="low" selected>⬜ Bassa</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Categoria</label>
+        <input type="text" id="new-category" placeholder="Es. Marketing, IT, Finanza">
+      </div>
+      <div class="form-group">
+        <label>Scadenza</label>
+        <input type="text" id="new-due" placeholder="Es. 30/04/2026">
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn-sm btn-emerald" onclick="addTask()">✅ Salva Task</button>
+      <button class="btn-sm btn-outline" onclick="toggleAddForm()">Annulla</button>
+    </div>
+  </div>
+
+  <!-- View tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="setView('matrix')" data-view="matrix">🗂 Matrice Eisenhower</button>
+    <button class="tab-btn" onclick="setView('list')" data-view="list">📋 Lista Completa</button>
+    <button class="tab-btn" onclick="setView('trash')" data-view="trash" id="trash-tab">🗑 Cestino</button>
+  </div>
+
+  <!-- ── MATRIX VIEW ── -->
+  <div id="view-matrix">
+    <div class="matrix-grid">
+      <!-- Q1: Do First -->
+      <div class="quadrant q-do">
+        <div class="quadrant-header">
+          <div class="quadrant-dot dot-do"></div>
+          <h3 class="txt-do">⚡ Fai Subito</h3>
+          <span class="quadrant-sub">Urgente + Importante</span>
+        </div>
+        <ul class="task-list" id="q-do-list" data-q="do"></ul>
+        <div class="empty-state" id="q-do-empty" style="display:none"><div class="emoji">✅</div>Nessun task urgente</div>
+      </div>
+      <!-- Q2: Plan -->
+      <div class="quadrant q-plan">
+        <div class="quadrant-header">
+          <div class="quadrant-dot dot-plan"></div>
+          <h3 class="txt-plan">📅 Pianifica</h3>
+          <span class="quadrant-sub">Non Urgente + Importante</span>
+        </div>
+        <ul class="task-list" id="q-plan-list" data-q="plan"></ul>
+        <div class="empty-state" id="q-plan-empty" style="display:none"><div class="emoji">📅</div>Nessun task da pianificare</div>
+      </div>
+      <!-- Q3: Delegate -->
+      <div class="quadrant q-del">
+        <div class="quadrant-header">
+          <div class="quadrant-dot dot-del"></div>
+          <h3 class="txt-del">🤝 Delega</h3>
+          <span class="quadrant-sub">Urgente + Non Importante</span>
+        </div>
+        <ul class="task-list" id="q-del-list" data-q="del"></ul>
+        <div class="empty-state" id="q-del-empty" style="display:none"><div class="emoji">🤝</div>Nessun task da delegare</div>
+      </div>
+      <!-- Q4: Drop -->
+      <div class="quadrant q-drop">
+        <div class="quadrant-header">
+          <div class="quadrant-dot dot-drop"></div>
+          <h3 class="txt-drop">🗑 Elimina / Posticipa</h3>
+          <span class="quadrant-sub">Non Urgente + Non Importante</span>
+        </div>
+        <ul class="task-list" id="q-drop-list" data-q="drop"></ul>
+        <div class="empty-state" id="q-drop-empty" style="display:none"><div class="emoji">🗑</div>Nessun task qui</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── LIST VIEW ── -->
+  <div id="view-list" style="display:none">
+    <div class="section-header">
+      <div class="section-title">
+        <div class="section-title-bar"></div>
+        Tutti i Task Attivi
+      </div>
+      <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+        <select id="filter-q" onchange="renderAll()" style="font-size:0.78rem;padding:0.3rem 0.6rem;border-radius:7px;background:rgba(30,41,59,0.8);border:1px solid var(--border);color:var(--text);">
+          <option value="">Tutti i quadranti</option>
+          <option value="do">⚡ Fai Subito</option>
+          <option value="plan">📅 Pianifica</option>
+          <option value="del">🤝 Delega</option>
+          <option value="drop">🗑 Posticipa</option>
+        </select>
+      </div>
+    </div>
+    <ul class="task-list" id="list-all" style="gap:0.55rem"></ul>
+    <div class="empty-state" id="list-empty" style="display:none"><div class="emoji">🎉</div>Nessun task attivo</div>
+  </div>
+
+  <!-- ── TRASH VIEW ── -->
+  <div id="view-trash" style="display:none">
+    <div id="trash-section">
+      <h3>🗑 Cestino — Task Completati / Eliminati</h3>
+      <ul class="task-list" id="trash-list"></ul>
+      <div class="empty-state" id="trash-empty" style="display:none;color:#64748b"><div class="emoji">🧹</div>Cestino vuoto</div>
+      <div style="margin-top:1rem;display:flex;gap:0.6rem;flex-wrap:wrap" id="trash-actions">
+        <button class="btn-sm btn-outline" onclick="restoreAll()">↩️ Ripristina Tutti</button>
+        <button class="btn-sm btn-red" onclick="emptyTrash()">🗑 Svuota Cestino</button>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- FOOTER -->
+<footer>
+  <p>🎯 COROLLE Dashboard &mdash; parte di <a href="../index.html">SECURDATA.PRO</a> &mdash; <a href="../risorse-gratuite.html">Risorse Gratuite</a></p>
+</footer>
+
+<script>
+// ── STATE ──────────────────────────────────────────────────────────────
+const STORAGE_KEY = 'corolle_tasks_v2';
+const TRASH_KEY   = 'corolle_trash_v2';
+const AUTH_KEY    = 'sdp_user_session';
+
+let tasks = [];
+let trash = [];
+let isAdmin = false;
+let currentView = 'matrix';
+let dragSrc = null;
+
+// Default demo tasks
+const DEFAULT_TASKS = [
+  { id: uid(), title: 'Aggiornare firewall aziendale', desc: 'Verificare regole e aggiornare firmware', urgency: 'high', importance: 'high', category: 'IT', due: '25/04/2026', done: false },
+  { id: uid(), title: 'Pianificare formazione GDPR team', desc: 'Organizzare sessione di training Q2', urgency: 'low', importance: 'high', category: 'Compliance', due: '10/05/2026', done: false },
+  { id: uid(), title: 'Rispondere email clienti pendenti', desc: '', urgency: 'high', importance: 'low', category: 'Commerciale', due: '20/04/2026', done: false },
+  { id: uid(), title: 'Riordinare cartelle documenti', desc: '', urgency: 'low', importance: 'low', category: 'Admin', due: '', done: false },
+  { id: uid(), title: 'Pubblicare articolo blog cybersecurity', desc: '', urgency: 'low', importance: 'high', category: 'Marketing', due: '30/04/2026', done: false },
+  { id: uid(), title: 'Backup dati server', desc: 'Eseguire backup settimanale', urgency: 'high', importance: 'high', category: 'IT', due: '21/04/2026', done: false },
+];
+
+function uid() { return '_' + Math.random().toString(36).slice(2, 11); }
+
+// ── INIT ──────────────────────────────────────────────────────────────
+function init() {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  tasks = saved ? JSON.parse(saved) : [...DEFAULT_TASKS];
+  const savedTrash = localStorage.getItem(TRASH_KEY);
+  trash = savedTrash ? JSON.parse(savedTrash) : [];
+
+  checkAuth();
+  renderAll();
+  updateStats();
+}
+
+function checkAuth() {
+  const user = sessionStorage.getItem(AUTH_KEY);
+  isAdmin = !!user;
+
+  document.getElementById('auth-banner').style.display    = isAdmin ? 'none' : 'flex';
+  document.getElementById('add-task-btn').style.display   = isAdmin ? 'inline-flex' : 'none';
+  document.getElementById('hero-admin-btn').style.display = isAdmin ? 'inline-flex' : 'none';
+  document.getElementById('admin-nav-btn').style.display  = isAdmin ? 'inline-flex' : 'none';
+  document.getElementById('nav-login-btn').style.display  = isAdmin ? 'none' : 'inline-flex';
+  document.getElementById('nav-logout-btn').style.display = isAdmin ? 'inline-flex' : 'none';
+}
+
+function logout() {
+  sessionStorage.removeItem(AUTH_KEY);
+  location.reload();
+}
+
+// ── SAVE ──────────────────────────────────────────────────────────────
+function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+  localStorage.setItem(TRASH_KEY, JSON.stringify(trash));
+}
+
+// ── QUADRANT LOGIC ────────────────────────────────────────────────────
+function getQuadrant(t) {
+  if (t.urgency === 'high' && t.importance === 'high') return 'do';
+  if (t.urgency === 'low'  && t.importance === 'high') return 'plan';
+  if (t.urgency === 'high' && t.importance === 'low')  return 'del';
+  return 'drop';
+}
+
+const QUAD_CONFIG = {
+  do:   { label: '⚡ Fai Subito', cls: 'txt-do',   bg: 'rgba(239,68,68,0.12)',  badgeCls: 'background:rgba(239,68,68,0.2);color:#fca5a5;border:1px solid rgba(239,68,68,0.3)' },
+  plan: { label: '📅 Pianifica',  cls: 'txt-plan', bg: 'rgba(245,158,11,0.12)', badgeCls: 'background:rgba(245,158,11,0.2);color:#fcd34d;border:1px solid rgba(245,158,11,0.3)' },
+  del:  { label: '🤝 Delega',     cls: 'txt-del',  bg: 'rgba(59,130,246,0.12)', badgeCls: 'background:rgba(59,130,246,0.2);color:#93c5fd;border:1px solid rgba(59,130,246,0.3)' },
+  drop: { label: '🗑 Posticipa',  cls: 'txt-drop', bg: 'rgba(100,116,139,0.1)', badgeCls: 'background:rgba(100,116,139,0.15);color:#94a3b8;border:1px solid rgba(100,116,139,0.25)' },
+};
+
+// ── RENDER ────────────────────────────────────────────────────────────
+function renderAll() {
+  renderMatrix();
+  renderList();
+  renderTrash();
+  updateStats();
+}
+
+function makeTaskEl(task, showQuadBadge) {
+  const li = document.createElement('li');
+  li.className = 'task-item' + (task.done ? ' done' : '');
+  li.dataset.id = task.id;
+
+  const q = getQuadrant(task);
+  const qc = QUAD_CONFIG[q];
+
+  const dueTxt = task.due ? `<span style="font-size:0.65rem;color:var(--dim);margin-left:4px">📅 ${task.due}</span>` : '';
+  const catTxt = task.category ? `<span style="font-size:0.65rem;color:var(--dim)">#${task.category}</span>` : '';
+  const qBadge = showQuadBadge ? `<span class="task-badge" style="${qc.badgeCls}">${qc.label}</span>` : '';
+
+  let adminControls = '';
+  if (isAdmin) {
+    adminControls = `
+      <div class="task-actions">
+        <button class="task-btn" title="Modifica" onclick="editTask('${task.id}')">✏️</button>
+        <button class="task-btn del" title="Sposta nel cestino" onclick="moveToTrash('${task.id}')">🗑</button>
+      </div>
+      <span class="task-drag-handle" draggable="true" title="Trascina per riordinare">⠿</span>`;
+  }
+
+  li.innerHTML = `
+    ${isAdmin ? `<input type="checkbox" class="task-cb" ${task.done ? 'checked' : ''} onchange="toggleDone('${task.id}',this.checked)">` : ''}
+    <div class="task-text">
+      <span>${escHtml(task.title)}</span>
+      <div style="display:flex;align-items:center;gap:0.4rem;flex-wrap:wrap;margin-top:2px">
+        ${catTxt}${dueTxt}${qBadge}
+      </div>
+    </div>
+    ${adminControls}
+  `;
+
+  if (isAdmin) {
+    const handle = li.querySelector('.task-drag-handle');
+    if (handle) {
+      handle.addEventListener('dragstart', (e) => {
+        dragSrc = li;
+        li.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+      });
+      handle.addEventListener('dragend', () => { li.classList.remove('dragging'); });
+    }
+    li.addEventListener('dragover', (e) => { e.preventDefault(); li.classList.add('drag-over'); });
+    li.addEventListener('dragleave', () => li.classList.remove('drag-over'));
+    li.addEventListener('drop', (e) => {
+      e.preventDefault();
+      li.classList.remove('drag-over');
+      if (dragSrc && dragSrc !== li) reorderTask(dragSrc.dataset.id, li.dataset.id);
+    });
+  }
+
+  return li;
+}
+
+function renderMatrix() {
+  const qs = ['do', 'plan', 'del', 'drop'];
+  qs.forEach(q => {
+    const list = document.getElementById(`q-${q}-list`);
+    const empty = document.getElementById(`q-${q}-empty`);
+    list.innerHTML = '';
+    const filtered = tasks.filter(t => !t.done && getQuadrant(t) === q);
+    filtered.forEach(t => list.appendChild(makeTaskEl(t, false)));
+    if (empty) empty.style.display = filtered.length ? 'none' : 'block';
+  });
+}
+
+function renderList() {
+  const list = document.getElementById('list-all');
+  const empty = document.getElementById('list-empty');
+  const filterQ = document.getElementById('filter-q').value;
+  list.innerHTML = '';
+  let filtered = tasks.filter(t => !t.done);
+  if (filterQ) filtered = filtered.filter(t => getQuadrant(t) === filterQ);
+  filtered.forEach(t => list.appendChild(makeTaskEl(t, true)));
+  empty.style.display = filtered.length ? 'none' : 'block';
+}
+
+function renderTrash() {
+  const list = document.getElementById('trash-list');
+  const empty = document.getElementById('trash-empty');
+  const actions = document.getElementById('trash-actions');
+  list.innerHTML = '';
+
+  const trashTab = document.getElementById('trash-tab');
+
+  // Completati
+  const done = tasks.filter(t => t.done);
+  // Eliminated
+  const all = [...done, ...trash];
+
+  all.forEach(t => {
+    const li = document.createElement('li');
+    li.className = 'task-item done';
+    li.innerHTML = `
+      <span style="font-size:0.8rem;flex:1;color:var(--muted)">${escHtml(t.title)}</span>
+      ${isAdmin ? `
+        <div class="task-actions" style="display:flex">
+          <button class="task-btn" onclick="restoreTask('${t.id}')">↩️</button>
+          <button class="task-btn del" onclick="deleteForever('${t.id}')">✕</button>
+        </div>` : ''}
+    `;
+    list.appendChild(li);
+  });
+
+  const hasItems = all.length > 0;
+  empty.style.display = hasItems ? 'none' : 'block';
+  if (actions) actions.style.display = (hasItems && isAdmin) ? 'flex' : 'none';
+  if (trashTab) trashTab.textContent = `🗑 Cestino${hasItems ? ` (${all.length})` : ''}`;
+}
+
+function updateStats() {
+  const active = tasks.filter(t => !t.done);
+  document.getElementById('stat-total').textContent = active.length;
+  document.getElementById('stat-do').textContent    = active.filter(t => getQuadrant(t) === 'do').length;
+  document.getElementById('stat-plan').textContent  = active.filter(t => getQuadrant(t) === 'plan').length;
+  document.getElementById('stat-done').textContent  = tasks.filter(t => t.done).length + trash.length;
+}
+
+// ── ACTIONS ───────────────────────────────────────────────────────────
+function toggleAddForm() {
+  const f = document.getElementById('add-form');
+  f.classList.toggle('open');
+  if (f.classList.contains('open')) document.getElementById('new-title').focus();
+}
+
+function addTask() {
+  if (!isAdmin) return;
+  const title = document.getElementById('new-title').value.trim();
+  if (!title) { showToast('⚠️ Inserisci il titolo del task'); return; }
+  const t = {
+    id: uid(),
+    title,
+    desc: document.getElementById('new-desc').value.trim(),
+    urgency: document.getElementById('new-urgency').value,
+    importance: document.getElementById('new-importance').value,
+    category: document.getElementById('new-category').value.trim(),
+    due: document.getElementById('new-due').value.trim(),
+    done: false,
+  };
+  tasks.unshift(t);
+  save(); renderAll();
+  // reset form
+  ['new-title','new-desc','new-category','new-due'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('new-urgency').value = 'low';
+  document.getElementById('new-importance').value = 'low';
+  document.getElementById('add-form').classList.remove('open');
+  showToast('✅ Task aggiunto!');
+}
+
+function toggleDone(id, checked) {
+  if (!isAdmin) return;
+  const t = tasks.find(t => t.id === id);
+  if (t) { t.done = checked; save(); renderAll(); }
+}
+
+function moveToTrash(id) {
+  if (!isAdmin) return;
+  const idx = tasks.findIndex(t => t.id === id);
+  if (idx === -1) return;
+  const [t] = tasks.splice(idx, 1);
+  trash.unshift(t);
+  save(); renderAll();
+  showToast('🗑 Spostato nel cestino');
+}
+
+function restoreTask(id) {
+  if (!isAdmin) return;
+  // check in tasks (done)
+  const idx1 = tasks.findIndex(t => t.id === id);
+  if (idx1 !== -1) { tasks[idx1].done = false; save(); renderAll(); showToast('↩️ Task ripristinato'); return; }
+  // check in trash
+  const idx2 = trash.findIndex(t => t.id === id);
+  if (idx2 !== -1) { const [t] = trash.splice(idx2, 1); t.done = false; tasks.unshift(t); save(); renderAll(); showToast('↩️ Task ripristinato'); }
+}
+
+function restoreAll() {
+  if (!isAdmin) return;
+  // restore done tasks
+  tasks.forEach(t => { if (t.done) t.done = false; });
+  // restore trash
+  trash.forEach(t => { t.done = false; tasks.unshift(t); });
+  trash = [];
+  save(); renderAll();
+  showToast('↩️ Tutti i task ripristinati');
+}
+
+function deleteForever(id) {
+  if (!isAdmin) return;
+  tasks = tasks.filter(t => t.id !== id);
+  trash = trash.filter(t => t.id !== id);
+  save(); renderAll();
+  showToast('🗑 Task eliminato definitivamente');
+}
+
+function emptyTrash() {
+  if (!isAdmin) return;
+  if (!confirm('Svuotare il cestino? Tutti i task eliminati saranno persi definitivamente.')) return;
+  trash = [];
+  tasks = tasks.filter(t => !t.done);
+  save(); renderAll();
+  showToast('🧹 Cestino svuotato');
+}
+
+function editTask(id) {
+  if (!isAdmin) return;
+  const t = tasks.find(x => x.id === id);
+  if (!t) return;
+  const newTitle = prompt('Modifica titolo:', t.title);
+  if (newTitle === null) return;
+  if (newTitle.trim()) { t.title = newTitle.trim(); save(); renderAll(); showToast('✏️ Task aggiornato'); }
+}
+
+function reorderTask(fromId, toId) {
+  const fromIdx = tasks.findIndex(t => t.id === fromId);
+  const toIdx   = tasks.findIndex(t => t.id === toId);
+  if (fromIdx === -1 || toIdx === -1) return;
+  const [moved] = tasks.splice(fromIdx, 1);
+  tasks.splice(toIdx, 0, moved);
+  save(); renderAll();
+}
+
+// ── VIEW SWITCHING ─────────────────────────────────────────────────────
+function setView(v) {
+  currentView = v;
+  ['matrix','list','trash'].forEach(id => {
+    document.getElementById('view-' + id).style.display = id === v ? 'block' : 'none';
+  });
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.view === v));
+  renderAll();
+}
+
+// ── UTILS ─────────────────────────────────────────────────────────────
+function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.style.display = 'block';
+  clearTimeout(t._tid);
+  t._tid = setTimeout(() => { t.style.display = 'none'; }, 2800);
+}
+
+// ── START ─────────────────────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>
