@@ -1,5 +1,6 @@
 # securdata.pro
 Provvisory website onepage: https://profitpickers.github.io/securdata.pro/
+
 Link dominio APP ACCORDLY AI: https://accordlyai.vercel.app/
 
 _____________________________________________________________________________________________________________
