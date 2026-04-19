@@ -3,6 +3,10 @@ Provvisory website onepage: https://profitpickers.github.io/securdata.pro/
 
 Link dominio APP ACCORDLY AI: https://accordlyai.vercel.app/
 
+Link data base: https://supabase.com/
+
+Link vetrina deploy: https://vercel.com/
+
 _____________________________________________________________________________________________________________
 Competitor: https://www.cyberlys.it/
 
