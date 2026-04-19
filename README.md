@@ -12,11 +12,15 @@ Competitor: https://www.cyberlys.it/
 
 
 _____________________________________________________________________________________________________________
+Strumendi AI creativi:
+video: https://app.heygen.com/
 
-
+Audio: https://suno.com/
 
 
 _____________________________________________________________________________________________________________
+Quiz: https://studyglen.com/  Account creato 18/04/2026 (GMAIL GOOGLE) Guido Battistini guidobattistini70
+
 
 
 
