@@ -323,7 +323,7 @@ function renderContent(raw) {
     line = line.replace(/`(.+?)`/g, '<code>$1</code>');
     // Markdown table row detection
     if (/^\s*\|/.test(line)) {
-      var isSeparator = /^\s*\|[\s\-:|]+\|\s*$/.test(line.replace(/\|[\s\-:|]+\|/g, '|---|'));
+      var isSeparator = /^\s*\|(?:[\s\-:]+\|)+\s*$/.test(line);
       if (isSeparator) {
         // separator row: finalize thead, open tbody
         if (inTable && tableRowIdx === 1) {
