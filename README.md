@@ -14,8 +14,9 @@ Competitor: https://www.cyberlys.it/
 _____________________________________________________________________________________________________________
 Strumendi AI creativi:
 video: https://app.heygen.com/
-
+foto: https://toolkit.artlist.io/  (account GMAIL vitoiacobellis1970
 Audio: https://suno.com/
+Musica roiality free: https://artlist.io/royalty-free-music/
 
 
 _____________________________________________________________________________________________________________
