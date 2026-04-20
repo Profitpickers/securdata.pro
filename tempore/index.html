@@ -283,6 +283,43 @@
       white-space: nowrap; flex-shrink: 0;
     }
     .nano-btn:hover { background: #4f46e5; }
+    /* ── TIMER & SVEGLIA ── */
+    .preset-btn {
+      background: rgba(30,41,59,.7);
+      border: 1px solid rgba(99,102,241,.22);
+      border-radius: .42rem;
+      padding: .28rem .15rem .2rem;
+      font-size: .73rem;
+      color: #94a3b8;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .04rem;
+      line-height: 1.2;
+      transition: background .15s, border-color .15s, color .15s;
+    }
+    .preset-btn:hover { background: rgba(99,102,241,.18); border-color: rgba(99,102,241,.45); color: #c4b5fd; }
+    .preset-btn.act { border-color: #f97316; background: rgba(249,115,22,.15); color: #fdba74; }
+    .alm-row { display:flex; align-items:center; justify-content:space-between; background:rgba(30,41,59,.5); border-radius:.45rem; padding:.3rem .5rem; margin-bottom:.2rem; }
+    #tmr-alert-wrap {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,.72); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      z-index: 501; align-items: center; justify-content: center; padding: 1rem;
+    }
+    #tmr-alert-wrap.open { display: flex; }
+    #tmr-alert-box {
+      background: rgba(10,14,38,.98);
+      border: 1.5px solid rgba(99,102,241,.5);
+      border-radius: 1.3rem;
+      padding: 1.8rem 1.5rem 1.4rem;
+      text-align: center;
+      box-shadow: 0 0 80px rgba(99,102,241,.35), 0 8px 40px rgba(0,0,0,.7);
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      width: 100%; max-width: 360px;
+      animation: alertPop .32s cubic-bezier(.34,1.56,.64,1);
+    }
+    @keyframes alertPop { from { transform: scale(.82); opacity: 0; } to { transform: scale(1); opacity: 1; } }
   </style>
 </head>
 <body>
@@ -574,6 +611,70 @@
     </div>
 
 
+    <!-- 10a TIMER SESSIONI -->
+    <div class="card glass">
+      <div class="card-hd" style="flex-wrap:wrap;gap:.3rem;">
+        <i data-lucide="timer" style="color:#f97316;"></i>
+        <span>Timer Sessioni</span>
+        <span id="tmr-pomo-count" style="margin-left:auto;font-size:.8rem;color:#f97316;font-weight:700;display:none;"></span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.22rem;flex-shrink:0;">
+        <button class="preset-btn" onclick="tmrPreset(25,'Pomodoro','🍅 Pomodoro Focus',this)"><span style="font-size:1.05rem;">🍅</span><span>Pomodoro</span><span style="color:#475569;font-size:.68rem;">25m</span></button>
+        <button class="preset-btn" onclick="tmrPreset(45,'Dev','🖥️ Sviluppo Software',this)"><span style="font-size:1.05rem;">🖥️</span><span>Dev</span><span style="color:#475569;font-size:.68rem;">45m</span></button>
+        <button class="preset-btn" onclick="tmrPreset(30,'Trading','📈 Trading',this)"><span style="font-size:1.05rem;">📈</span><span>Trading</span><span style="color:#475569;font-size:.68rem;">30m</span></button>
+        <button class="preset-btn" onclick="tmrPreset(50,'Studio','🎓 Studio',this)"><span style="font-size:1.05rem;">🎓</span><span>Studio</span><span style="color:#475569;font-size:.68rem;">50m</span></button>
+        <button class="preset-btn" onclick="tmrPreset(25,'Lettura','📖 Lettura',this)"><span style="font-size:1.05rem;">📖</span><span>Lettura</span><span style="color:#475569;font-size:.68rem;">25m</span></button>
+        <button class="preset-btn" onclick="tmrPreset(60,'Fun','🎮 Divertimento',this)"><span style="font-size:1.05rem;">🎮</span><span>Fun</span><span style="color:#475569;font-size:.68rem;">60m</span></button>
+        <button class="preset-btn" onclick="tmrPreset(5,'Pausa','☕ Pausa breve',this)"><span style="font-size:1.05rem;">☕</span><span>Pausa</span><span style="color:#475569;font-size:.68rem;">5m</span></button>
+        <button class="preset-btn" onclick="tmrPreset(90,'Meeting','💼 Business Meeting',this)"><span style="font-size:1.05rem;">💼</span><span>Meeting</span><span style="color:#475569;font-size:.68rem;">90m</span></button>
+      </div>
+      <div style="display:flex;gap:.28rem;align-items:center;flex-shrink:0;">
+        <input type="number" id="tmr-h" placeholder="00" min="0" max="23" class="nano-inp" style="width:3rem;text-align:center;padding:.32rem .2rem;" oninput="tmrFromInputs()">
+        <span style="color:#475569;font-weight:700;">:</span>
+        <input type="number" id="tmr-m" placeholder="25" min="0" max="59" class="nano-inp" style="width:3rem;text-align:center;padding:.32rem .2rem;" oninput="tmrFromInputs()">
+        <span style="color:#475569;font-weight:700;">:</span>
+        <input type="number" id="tmr-s" placeholder="00" min="0" max="59" class="nano-inp" style="width:3rem;text-align:center;padding:.32rem .2rem;" oninput="tmrFromInputs()">
+        <span style="color:#64748b;font-size:.75rem;flex-shrink:0;">hh : mm : ss</span>
+      </div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:2.8rem;font-weight:600;text-align:center;color:#fff;letter-spacing:.06em;line-height:1;flex-shrink:0;" id="tmr-display">25:00</div>
+      <div class="lbar-track" style="flex-shrink:0;"><div id="tmr-bar" class="lbar-fill" style="width:0%;background:linear-gradient(90deg,#f97316,#fbbf24);transition:width .3s linear;"></div></div>
+      <div id="tmr-session-lbl" style="text-align:center;font-size:.82rem;color:#94a3b8;min-height:1.1rem;flex-shrink:0;">🍅 Pomodoro Focus — 25 min</div>
+      <div style="display:flex;gap:.38rem;flex-shrink:0;">
+        <button id="tmr-start-btn" onclick="tmrToggle()" class="nano-btn" style="flex:1;background:linear-gradient(135deg,#f97316,#fb923c);">▶ Avvia</button>
+        <button onclick="tmrReset()" class="nano-btn" style="background:rgba(30,41,59,.9);border:1px solid #334155;">↺ Reset</button>
+      </div>
+      <div id="tmr-log" style="font-size:.75rem;color:#475569;min-height:.9rem;flex-shrink:0;"></div>
+    </div>
+
+    <!-- 10b SVEGLIA & ALERT -->
+    <div class="card glass">
+      <div class="card-hd" style="flex-wrap:wrap;gap:.3rem;">
+        <i data-lucide="bell" style="color:#fbbf24;"></i>
+        <span>Sveglia &amp; Alert</span>
+        <span id="alm-next-label" style="margin-left:auto;font-size:.75rem;color:#64748b;font-weight:400;"></span>
+      </div>
+      <div style="display:flex;gap:.28rem;align-items:stretch;flex-shrink:0;">
+        <input type="time" id="alm-time" class="nano-inp" style="flex:1;color:#fbbf24;font-weight:700;">
+        <button onclick="almAdd()" class="nano-btn" style="background:linear-gradient(135deg,#d97706,#fbbf24);color:#1a1200;">+ Imposta</button>
+      </div>
+      <div style="display:flex;gap:.28rem;align-items:stretch;flex-shrink:0;">
+        <input type="text" id="alm-msg" placeholder="Messaggio vocale personalizzato..." class="nano-inp" style="flex:1;font-size:.88rem;">
+        <button id="voice-btn" onclick="almStartVoice()" class="nano-btn" style="background:rgba(30,41,59,.9);border:1px solid #334155;padding:.38rem .55rem;" title="Dettatura vocale">🎤</button>
+        <button onclick="testSpeech()" class="nano-btn" style="background:rgba(30,41,59,.9);border:1px solid #334155;padding:.38rem .55rem;" title="Ascolta messaggio">🔊</button>
+      </div>
+      <div style="flex-shrink:0;">
+        <input type="file" id="alm-audio-file" accept="audio/*" onchange="loadCustomAudio(this)" style="display:none;">
+        <button onclick="document.getElementById('alm-audio-file').click()" style="background:none;border:1px solid rgba(99,102,241,.22);border-radius:.45rem;padding:.28rem .6rem;font-size:.82rem;cursor:pointer;color:#94a3b8;width:100%;text-align:left;">
+          🎵 <span id="audio-file-lbl">Carica file audio personalizzato (mp3, wav, ogg…)</span>
+        </button>
+      </div>
+      <div id="alm-list" style="flex:1;overflow-y:auto;min-height:2rem;"></div>
+      <div style="display:flex;gap:.28rem;flex-shrink:0;">
+        <button id="notif-btn" onclick="reqNotif()" style="flex:1;background:none;border:1px solid rgba(99,102,241,.25);border-radius:.45rem;padding:.3rem .5rem;font-size:.82rem;cursor:pointer;color:#fbbf24;">🔔 Notifiche</button>
+        <button onclick="playBeep('alarm')" style="flex:1;background:none;border:1px solid rgba(99,102,241,.25);border-radius:.45rem;padding:.3rem .5rem;font-size:.82rem;cursor:pointer;color:#94a3b8;">🔉 Test Audio</button>
+      </div>
+    </div>
+
     <!-- 10 SESSIONI FOREX -->
     <div class="card glass" style="grid-column:1/-1;">
       <div class="card-hd">
@@ -678,6 +779,20 @@
 
 <!-- Carousel progress bar -->
 <div id="crl-prog"><div id="crl-prog-fill"></div></div>
+
+<!-- TIMER/ALARM ALERT POPUP -->
+<div id="tmr-alert-wrap" onclick="closeAlert()">
+  <div id="tmr-alert-box" onclick="event.stopPropagation()">
+    <div id="tmr-alert-ico" style="font-size:3.5rem;line-height:1;margin-bottom:.6rem;">⏰</div>
+    <div id="tmr-alert-title" style="font-size:1.4rem;font-weight:900;color:#fff;margin-bottom:.4rem;"></div>
+    <div id="tmr-alert-msg" style="font-size:1rem;color:#cbd5e1;line-height:1.5;margin-bottom:1.2rem;"></div>
+    <div style="display:flex;gap:.45rem;justify-content:center;flex-wrap:wrap;">
+      <button onclick="closeAlert()" class="nano-btn" style="min-width:7rem;background:linear-gradient(135deg,#6366f1,#a855f7);">OK</button>
+      <button onclick="speakMsg(document.getElementById('tmr-alert-msg').textContent)" style="background:none;border:1px solid rgba(99,102,241,.3);border-radius:.5rem;padding:.38rem .7rem;font-size:.9rem;cursor:pointer;color:#94a3b8;">🔊 Rileggi</button>
+    </div>
+    <div style="font-size:.72rem;color:#334155;margin-top:.7rem;">Premi OK o Esc per chiudere</div>
+  </div>
+</div>
 
 <!-- AI MODAL -->
 <div id="ai-modal" onclick="closeModalOut(event)">
@@ -1242,6 +1357,8 @@ function _scheduleTick() {
 /* Keyboard shortcuts */
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
+    const alertOpen = $('tmr-alert-wrap') && $('tmr-alert-wrap').classList.contains('open');
+    if (alertOpen) { closeAlert(); return; }
     if (_carousel) stopCarousel();
     else closeZoom();
   }
@@ -1251,6 +1368,319 @@ document.addEventListener('keydown', e => {
     if (e.key === ' ') { e.preventDefault(); toggleCarousel(); }
   }
 });
+/* ══ AUDIO ENGINE ══ */
+let _aCtx = null, _customAudio = null;
+function _getACtx() {
+  if (!_aCtx) {
+    try { _aCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) { _aCtx = null; }
+  }
+  if (_aCtx && _aCtx.state === 'suspended') _aCtx.resume().catch(() => {});
+  return _aCtx;
+}
+function playBeep(type) {
+  const ctx = _getACtx(); if (!ctx) return;
+  const seqs = {
+    timer: [[523.25,0,.15,.35],[659.25,.18,.15,.35],[783.99,.36,.25,.5]],
+    alarm: [[440,0,.08,.28],[554,.13,.08,.28],[659,.26,.08,.28],[880,.39,.1,.35],[880,.55,.15,.45],[880,.74,.15,.45],[880,.93,.2,.55]],
+    chime: [[1046.5,0,.1,.6],[1318.5,.15,.1,.6],[1567.98,.3,.15,.8]]
+  };
+  const seq = seqs[type] || seqs.timer;
+  seq.forEach(([freq, delay, atk, total]) => {
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.type = type === 'alarm' ? 'square' : 'sine';
+    o.frequency.value = freq;
+    const t = ctx.currentTime + delay;
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(0.35, t + atk);
+    g.gain.exponentialRampToValueAtTime(0.001, t + total);
+    o.start(t); o.stop(t + total + 0.05);
+  });
+}
+function loadCustomAudio(input) {
+  const file = input.files[0]; if (!file) return;
+  if (_customAudio) { URL.revokeObjectURL(_customAudio.src); }
+  _customAudio = new Audio(URL.createObjectURL(file));
+  _customAudio.load();
+  const lbl = $('audio-file-lbl');
+  if (lbl) lbl.textContent = '✅ ' + file.name;
+  showToast('🎵 Audio caricato: ' + file.name);
+}
+function _playAudio(type) {
+  if (_customAudio) {
+    _customAudio.currentTime = 0;
+    _customAudio.play().catch(() => playBeep(type));
+  } else {
+    playBeep(type);
+  }
+}
+
+/* ══ TEXT-TO-SPEECH ══ */
+function speakMsg(text, lang) {
+  if (!window.speechSynthesis || !text) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text.trim());
+  u.lang = lang || 'it-IT'; u.rate = 0.9; u.pitch = 1; u.volume = 1;
+  window.speechSynthesis.speak(u);
+}
+function testSpeech() {
+  const msg = ($('alm-msg') && $('alm-msg').value.trim()) || 'Test messaggio vocale da Tempore';
+  speakMsg(msg);
+}
+
+/* ══ VOICE INPUT ══ */
+let _voiceRecog = null;
+function almStartVoice() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const btn = $('voice-btn');
+  if (!SR) { showToast('❌ Riconoscimento vocale non supportato'); return; }
+  if (_voiceRecog) { _voiceRecog.stop(); return; }
+  _voiceRecog = new SR();
+  _voiceRecog.lang = 'it-IT'; _voiceRecog.continuous = false; _voiceRecog.interimResults = false;
+  _voiceRecog.onresult = e => {
+    const t = Array.from(e.results).map(r => r[0].transcript).join(' ');
+    if ($('alm-msg')) $('alm-msg').value = t;
+    showToast('✅ Testo: "' + t + '"');
+  };
+  _voiceRecog.onerror = () => { showToast('❌ Errore riconoscimento vocale'); };
+  _voiceRecog.onend = () => { _voiceRecog = null; if (btn) btn.textContent = '🎤'; };
+  _voiceRecog.start();
+  if (btn) btn.textContent = '🔴';
+  showToast('🎤 Parla ora...');
+}
+
+/* ══ BROWSER NOTIFICATIONS ══ */
+function sendNotification(title, body) {
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+  try { new Notification(title, { body, icon: '../logo-00-securdata-pro.svg' }); } catch(e) {}
+}
+function reqNotif() {
+  if (!('Notification' in window)) { showToast('❌ Browser non supporta notifiche'); return; }
+  if (Notification.permission === 'granted') { showToast('✅ Notifiche già attive'); return; }
+  Notification.requestPermission().then(p => {
+    showToast(p === 'granted' ? '✅ Notifiche abilitate!' : '❌ Notifiche non abilitate');
+    _renderNotifBtn();
+  });
+}
+function _renderNotifBtn() {
+  const btn = $('notif-btn'); if (!btn) return;
+  const p = ('Notification' in window) ? Notification.permission : 'na';
+  if (p === 'granted') { btn.textContent = '✅ Notifiche Attive'; btn.style.color = '#4ade80'; }
+  else if (p === 'denied') { btn.textContent = '🚫 Notifiche Bloccate'; btn.style.color = '#f87171'; }
+  else { btn.textContent = '🔔 Abilita Notifiche'; btn.style.color = '#fbbf24'; }
+}
+_renderNotifBtn();
+
+/* ══ TOAST ══ */
+let _toastTimer = null;
+function showToast(msg, dur) {
+  dur = dur || 3200;
+  let el = $('tp-toast');
+  if (!el) {
+    el = document.createElement('div'); el.id = 'tp-toast';
+    el.style.cssText = 'position:fixed;bottom:5.5rem;left:50%;transform:translateX(-50%);' +
+      'background:rgba(15,23,42,.96);border:1px solid rgba(99,102,241,.4);border-radius:.65rem;' +
+      'padding:.5rem 1.1rem;font-size:.9rem;color:#f1f5f9;z-index:600;pointer-events:none;' +
+      'opacity:0;transition:opacity .22s;white-space:nowrap;backdrop-filter:blur(10px);' +
+      'box-shadow:0 4px 18px rgba(0,0,0,.4);max-width:90vw;text-align:center;';
+    document.body.appendChild(el);
+  }
+  el.textContent = msg; el.style.opacity = '1';
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => { el.style.opacity = '0'; }, dur);
+}
+
+/* ══ ALERT POPUP ══ */
+let _alertAutoClose = null;
+function showAlert(title, msg, type, autoDur) {
+  const wrap = $('tmr-alert-wrap'); if (!wrap) return;
+  const icons = { timer: '⏰', alarm: '🔔', info: 'ℹ️', done: '✅' };
+  const ico = $('tmr-alert-ico'); if (ico) ico.textContent = icons[type] || '⏰';
+  const ttl = $('tmr-alert-title'); if (ttl) ttl.textContent = title;
+  const msge = $('tmr-alert-msg'); if (msge) msge.textContent = msg;
+  wrap.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  clearTimeout(_alertAutoClose);
+  if (autoDur !== false) {
+    _alertAutoClose = setTimeout(closeAlert, autoDur != null ? autoDur : 10000);
+  }
+}
+function closeAlert() {
+  const wrap = $('tmr-alert-wrap'); if (!wrap) return;
+  wrap.classList.remove('open');
+  document.body.style.overflow = '';
+  clearTimeout(_alertAutoClose);
+}
+
+/* ══ TIMER ══ */
+let _tmrTotal = 0, _tmrLeft = 0, _tmrRunning = false;
+let _tmrInterval = null, _tmrSnapTime = 0, _tmrSnapLeft = 0;
+let _tmrLog = [], _tmrPomoCount = 0, _tmrCurrentPreset = 'Pomodoro';
+
+function _tmrFmt(s) {
+  const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), ss = s % 60;
+  return (h > 0 ? pad(h) + ':' : '') + pad(m) + ':' + pad(ss);
+}
+function _tmrUpdateDisplay() {
+  const disp = $('tmr-display'); if (disp) disp.textContent = _tmrFmt(_tmrLeft);
+  const bar = $('tmr-bar');
+  if (bar && _tmrTotal > 0) bar.style.width = ((_tmrTotal - _tmrLeft) / _tmrTotal * 100) + '%';
+}
+function tmrSet(secs) {
+  _tmrStop(); _tmrTotal = secs; _tmrLeft = secs;
+  _tmrUpdateDisplay();
+  const bar = $('tmr-bar'); if (bar) { bar.style.transition = 'none'; bar.style.width = '0%'; }
+  const sb = $('tmr-start-btn'); if (sb) sb.textContent = '▶ Avvia';
+}
+function tmrPreset(min, label, desc, btn) {
+  tmrSet(min * 60);
+  _tmrCurrentPreset = label;
+  const lbl = $('tmr-session-lbl'); if (lbl) lbl.textContent = desc || label;
+  document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('act'));
+  if (btn) btn.classList.add('act');
+  setTimeout(() => { const bar = $('tmr-bar'); if (bar) bar.style.transition = 'width .3s linear'; }, 50);
+}
+function tmrFromInputs() {
+  const h = Math.min(23, Math.max(0, parseInt($('tmr-h').value) || 0));
+  const m = Math.min(59, Math.max(0, parseInt($('tmr-m').value) || 0));
+  const s = Math.min(59, Math.max(0, parseInt($('tmr-s').value) || 0));
+  const total = h * 3600 + m * 60 + s;
+  if (total > 0) {
+    _tmrStop(); _tmrTotal = total; _tmrLeft = total; _tmrUpdateDisplay();
+    const bar = $('tmr-bar');
+    if (bar) { bar.style.transition = 'none'; bar.style.width = '0%'; setTimeout(() => { bar.style.transition = 'width .3s linear'; }, 50); }
+    const sb = $('tmr-start-btn'); if (sb) sb.textContent = '▶ Avvia';
+    document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('act'));
+    const lbl = $('tmr-session-lbl'); if (lbl) lbl.textContent = 'Timer personalizzato';
+    _tmrCurrentPreset = 'Personalizzato';
+  }
+}
+function tmrToggle() {
+  if (_tmrLeft <= 0) return;
+  if (_tmrRunning) { _tmrStop(); const sb = $('tmr-start-btn'); if (sb) sb.textContent = '▶ Riprendi'; }
+  else _tmrStart();
+}
+function _tmrStart() {
+  if (_tmrLeft <= 0 || _tmrRunning) return;
+  _tmrRunning = true; _tmrSnapTime = Date.now(); _tmrSnapLeft = _tmrLeft;
+  const sb = $('tmr-start-btn'); if (sb) sb.textContent = '⏸ Pausa';
+  _tmrInterval = setInterval(() => {
+    const elapsed = Math.round((Date.now() - _tmrSnapTime) / 1000);
+    _tmrLeft = Math.max(0, _tmrSnapLeft - elapsed);
+    _tmrUpdateDisplay();
+    if (_tmrLeft <= 0) { _tmrStop(); _tmrFinished(); }
+  }, 250);
+}
+function _tmrStop() {
+  clearInterval(_tmrInterval); _tmrInterval = null; _tmrRunning = false;
+}
+function tmrReset() {
+  _tmrStop(); _tmrLeft = _tmrTotal; _tmrUpdateDisplay();
+  const bar = $('tmr-bar'); if (bar) { bar.style.transition = 'none'; bar.style.width = '0%'; setTimeout(() => { bar.style.transition = 'width .3s linear'; }, 50); }
+  const sb = $('tmr-start-btn'); if (sb) sb.textContent = '▶ Avvia';
+}
+function _tmrFinished() {
+  const name = _tmrCurrentPreset || 'Timer';
+  const dur = _tmrFmt(_tmrTotal);
+  if (_tmrTotal === 25 * 60 || name.toLowerCase().includes('pomodoro')) {
+    _tmrPomoCount++;
+    const pc = $('tmr-pomo-count'); if (pc) { pc.textContent = '🍅 ×' + _tmrPomoCount; pc.style.display = ''; }
+  }
+  _tmrLog.unshift({ name, dur, time: new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }) });
+  if (_tmrLog.length > 3) _tmrLog.pop();
+  _renderTmrLog();
+  const alertMsg = 'Sessione "' + name + '" completata (' + dur + '). Ottimo lavoro!';
+  showAlert('⏰ Timer Completato!', alertMsg, 'timer');
+  _playAudio('timer');
+  const cleanName = name.replace(/[^\x00-\x7F]/g, '').trim() || name;
+  speakMsg('Sessione ' + cleanName + ' completata. Ottimo lavoro!');
+  sendNotification('⏰ Timer: ' + name, 'Completato in ' + dur);
+}
+function _renderTmrLog() {
+  const el = $('tmr-log'); if (!el) return;
+  if (_tmrLog.length === 0) { el.innerHTML = ''; return; }
+  el.innerHTML = '<div style="color:#334155;font-size:.72rem;margin-bottom:.1rem;">Ultime sessioni:</div>' +
+    _tmrLog.map(l =>
+      '<div style="display:flex;justify-content:space-between;gap:.5rem;">' +
+        '<span style="color:#64748b;">' + l.name + '</span>' +
+        '<span style="color:#475569;">' + l.dur + ' @ ' + l.time + '</span>' +
+      '</div>'
+    ).join('');
+}
+(function() {
+  tmrSet(25 * 60);
+  const lbl = $('tmr-session-lbl'); if (lbl) lbl.textContent = '🍅 Pomodoro Focus — 25 min';
+})();
+
+/* ══ SVEGLIA ══ */
+let _almList = [];
+try { _almList = JSON.parse(localStorage.getItem('tp_alarms') || '[]'); } catch(e) { _almList = []; }
+
+function _almSave() {
+  try { localStorage.setItem('tp_alarms', JSON.stringify(_almList.map(({ _fired, ...r }) => r))); } catch(e) {}
+}
+function _almNextLabel() {
+  const el = $('alm-next-label'); if (!el) return;
+  const now = new Date(), cur = pad(now.getHours()) + ':' + pad(now.getMinutes());
+  const active = _almList.filter(a => a.active).sort((a, b) => a.time.localeCompare(b.time));
+  if (!active.length) { el.textContent = ''; return; }
+  const next = active.find(a => a.time > cur) || active[0];
+  el.textContent = 'Prossima: ' + next.time;
+}
+function _almRenderList() {
+  const el = $('alm-list'); if (!el) return;
+  if (_almList.length === 0) {
+    el.innerHTML = '<div style="text-align:center;color:#475569;font-size:.85rem;padding:.5rem 0;">Nessuna sveglia impostata</div>';
+    return;
+  }
+  el.innerHTML = _almList.map((a, i) =>
+    '<div class="alm-row">' +
+      '<div style="display:flex;flex-direction:column;gap:.04rem;min-width:0;">' +
+        '<span style="font-family:\'JetBrains Mono\',monospace;font-size:1.15rem;font-weight:700;color:' + (a.active ? '#fbbf24' : '#475569') + ';">' + a.time + '</span>' +
+        (a.msg ? '<span style="font-size:.75rem;color:#64748b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:11rem;">' + a.msg.substring(0, 45) + '</span>' : '') +
+      '</div>' +
+      '<div style="display:flex;gap:.22rem;align-items:center;">' +
+        '<button onclick="_almToggle(' + i + ')" style="background:none;border:1px solid rgba(99,102,241,.3);border-radius:.35rem;padding:.18rem .38rem;cursor:pointer;font-size:.78rem;font-weight:700;color:' + (a.active ? '#4ade80' : '#475569') + ';">' + (a.active ? 'ON' : 'OFF') + '</button>' +
+        '<button onclick="_almRemove(' + i + ')" style="background:none;border:none;cursor:pointer;color:#f87171;font-size:1rem;line-height:1;padding:.1rem .22rem;" title="Elimina">✕</button>' +
+      '</div>' +
+    '</div>'
+  ).join('');
+  _almNextLabel();
+}
+function almAdd() {
+  const t = $('alm-time') && $('alm-time').value;
+  if (!t) { showToast('⚠️ Seleziona un orario'); return; }
+  if (_almList.length >= 5) { showToast('⚠️ Massimo 5 sveglie'); return; }
+  const msg = ($('alm-msg') && $('alm-msg').value.trim()) || '';
+  _almList.push({ time: t, msg, active: true });
+  _almSave(); _almRenderList();
+  showToast('✅ Sveglia impostata per le ' + t);
+}
+function _almToggle(i) {
+  if (_almList[i]) { _almList[i].active = !_almList[i].active; _almSave(); _almRenderList(); }
+}
+function _almRemove(i) {
+  _almList.splice(i, 1); _almSave(); _almRenderList();
+}
+let _almLastFiredMin = '';
+setInterval(() => {
+  const now = new Date();
+  const cur = pad(now.getHours()) + ':' + pad(now.getMinutes());
+  const sec = now.getSeconds();
+  if (sec >= 5) { if (_almLastFiredMin === cur) _almLastFiredMin = ''; return; }
+  if (_almLastFiredMin === cur) return;
+  _almList.forEach(a => {
+    if (a.active && a.time === cur) {
+      _almLastFiredMin = cur;
+      const msg = a.msg || ('Sveglia! Sono le ' + a.time);
+      showAlert('🔔 Sveglia!', msg, 'alarm', false);
+      _playAudio('alarm');
+      speakMsg(msg);
+      sendNotification('🔔 Sveglia ' + a.time, msg);
+    }
+  });
+}, 1000);
+_almRenderList();
 </script>
 </body>
 </html>
