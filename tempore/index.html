@@ -1592,6 +1592,7 @@ function _tmrFinished() {
   const alertMsg = 'Sessione "' + name + '" completata (' + dur + '). Ottimo lavoro!';
   showAlert('⏰ Timer Completato!', alertMsg, 'timer');
   _playAudio('timer');
+  // Strip emojis/non-ASCII for TTS compatibility — some engines choke on Unicode symbols
   const cleanName = name.replace(/[^\x00-\x7F]/g, '').trim() || name;
   speakMsg('Sessione ' + cleanName + ' completata. Ottimo lavoro!');
   sendNotification('⏰ Timer: ' + name, 'Completato in ' + dur);
@@ -1616,6 +1617,10 @@ function _renderTmrLog() {
 let _almList = [];
 try { _almList = JSON.parse(localStorage.getItem('tp_alarms') || '[]'); } catch(e) { _almList = []; }
 
+// Escape HTML entities to prevent XSS when user-supplied text is rendered inside innerHTML
+function _esc(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
 function _almSave() {
   try { localStorage.setItem('tp_alarms', JSON.stringify(_almList.map(({ _fired, ...r }) => r))); } catch(e) {}
 }
@@ -1636,8 +1641,8 @@ function _almRenderList() {
   el.innerHTML = _almList.map((a, i) =>
     '<div class="alm-row">' +
       '<div style="display:flex;flex-direction:column;gap:.04rem;min-width:0;">' +
-        '<span style="font-family:\'JetBrains Mono\',monospace;font-size:1.15rem;font-weight:700;color:' + (a.active ? '#fbbf24' : '#475569') + ';">' + a.time + '</span>' +
-        (a.msg ? '<span style="font-size:.75rem;color:#64748b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:11rem;">' + a.msg.substring(0, 45) + '</span>' : '') +
+        '<span style="font-family:\'JetBrains Mono\',monospace;font-size:1.15rem;font-weight:700;color:' + (a.active ? '#fbbf24' : '#475569') + ';">' + _esc(a.time) + '</span>' +
+        (a.msg ? '<span style="font-size:.75rem;color:#64748b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:11rem;">' + _esc(a.msg.substring(0, 45)) + '</span>' : '') +
       '</div>' +
       '<div style="display:flex;gap:.22rem;align-items:center;">' +
         '<button onclick="_almToggle(' + i + ')" style="background:none;border:1px solid rgba(99,102,241,.3);border-radius:.35rem;padding:.18rem .38rem;cursor:pointer;font-size:.78rem;font-weight:700;color:' + (a.active ? '#4ade80' : '#475569') + ';">' + (a.active ? 'ON' : 'OFF') + '</button>' +
@@ -1667,7 +1672,9 @@ setInterval(() => {
   const now = new Date();
   const cur = pad(now.getHours()) + ':' + pad(now.getMinutes());
   const sec = now.getSeconds();
+  // After 5 s into the minute, reset the fired guard so the next minute can fire
   if (sec >= 5) { if (_almLastFiredMin === cur) _almLastFiredMin = ''; return; }
+  // Guard: fire at most once per minute (seconds 0–4)
   if (_almLastFiredMin === cur) return;
   _almList.forEach(a => {
     if (a.active && a.time === cur) {
