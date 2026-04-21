@@ -7,8 +7,7 @@
   <meta name="description" content="Orologio, meteo locale, borse mondiali, life bar e citazioni stoiche. Il tuo strumento gratuito di analisi spazio-temporale.">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV/XN/WLEo=" crossorigin="anonymous"></script>
+
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
     *, *::before, *::after { box-sizing: border-box; }
@@ -1113,17 +1112,65 @@ function requestExactPosition(){
     if(btn){btn.textContent=msg;setTimeout(()=>{btn.textContent='\uD83D\uDCCD Rileva posizione esatta';btn.disabled=false;},3500);}
   },{enableHighAccuracy:true,timeout:12000,maximumAge:0});
 }
-function initGeoMap(lt, ln) {
-  const mapEl = $('geo-map');
-  if (!mapEl || typeof L === 'undefined') return;
-  mapEl.innerHTML = '';
-  const map = L.map('geo-map', { zoomControl: true, attributionControl: true, scrollWheelZoom: true, keyboard: true, keyboardPanDelta: 80 });
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(map);
-  map.setView([lt, ln], 12);
-  const marker = L.circleMarker([lt, ln], { radius: 8, fillColor: '#6366f1', color: '#fff', weight: 2, fillOpacity: 0.9 }).addTo(map);
-  marker.bindPopup('Tu sei qui').openPopup();
-  const coordEl = $('space-coord');
-  if (coordEl) coordEl.textContent = Math.abs(parseFloat(lt)).toFixed(2)+(parseFloat(lt)>=0?'°N':'°S')+' '+Math.abs(parseFloat(ln)).toFixed(2)+(parseFloat(ln)>=0?'°E':'°W');
+function _orthProject(cLat,cLon,lat,lon,cx,cy,R){
+  const phi0=cLat*Math.PI/180,lam0=cLon*Math.PI/180;
+  const phi=lat*Math.PI/180,lam=lon*Math.PI/180;
+  const cosc=Math.sin(phi0)*Math.sin(phi)+Math.cos(phi0)*Math.cos(phi)*Math.cos(lam-lam0);
+  if(cosc<0)return null;
+  return{x:cx+R*Math.cos(phi)*Math.sin(lam-lam0),
+         y:cy-R*(Math.cos(phi0)*Math.sin(phi)-Math.sin(phi0)*Math.cos(phi)*Math.cos(lam-lam0))};
+}
+function initGeoMap(lt,ln){
+  const mapEl=$('geo-map');
+  if(!mapEl)return;
+  mapEl.innerHTML='';
+  const W=mapEl.offsetWidth||300,H=140;
+  const canvas=document.createElement('canvas');
+  canvas.width=W;canvas.height=H;
+  canvas.style.cssText='display:block;width:100%;height:100%;';
+  mapEl.appendChild(canvas);
+  const ctx=canvas.getContext('2d');
+  ctx.fillStyle='#0b1929';ctx.fillRect(0,0,W,H);
+  const cx=W/2,cy=H/2,R=Math.min(W,H)/2-5;
+  // Ocean fill
+  ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);
+  ctx.fillStyle='#0c2340';ctx.fill();
+  ctx.strokeStyle='rgba(99,102,241,.6)';ctx.lineWidth=1.5;ctx.stroke();
+  // Clip to globe disc
+  ctx.save();
+  ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.clip();
+  // Grid lines
+  ctx.strokeStyle='rgba(99,102,241,.2)';ctx.lineWidth=0.6;
+  for(let lo=-180;lo<=180;lo+=30){
+    ctx.beginPath();let f=true;
+    for(let la=-90;la<=90;la+=3){
+      const p=_orthProject(lt,ln,la,lo,cx,cy,R);
+      if(p){if(f){ctx.moveTo(p.x,p.y);f=false;}else ctx.lineTo(p.x,p.y);}
+      else f=true;
+    }ctx.stroke();
+  }
+  for(let la=-60;la<=60;la+=30){
+    ctx.beginPath();let f=true;
+    for(let lo=-180;lo<=180;lo+=3){
+      const p=_orthProject(lt,ln,la,lo,cx,cy,R);
+      if(p){if(f){ctx.moveTo(p.x,p.y);f=false;}else ctx.lineTo(p.x,p.y);}
+      else f=true;
+    }ctx.stroke();
+  }
+  ctx.restore();
+  // Position marker (always at globe centre = user's location)
+  ctx.beginPath();ctx.arc(cx,cy,11,0,Math.PI*2);
+  ctx.fillStyle='rgba(99,102,241,.25)';ctx.fill();
+  ctx.beginPath();ctx.arc(cx,cy,5,0,Math.PI*2);
+  ctx.fillStyle='#6366f1';ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.fill();ctx.stroke();
+  // Coordinate label
+  const latStr=Math.abs(parseFloat(lt)).toFixed(4)+(parseFloat(lt)>=0?'°N':'°S');
+  const lngStr=Math.abs(parseFloat(ln)).toFixed(4)+(parseFloat(ln)>=0?'°E':'°W');
+  ctx.fillStyle='rgba(165,180,252,.9)';ctx.font='600 10px Inter,sans-serif';
+  ctx.textAlign='center';ctx.fillText(latStr+'  '+lngStr,cx,H-7);
+  // Update coordinate badge
+  const coordEl=$('space-coord');
+  if(coordEl)coordEl.textContent=latStr+' '+lngStr;
 }
 
 /* ══ YEAR ARC ══ */
