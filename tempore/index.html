@@ -658,6 +658,10 @@
         <button onclick="almAdd()" class="nano-btn" style="background:linear-gradient(135deg,#d97706,#fbbf24);color:#1a1200;">+ Imposta</button>
       </div>
       <div style="display:flex;gap:.28rem;align-items:stretch;flex-shrink:0;">
+        <input type="number" id="alm-hours-from" min="0" max="48" step="0.5" placeholder="Tra X ore…" class="nano-inp" style="flex:1;font-size:.88rem;">
+        <button onclick="almSetFromHours()" class="nano-btn" style="background:rgba(30,41,59,.9);border:1px solid #d97706;color:#fbbf24;white-space:nowrap;">⏳ Da ora</button>
+      </div>
+      <div style="display:flex;gap:.28rem;align-items:stretch;flex-shrink:0;">
         <input type="text" id="alm-msg" placeholder="Messaggio vocale personalizzato..." class="nano-inp" style="flex:1;font-size:.88rem;">
         <button id="voice-btn" onclick="almStartVoice()" class="nano-btn" style="background:rgba(30,41,59,.9);border:1px solid #334155;padding:.38rem .55rem;" title="Dettatura vocale">🎤</button>
         <button onclick="testSpeech()" class="nano-btn" style="background:rgba(30,41,59,.9);border:1px solid #334155;padding:.38rem .55rem;" title="Ascolta messaggio">🔊</button>
@@ -667,6 +671,11 @@
         <button onclick="document.getElementById('alm-audio-file').click()" style="background:none;border:1px solid rgba(99,102,241,.22);border-radius:.45rem;padding:.28rem .6rem;font-size:.82rem;cursor:pointer;color:#94a3b8;width:100%;text-align:left;">
           🎵 <span id="audio-file-lbl">Carica file audio personalizzato (mp3, wav, ogg…)</span>
         </button>
+      </div>
+      <div style="display:flex;gap:.28rem;align-items:center;flex-shrink:0;">
+        <button id="alm-loop-btn" onclick="almToggleLoop()" style="flex:1;background:none;border:1px solid rgba(99,102,241,.25);border-radius:.45rem;padding:.3rem .5rem;font-size:.82rem;cursor:pointer;color:#94a3b8;">🔁 Loop OFF</button>
+        <input type="number" id="alm-loop-sec" min="5" max="600" value="30" class="nano-inp" style="width:4.5rem;text-align:center;" title="Periodo intermittenza (secondi)">
+        <span style="font-size:.78rem;color:#64748b;white-space:nowrap;">s</span>
       </div>
       <div id="alm-list" style="flex:1;overflow-y:auto;min-height:2rem;"></div>
       <div style="display:flex;gap:.28rem;flex-shrink:0;">
@@ -786,6 +795,9 @@
     <div id="tmr-alert-ico" style="font-size:3.5rem;line-height:1;margin-bottom:.6rem;">⏰</div>
     <div id="tmr-alert-title" style="font-size:1.4rem;font-weight:900;color:#fff;margin-bottom:.4rem;"></div>
     <div id="tmr-alert-msg" style="font-size:1rem;color:#cbd5e1;line-height:1.5;margin-bottom:1.2rem;"></div>
+    <div id="tmr-alert-stop-row" style="display:none;justify-content:center;margin-bottom:.55rem;">
+      <button onclick="stopAlarmAudio()" style="background:linear-gradient(135deg,#dc2626,#ef4444);border:none;border-radius:.5rem;padding:.4rem 1.1rem;font-size:.95rem;font-weight:700;color:#fff;cursor:pointer;display:flex;align-items:center;gap:.35rem;">🛑 Ferma Audio</button>
+    </div>
     <div style="display:flex;gap:.45rem;justify-content:center;flex-wrap:wrap;">
       <button onclick="closeAlert()" class="nano-btn" style="min-width:7rem;background:linear-gradient(135deg,#6366f1,#a855f7);">OK</button>
       <button onclick="speakMsg(document.getElementById('tmr-alert-msg').textContent)" style="background:none;border:1px solid rgba(99,102,241,.3);border-radius:.5rem;padding:.38rem .7rem;font-size:.9rem;cursor:pointer;color:#94a3b8;">🔊 Rileggi</button>
@@ -1370,6 +1382,7 @@ document.addEventListener('keydown', e => {
 });
 /* ══ AUDIO ENGINE ══ */
 let _aCtx = null, _customAudio = null;
+let _almLoopEnabled = false, _almLoopIntervalId = null;
 function _getACtx() {
   if (!_aCtx) {
     try { _aCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) { _aCtx = null; }
@@ -1406,13 +1419,27 @@ function loadCustomAudio(input) {
   if (lbl) lbl.textContent = '✅ ' + file.name;
   showToast('🎵 Audio caricato: ' + file.name);
 }
-function _playAudio(type) {
+function _playOneShot(type) {
   if (_customAudio) {
     _customAudio.currentTime = 0;
     _customAudio.play().catch(() => playBeep(type));
   } else {
     playBeep(type);
   }
+}
+function _playAudio(type) {
+  _playOneShot(type);
+  if (_almLoopEnabled && type === 'alarm') {
+    if (_almLoopIntervalId) clearInterval(_almLoopIntervalId);
+    const sec = (parseInt(($('alm-loop-sec') || {}).value, 10) || 30);
+    _almLoopIntervalId = setInterval(() => _playOneShot(type), sec * 1000);
+  }
+}
+function stopAlarmAudio() {
+  if (_customAudio) { try { _customAudio.pause(); _customAudio.currentTime = 0; } catch(e) {} }
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
+  if (_almLoopIntervalId) { clearInterval(_almLoopIntervalId); _almLoopIntervalId = null; }
+  const row = $('tmr-alert-stop-row'); if (row) row.style.display = 'none';
 }
 
 /* ══ TEXT-TO-SPEECH ══ */
@@ -1498,6 +1525,8 @@ function showAlert(title, msg, type, autoDur) {
   const ico = $('tmr-alert-ico'); if (ico) ico.textContent = icons[type] || '⏰';
   const ttl = $('tmr-alert-title'); if (ttl) ttl.textContent = title;
   const msge = $('tmr-alert-msg'); if (msge) msge.textContent = msg;
+  const row = $('tmr-alert-stop-row');
+  if (row) row.style.display = type === 'alarm' ? 'flex' : 'none';
   wrap.classList.add('open');
   document.body.style.overflow = 'hidden';
   clearTimeout(_alertAutoClose);
@@ -1510,6 +1539,7 @@ function closeAlert() {
   wrap.classList.remove('open');
   document.body.style.overflow = '';
   clearTimeout(_alertAutoClose);
+  stopAlarmAudio();
 }
 
 /* ══ TIMER ══ */
@@ -1651,6 +1681,24 @@ function _almRenderList() {
     '</div>'
   ).join('');
   _almNextLabel();
+}
+function almSetFromHours() {
+  const el = $('alm-hours-from');
+  if (!el || el.value === '') { showToast('⚠️ Inserisci le ore che mancano'); return; }
+  const hours = parseFloat(el.value);
+  if (isNaN(hours) || hours < 0) { showToast('⚠️ Valore non valido'); return; }
+  const target = new Date(Date.now() + hours * 3600 * 1000);
+  const timeStr = pad(target.getHours()) + ':' + pad(target.getMinutes());
+  const almTimeEl = $('alm-time');
+  if (almTimeEl) almTimeEl.value = timeStr;
+  showToast('⏰ Orario impostato: ' + timeStr);
+}
+function almToggleLoop() {
+  _almLoopEnabled = !_almLoopEnabled;
+  if (!_almLoopEnabled && _almLoopIntervalId) { clearInterval(_almLoopIntervalId); _almLoopIntervalId = null; }
+  const btn = $('alm-loop-btn');
+  if (btn) { btn.textContent = _almLoopEnabled ? '🔁 Loop ON' : '🔁 Loop OFF'; btn.style.color = _almLoopEnabled ? '#4ade80' : '#94a3b8'; }
+  showToast(_almLoopEnabled ? '✅ Loop attivato' : '⭕ Loop disattivato');
 }
 function almAdd() {
   const t = $('alm-time') && $('alm-time').value;
