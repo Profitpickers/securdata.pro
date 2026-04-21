@@ -658,7 +658,7 @@
         <button onclick="almAdd()" class="nano-btn" style="background:linear-gradient(135deg,#d97706,#fbbf24);color:#1a1200;">+ Imposta</button>
       </div>
       <div style="display:flex;gap:.28rem;align-items:stretch;flex-shrink:0;">
-        <input type="number" id="alm-hours-from" min="0" max="48" step="0.5" placeholder="Tra X ore…" class="nano-inp" style="flex:1;font-size:.88rem;">
+        <input type="number" id="alm-hours-from" min="0" max="48" step="0.5" placeholder="Tra X ore…" aria-label="Ore da ora" class="nano-inp" style="flex:1;font-size:.88rem;">
         <button onclick="almSetFromHours()" class="nano-btn" style="background:rgba(30,41,59,.9);border:1px solid #d97706;color:#fbbf24;white-space:nowrap;">⏳ Da ora</button>
       </div>
       <div style="display:flex;gap:.28rem;align-items:stretch;flex-shrink:0;">
@@ -674,7 +674,7 @@
       </div>
       <div style="display:flex;gap:.28rem;align-items:center;flex-shrink:0;">
         <button id="alm-loop-btn" onclick="almToggleLoop()" style="flex:1;background:none;border:1px solid rgba(99,102,241,.25);border-radius:.45rem;padding:.3rem .5rem;font-size:.82rem;cursor:pointer;color:#94a3b8;">🔁 Loop OFF</button>
-        <input type="number" id="alm-loop-sec" min="5" max="600" value="30" class="nano-inp" style="width:4.5rem;text-align:center;" title="Periodo intermittenza (secondi)">
+        <input type="number" id="alm-loop-sec" min="5" max="600" value="30" class="nano-inp" style="width:4.5rem;text-align:center;" title="Periodo intermittenza (secondi)" aria-label="Periodo intermittenza in secondi">
         <span style="font-size:.78rem;color:#64748b;white-space:nowrap;">s</span>
       </div>
       <div id="alm-list" style="flex:1;overflow-y:auto;min-height:2rem;"></div>
@@ -1383,6 +1383,7 @@ document.addEventListener('keydown', e => {
 /* ══ AUDIO ENGINE ══ */
 let _aCtx = null, _customAudio = null;
 let _almLoopEnabled = false, _almLoopIntervalId = null;
+const DEFAULT_LOOP_INTERVAL_SEC = 30, MS_PER_HOUR = 3600 * 1000;
 function _getACtx() {
   if (!_aCtx) {
     try { _aCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) { _aCtx = null; }
@@ -1431,7 +1432,7 @@ function _playAudio(type) {
   _playOneShot(type);
   if (_almLoopEnabled && type === 'alarm') {
     if (_almLoopIntervalId) clearInterval(_almLoopIntervalId);
-    const sec = (parseInt(($('alm-loop-sec') || {}).value, 10) || 30);
+    const sec = (parseInt(($('alm-loop-sec') || {}).value, 10) || DEFAULT_LOOP_INTERVAL_SEC);
     _almLoopIntervalId = setInterval(() => _playOneShot(type), sec * 1000);
   }
 }
@@ -1687,7 +1688,7 @@ function almSetFromHours() {
   if (!el || el.value === '') { showToast('⚠️ Inserisci le ore che mancano'); return; }
   const hours = parseFloat(el.value);
   if (isNaN(hours) || hours < 0) { showToast('⚠️ Valore non valido'); return; }
-  const target = new Date(Date.now() + hours * 3600 * 1000);
+  const target = new Date(Date.now() + hours * MS_PER_HOUR);
   const timeStr = pad(target.getHours()) + ':' + pad(target.getMinutes());
   const almTimeEl = $('alm-time');
   if (almTimeEl) almTimeEl.value = timeStr;
