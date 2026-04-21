@@ -1057,16 +1057,16 @@ function esc(s) {
 
 function copyEmbed() {
   var el = document.getElementById('embedCode');
-  el.select();
-  document.execCommand('copy');
-  toast('Codice embed copiato!','ok');
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(el.value).then(function(){ toast('Codice embed copiato!','ok'); });
+  } else { el.select(); document.execCommand('copy'); toast('Codice embed copiato!','ok'); }
 }
 
 function copyCsv() {
   var el = document.getElementById('csvUrl');
-  el.select();
-  document.execCommand('copy');
-  toast('URL copiato!','ok');
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(el.value).then(function(){ toast('URL copiato!','ok'); });
+  } else { el.select(); document.execCommand('copy'); toast('URL copiato!','ok'); }
 }
 
 ['leadMo','blogMo'].forEach(function(id){
