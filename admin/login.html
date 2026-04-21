@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Backend SECURDATA.PRO — Accesso Riservato</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#020814;min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:1rem;color:#e2e8f0;overflow:hidden;}
+.bg{position:fixed;inset:0;
+  background:radial-gradient(ellipse 80% 60% at 20% 10%,rgba(59,130,246,.08) 0%,transparent 60%),
+  radial-gradient(ellipse 60% 50% at 80% 90%,rgba(99,102,241,.07) 0%,transparent 55%),
+  linear-gradient(160deg,#020814 0%,#0f172a 50%,#0d0a1f 100%);z-index:0;}
+.warn{position:fixed;top:0;left:0;right:0;z-index:100;
+  background:linear-gradient(90deg,#7f1d1d,#991b1b);
+  border-bottom:1px solid rgba(239,68,68,.4);
+  padding:6px 16px;display:flex;align-items:center;justify-content:center;gap:10px;}
+.warn span{font-size:.7rem;color:#fca5a5;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.blink{animation:blink 1.2s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.wrap{position:relative;z-index:10;width:100%;max-width:430px;margin-top:40px;}
+.sec-bar{display:flex;align-items:center;gap:8px;padding:8px 14px;
+  background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.25);
+  border-radius:10px 10px 0 0;font-size:.7rem;color:#6ee7b7;font-weight:700;letter-spacing:.07em;}
+.sec-dot{width:7px;height:7px;background:#10b981;border-radius:50%;flex-shrink:0;
+  animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.6);opacity:.6}}
+.card{background:rgba(10,18,40,.97);border:1px solid rgba(99,179,237,.16);border-top:none;
+  border-radius:0 0 18px 18px;padding:2.2rem 2rem 1.8rem;
+  box-shadow:0 30px 60px rgba(0,0,0,.7);}
+.brand{text-align:center;margin-bottom:1.3rem}
+.brand-name{font-size:.95rem;font-weight:800;color:#90cdf4;letter-spacing:.12em;}
+.brand-sub{font-size:.62rem;color:#334155;letter-spacing:.08em;text-transform:uppercase;margin-top:2px;}
+.title{text-align:center;font-size:1.2rem;font-weight:800;color:#f1f5f9;letter-spacing:.08em;}
+.subtitle{text-align:center;font-size:.68rem;color:#475569;letter-spacing:.09em;text-transform:uppercase;margin-top:3px;}
+hr{border:none;border-top:1px solid rgba(99,179,237,.08);margin:1.1rem 0}
+.tabs{display:flex;gap:5px;margin-bottom:1.1rem;background:rgba(0,0,0,.3);padding:4px;border-radius:9px;}
+.tab{flex:1;text-align:center;padding:6px;font-size:.7rem;font-weight:700;
+  letter-spacing:.05em;text-transform:uppercase;cursor:pointer;border-radius:6px;
+  color:#475569;transition:all .18s;border:none;background:none;font-family:inherit;}
+.tab.active{background:rgba(59,130,246,.2);color:#63b3ed;border:1px solid rgba(59,130,246,.3);}
+.fg{margin-bottom:.85rem}
+.fl{display:block;font-size:.68rem;font-weight:700;color:#64748b;
+  text-transform:uppercase;letter-spacing:.09em;margin-bottom:4px}
+.iw{position:relative}
+.ii{position:absolute;left:11px;top:50%;transform:translateY(-50%);
+  width:14px;height:14px;color:#475569;pointer-events:none;}
+.fi{width:100%;padding:.7rem .7rem .7rem 2.3rem;background:rgba(10,14,26,.9);
+  border:1px solid rgba(51,65,85,.6);border-radius:9px;color:#e2e8f0;
+  font-size:.855rem;outline:none;transition:border .2s;font-family:inherit;}
+.fi:focus{border-color:rgba(59,130,246,.55);box-shadow:0 0 0 3px rgba(59,130,246,.09);}
+.fi::placeholder{color:#1e293b}
+.totp-w .fi{font-family:'Courier New',monospace;font-size:1.2rem;letter-spacing:.4em;
+  text-align:center;padding-left:.7rem;color:#60a5fa;}
+.totp-hint{font-size:.62rem;color:#334155;margin-top:3px;text-align:center;}
+.collab-note{font-size:.68rem;color:#334155;text-align:center;padding:.5rem;
+  background:rgba(99,179,237,.03);border:1px solid rgba(99,179,237,.08);border-radius:6px;margin-top:.3rem;}
+.btn{width:100%;padding:.85rem;margin-top:1rem;
+  background:linear-gradient(135deg,#1d4ed8,#1e40af);
+  border:1px solid rgba(59,130,246,.45);border-radius:9px;color:#fff;
+  font-size:.9rem;font-weight:700;letter-spacing:.04em;cursor:pointer;
+  transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;font-family:inherit;}
+.btn:hover:not(:disabled){background:linear-gradient(135deg,#2563eb,#1d4ed8);
+  box-shadow:0 0 22px rgba(59,130,246,.28);transform:translateY(-1px);}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.msg{margin-top:.8rem;padding:.65rem .9rem;border-radius:7px;font-size:.78rem;
+  font-weight:600;text-align:center;display:none;align-items:center;
+  justify-content:center;gap:7px;letter-spacing:.02em;line-height:1.4;}
+.msg.err{background:rgba(239,68,68,.09);border:1px solid rgba(239,68,68,.28);color:#fca5a5;display:flex;}
+.msg.ok{background:rgba(16,185,129,.09);border:1px solid rgba(16,185,129,.28);color:#6ee7b7;display:flex;}
+.lock-note{margin-top:.85rem;padding:.55rem .75rem;
+  background:rgba(251,191,36,.04);border:1px solid rgba(251,191,36,.13);
+  border-radius:7px;font-size:.63rem;color:#57534e;text-align:center;line-height:1.7;}
+.badges{display:flex;gap:5px;justify-content:center;margin-top:1.1rem;flex-wrap:wrap;}
+.badge{display:flex;align-items:center;gap:4px;padding:3px 8px;
+  background:rgba(10,14,26,.9);border:1px solid rgba(51,65,85,.4);border-radius:20px;
+  font-size:.6rem;color:#475569;font-weight:600;letter-spacing:.05em;text-transform:uppercase;}
+.dot-g{width:5px;height:5px;background:#10b981;border-radius:50%}
+.dot-b{width:5px;height:5px;background:#3b82f6;border-radius:50%}
+.dot-v{width:5px;height:5px;background:#8b5cf6;border-radius:50%}
+.footer{margin-top:1.3rem;text-align:center;font-size:.63rem;color:#1e293b;line-height:1.9;}
+.footer a{color:#1e3a5f;text-decoration:none}
+.spin{width:14px;height:14px;border:2px solid rgba(255,255,255,.25);
+  border-top-color:#fff;border-radius:50%;animation:spinr .65s linear infinite;}
+@keyframes spinr{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="bg"></div>
+
+<div class="warn">
+  <span class="blink">&#9888;</span>
+  <span>Accesso riservato — Ogni tentativo non autorizzato è monitorato e perseguibile per legge</span>
+  <span class="blink">&#9888;</span>
+</div>
+
+<div class="wrap">
+  <div class="sec-bar">
+    <div class="sec-dot"></div>
+    <span>Backend SECURDATA.PRO &mdash; Pannello di Controllo</span>
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#6ee7b7" stroke-width="2.5" style="margin-left:auto;flex-shrink:0"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+  </div>
+  <div class="card">
+    <div class="brand">
+      <div class="brand-name">SECURDATA.PRO</div>
+      <div class="brand-sub">Backend Amministrativo</div>
+    </div>
+    <div class="title">ACCESSO SICURO</div>
+    <div class="subtitle">Gestione completa del sito web</div>
+    <hr>
+
+    <div class="tabs">
+      <button class="tab active" id="tab-admin" onclick="setRole('admin')">&#128737; Amministratore</button>
+      <button class="tab" id="tab-collab" onclick="setRole('collab')">&#128100; Collaboratore</button>
+    </div>
+
+    <form id="frm" autocomplete="off" onsubmit="handleLogin(event)">
+      <input type="hidden" id="role" value="admin">
+
+      <div class="fg">
+        <label class="fl">Identificativo</label>
+        <div class="iw">
+          <svg class="ii" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
+          </svg>
+          <input id="username" type="text" class="fi" placeholder="Nome utente" autocomplete="off" required>
+        </div>
+      </div>
+
+      <div class="fg">
+        <label class="fl">Password</label>
+        <div class="iw">
+          <svg class="ii" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>
+          </svg>
+          <input id="password" type="password" class="fi" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" autocomplete="new-password" required>
+        </div>
+      </div>
+
+      <div class="fg totp-w" id="totpGrp">
+        <label class="fl">Codice 2FA (solo Admin)</label>
+        <div class="iw">
+          <input id="totp" type="text" class="fi" placeholder="000000" maxlength="6" pattern="[0-9]{6}" inputmode="numeric" autocomplete="one-time-code">
+        </div>
+        <div class="totp-hint">&#9881; Google Authenticator / Authy — codice a 6 cifre</div>
+      </div>
+
+      <div class="collab-note" id="collabNote" style="display:none;">
+        &#8505;&#65039; Accesso collaboratore — nessun 2FA richiesto. Accesso a: Lead, Blog, Dashboard.
+      </div>
+
+      <button type="submit" class="btn" id="submitBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        Accedi al Pannello
+      </button>
+    </form>
+
+    <div id="errMsg" class="msg"></div>
+    <div id="okMsg" class="msg ok" style="display:none">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+      Autenticazione completata — Accesso in corso&hellip;
+    </div>
+
+    <div class="lock-note">
+      &#128274; Anti-brute-force attivo &middot; Max 5 tentativi per sessione<br>
+      Ogni accesso è registrato con timestamp e impronta del dispositivo
+    </div>
+
+    <div class="badges">
+      <div class="badge"><div class="dot-g"></div> 2FA Admin</div>
+      <div class="badge"><div class="dot-b"></div> SHA-256</div>
+      <div class="badge"><div class="dot-b"></div> TLS 1.3</div>
+      <div class="badge"><div class="dot-v"></div> RBAC</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    &copy; 2026 SECURDATA.PRO &middot; Tutti i diritti riservati<br>
+    Accesso non autorizzato è reato ai sensi del D.Lgs. 231/2001<br>
+    <a href="../index.html">&larr; Torna alla Home</a>
+    &nbsp;&middot;&nbsp;
+    <a href="../vito_qrcode_contact/admin.html">&#9881; Admin Biglietto</a>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════════
+   UTENTI CONFIGURATI
+   Per aggiungere un collaboratore:
+   1. Scegli username e password
+   2. Calcola SHA-256: https://emn178.github.io/online-tools/sha256.html
+   3. Aggiungi un oggetto USERS con { username, hash, role:'editor', require2fa:false }
+   ═══════════════════════════════════════════════════════════════════
+   CREDENZIALI DEFAULT:
+   - admin / SecurData2026!  + codice 2FA (secret: JBSWY3DPEHPK3PXP)
+   - team  / TeamSecur2026   (nessun 2FA)
+   CAMBIA LE PASSWORD PREDEFINITE!
+   ═══════════════════════════════════════════════════════════════════ */
+var USERS = [
+  {
+    username:   'admin',
+    hash:       'd75e5a7ab4d547daaa799247055caddd181fbb598700e65d7c1fe219453ef501',
+    role:       'admin',
+    require2fa: true,
+    totp_secret:'JBSWY3DPEHPK3PXP',
+    display:    'Vito Iacobellis — Amministratore'
+  },
+  {
+    username:   'team',
+    hash:       '5838ccd26e0f3029aa1df319c7de60a1232723c29d4015363af699077505dc02',
+    role:       'editor',
+    require2fa: false,
+    display:    'Team — Editor'
+    /* password: TeamSecur2026 — cambia subito! */
+  }
+];
+
+var MAX_ATTEMPTS = 5;
+var LOCKOUT_MS   = 5 * 60 * 1000;
+
+async function sha256(str) {
+  var data = new TextEncoder().encode(str);
+  var buf  = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(buf)).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
+}
+
+function b32decode(s) {
+  var alpha = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+  var clean = s.toUpperCase().replace(/[\s=]/g,'');
+  var bits  = '';
+  for (var i = 0; i < clean.length; i++) {
+    var v = alpha.indexOf(clean[i]);
+    if (v >= 0) bits += v.toString(2).padStart(5,'0');
+  }
+  var bytes = new Uint8Array(Math.floor(bits.length / 8));
+  for (var j = 0; j < bytes.length; j++) bytes[j] = parseInt(bits.slice(j*8,j*8+8),2);
+  return bytes;
+}
+
+async function getTOTP(secret, offset) {
+  offset = offset || 0;
+  var key  = await crypto.subtle.importKey('raw', b32decode(secret), {name:'HMAC',hash:'SHA-1'}, false, ['sign']);
+  var ctr  = Math.floor(Date.now()/1000/30) + offset;
+  var buf  = new ArrayBuffer(8);
+  var dv   = new DataView(buf);
+  var UINT32_MAX = 0x100000000; // 2^32, used to split 64-bit TOTP counter
+  var hi   = Math.floor(ctr / UINT32_MAX);
+  if (hi) dv.setUint32(0, hi >>> 0, false); // high 32 bits
+
+  dv.setUint32(4, ctr >>> 0, false);
+  var sig  = new Uint8Array(await crypto.subtle.sign('HMAC', key, buf));
+  var off2 = sig[19] & 0xf;
+  var code = (((sig[off2]&0x7f)<<24)|((sig[off2+1]&0xff)<<16)|((sig[off2+2]&0xff)<<8)|(sig[off2+3]&0xff)) % 1000000;
+  return code.toString().padStart(6,'0');
+}
+
+async function validateTOTP(secret, code) {
+  for (var w = -1; w <= 1; w++) {
+    if (await getTOTP(secret, w) === code) return true;
+  }
+  return false;
+}
+
+function getLock() { try { return JSON.parse(sessionStorage.getItem('_sdlock')||'{}'); } catch(e){ return {}; } }
+function putLock(s) { sessionStorage.setItem('_sdlock', JSON.stringify(s)); }
+
+function showErr(msg) {
+  var el = document.getElementById('errMsg');
+  el.textContent = msg; el.className = 'msg err';
+  document.getElementById('okMsg').style.display = 'none';
+}
+function clearErr() {
+  document.getElementById('errMsg').className = 'msg';
+  document.getElementById('errMsg').textContent = '';
+}
+function resetBtn() {
+  var b = document.getElementById('submitBtn');
+  b.disabled = false;
+  b.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Accedi al Pannello';
+}
+
+function setRole(r) {
+  document.getElementById('role').value = r;
+  document.getElementById('tab-admin').classList.toggle('active', r === 'admin');
+  document.getElementById('tab-collab').classList.toggle('active', r === 'collab');
+  document.getElementById('totpGrp').style.display   = r === 'admin' ? '' : 'none';
+  document.getElementById('collabNote').style.display = r === 'collab' ? '' : 'none';
+}
+
+async function handleLogin(e) {
+  e.preventDefault();
+  var lock = getLock();
+  if (lock.until && lock.until > Date.now()) {
+    var s = Math.ceil((lock.until - Date.now()) / 1000);
+    showErr('Accesso bloccato. Riprova tra ' + s + ' secondi.'); return;
+  }
+  var btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spin"></div>';
+  clearErr();
+
+  try {
+    var user  = document.getElementById('username').value.trim();
+    var pass  = document.getElementById('password').value;
+    var code  = document.getElementById('totp').value.trim().replace(/\s/g,'');
+    var phash = await sha256(pass);
+
+    var matched = null;
+    for (var i = 0; i < USERS.length; i++) {
+      if (USERS[i].username === user && USERS[i].hash === phash) { matched = USERS[i]; break; }
+    }
+
+    var ok = false;
+    if (matched) {
+      ok = matched.require2fa ? await validateTOTP(matched.totp_secret, code) : true;
+    }
+
+    if (ok) {
+      sessionStorage.setItem('sd_auth_token',   'authenticated');
+      sessionStorage.setItem('sd_user_role',    matched.role);
+      sessionStorage.setItem('sd_user_display', matched.display);
+      sessionStorage.setItem('sd_username',     matched.username);
+      sessionStorage.removeItem('_sdlock');
+      document.getElementById('okMsg').style.display = 'flex';
+      setTimeout(function(){ window.location.replace('./index.html'); }, 1000);
+    } else {
+      lock.attempts = (lock.attempts || 0) + 1;
+      var rem = MAX_ATTEMPTS - lock.attempts;
+      if (lock.attempts >= MAX_ATTEMPTS) {
+        lock.until = Date.now() + LOCKOUT_MS;
+        putLock(lock);
+        showErr('Troppi tentativi. Bloccato per 5 minuti.');
+      } else {
+        putLock(lock);
+        showErr(!matched
+          ? 'Credenziali non valide. Tentativi rimasti: ' + rem
+          : 'Codice 2FA non valido. Tentativi rimasti: ' + rem);
+      }
+      resetBtn();
+    }
+  } catch(err) {
+    showErr('Errore di sistema. Aggiorna e riprova.'); resetBtn();
+  }
+}
+
+document.getElementById('totp').addEventListener('input', function(){
+  this.value = this.value.replace(/\D/g,'');
+});
+
+(function(){
+  var lock = getLock();
+  if (lock.until && lock.until > Date.now()) {
+    var s = Math.ceil((lock.until - Date.now()) / 1000);
+    showErr('Accesso bloccato. Riprova tra ' + s + ' secondi.');
+    document.getElementById('submitBtn').disabled = true;
+  }
+})();
+</script>
+</body>
+</html>

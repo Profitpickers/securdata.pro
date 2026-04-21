@@ -499,6 +499,42 @@ var profile = JSON.parse(localStorage.getItem('sdp_profile') || 'null') || {
 var leads = JSON.parse(localStorage.getItem('sdp_leads') || '[]');
 var notes = JSON.parse(localStorage.getItem('sdp_notes') || '[]');
 
+// Carica leads reali da GitHub CSV e li unisce a quelli in localStorage
+(function loadGhLeads(){
+  var RAW = 'https://raw.githubusercontent.com/Profitpickers/securdata.pro/main/data/leads.csv';
+  fetch(RAW + '?t=' + Date.now())
+    .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.text(); })
+    .then(function(csv){
+      var lines = csv.replace(/\r/g,'').split('\n').filter(function(l){ return l.trim(); });
+      if(lines.length <= 1) return;
+      var parsed = [];
+      for(var i=1;i<lines.length;i++){
+        var cols = lines[i].split(',').map(function(c){ return c.replace(/^"|"$/g,'').trim(); });
+        if(!cols[2]) continue;
+        parsed.push({
+          timestamp:cols[0]||'', nome:cols[1]||'', email:cols[2]||'',
+          tel:cols[3]||'', attivita:cols[4]||'', settore:cols[5]||'',
+          source:cols[6]||'', referrer:cols[7]||'',
+          stato:cols[8]||'new', note:cols[9]||'',
+          date:(cols[0]||'').substring(0,10)
+        });
+      }
+      var emailSet = new Set(leads.map(function(l){ return (l.email||'').toLowerCase(); }));
+      var added = 0;
+      parsed.forEach(function(l){
+        if(!emailSet.has(l.email.toLowerCase())){
+          leads.push(l); emailSet.add(l.email.toLowerCase()); added++;
+        }
+      });
+      if(added > 0){
+        localStorage.setItem('sdp_leads', JSON.stringify(leads));
+        renderDashboard();
+        renderLeads();
+      }
+    })
+    .catch(function(err){ console.warn('Lead sync error:', err.message); });
+})();
+
 function showPage(id,el){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
