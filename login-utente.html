@@ -549,7 +549,12 @@ function saveLeadToGitHub(nome, email, tipo) {
       var newContent = current + row + '\n';
       return fetch(apiUrl, { method: 'PUT', headers: headers, body: JSON.stringify({ message: 'lead: nuova registrazione', content: _toBase64Lead(newContent), sha: fileData.sha }) });
     })
-    .catch(function(err){ console.warn('sdp: errore salvataggio lead GitHub:', err); });
+    .then(function(putResp){
+      if (putResp && !putResp.ok) {
+        putResp.text().then(function(t){ console.warn('sdp: GitHub PUT error (' + putResp.status + '):', t); });
+      }
+    })
+    .catch(function(err){ console.warn('sdp: errore salvataggio lead GitHub (registrazione):', err.message || err); });
 }
 
 // ── Storage keys ──
