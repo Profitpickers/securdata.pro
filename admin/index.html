@@ -501,7 +501,7 @@ var BLOG_URL = '../data/blog-posts.json';
 /* ═══════════════════════ STATE ══════════════════════════════════ */
 var currentRole    = sessionStorage.getItem('sd_user_role')    || 'editor';
 var currentDisplay = sessionStorage.getItem('sd_user_display') || 'Utente';
-var currentUser    = sessionStorage.getItem('sd_username')     || '\u2014';
+var currentUser    = sessionStorage.getItem('sd_username')     || 'Utente';
 
 var ghLeads    = [];
 var localSt    = {};
@@ -646,7 +646,8 @@ function syncLeads() {
 /* ═══════════════════════ DASHBOARD ═════════════════════════════ */
 function renderDashboard() {
   var all  = allLeads();
-  var week = Date.now() - 7*86400000;
+  var MS_PER_DAY = 86400000;
+  var week = Date.now() - 7 * MS_PER_DAY;
   var nw   = all.filter(function(l){ return new Date(l.timestamp).getTime() > week; }).length;
   var ct   = all.filter(function(l){ return l.stato==='contact'; }).length;
   var cv   = all.filter(function(l){ return l.stato==='converted'; }).length;

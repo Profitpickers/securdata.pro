@@ -519,11 +519,11 @@ var notes = JSON.parse(localStorage.getItem('sdp_notes') || '[]');
           date:(cols[0]||'').substring(0,10)
         });
       }
-      var existingEmails = leads.map(function(l){ return (l.email||'').toLowerCase(); });
+      var emailSet = new Set(leads.map(function(l){ return (l.email||'').toLowerCase(); }));
       var added = 0;
       parsed.forEach(function(l){
-        if(existingEmails.indexOf(l.email.toLowerCase()) === -1){
-          leads.push(l); added++;
+        if(!emailSet.has(l.email.toLowerCase())){
+          leads.push(l); emailSet.add(l.email.toLowerCase()); added++;
         }
       });
       if(added > 0){

@@ -247,8 +247,10 @@ async function getTOTP(secret, offset) {
   var ctr  = Math.floor(Date.now()/1000/30) + offset;
   var buf  = new ArrayBuffer(8);
   var dv   = new DataView(buf);
-  var hi   = Math.floor(ctr / 0x100000000);
-  if (hi) dv.setUint32(0, hi >>> 0, false);
+  var UINT32_MAX = 0x100000000; // 2^32, used to split 64-bit TOTP counter
+  var hi   = Math.floor(ctr / UINT32_MAX);
+  if (hi) dv.setUint32(0, hi >>> 0, false); // high 32 bits
+
   dv.setUint32(4, ctr >>> 0, false);
   var sig  = new Uint8Array(await crypto.subtle.sign('HMAC', key, buf));
   var off2 = sig[19] & 0xf;
