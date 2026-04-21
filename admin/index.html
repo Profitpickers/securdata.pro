@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SECURDATA.PRO — Backend Admin</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0e1a;--sb:#0d1530;--bd:rgba(99,179,237,.15);--text:#e2e8f0;--dim:#718096;--mut:#4a5568;}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+.topbar{background:var(--sb);border-bottom:1px solid var(--bd);padding:.85rem 1.6rem;
+  display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+.tl{display:flex;align-items:center;gap:10px}
+.logo{font-size:.92rem;font-weight:800;color:#90cdf4;letter-spacing:.05em;text-decoration:none;}
+.logo:hover{color:#60a5fa}
+.tr{display:flex;align-items:center;gap:9px}
+.rbadge{background:rgba(26,86,219,.2);color:#63b3ed;font-size:.67rem;padding:3px 9px;
+  border-radius:20px;border:1px solid rgba(99,179,237,.3);}
+.rbadge.ed{background:rgba(99,102,241,.15);color:#a78bfa;border-color:rgba(139,92,246,.3);}
+.logout{display:flex;align-items:center;gap:5px;background:rgba(239,68,68,.1);
+  color:#fca5a5;font-size:.68rem;padding:4px 10px;border-radius:20px;
+  border:1px solid rgba(239,68,68,.3);cursor:pointer;font-family:inherit;transition:all .2s;}
+.logout:hover{background:rgba(239,68,68,.2)}
+.sync-info{display:flex;align-items:center;gap:6px;font-size:.7rem;color:var(--dim);}
+.sdot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.sdot.ok{background:#10b981;box-shadow:0 0 6px rgba(16,185,129,.5);}
+.sdot.loading{background:#f59e0b;}
+.sdot.err{background:#ef4444;}
+.layout{display:grid;grid-template-columns:215px 1fr;min-height:calc(100vh - 55px);}
+.sidebar{background:var(--sb);border-right:1px solid rgba(99,179,237,.1);padding:1.1rem 0;overflow-y:auto;}
+.ns{font-size:.61rem;color:#4a5568;letter-spacing:.1em;text-transform:uppercase;padding:1.1rem 1.3rem .35rem;}
+.ni{display:flex;align-items:center;gap:9px;padding:.62rem 1.3rem;font-size:.84rem;
+  color:var(--dim);cursor:pointer;transition:all .18s;border-left:3px solid transparent;}
+.ni:hover{color:#90cdf4;background:rgba(99,179,237,.05);}
+.ni.active{color:#63b3ed;border-left-color:#63b3ed;background:rgba(99,179,237,.08);font-weight:600;}
+.ni.hidden{display:none!important}
+.ni svg{width:14px;height:14px;flex-shrink:0}
+.main{padding:1.6rem;overflow-y:auto;max-height:calc(100vh - 55px);}
+.page{display:none}.page.active{display:block}
+h2{font-size:1.2rem;font-weight:700;color:#e8f4ff;margin-bottom:1.3rem;}
+.card{background:rgba(255,255,255,.04);border:1px solid var(--bd);border-radius:13px;padding:1.3rem;margin-bottom:1.3rem;}
+.ct{font-size:.78rem;font-weight:700;color:#63b3ed;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.85rem;}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:.9rem;margin-bottom:1.3rem;}
+.stat{background:rgba(255,255,255,.04);border:1px solid var(--bd);border-radius:11px;padding:.9rem 1.1rem;}
+.sn{font-size:1.65rem;font-weight:700;color:#63b3ed;}
+.sl{font-size:.7rem;color:var(--dim);margin-top:2px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.9rem;}
+.lrow{display:flex;align-items:center;justify-content:center;gap:9px;padding:1.8rem;color:var(--dim);font-size:.86rem;}
+.spin{width:17px;height:17px;border:2px solid rgba(99,179,237,.3);border-top-color:#63b3ed;
+  border-radius:50%;animation:spinr .7s linear infinite;flex-shrink:0;}
+@keyframes spinr{to{transform:rotate(360deg)}}
+table{width:100%;border-collapse:collapse;font-size:.8rem;}
+.tw{overflow-x:auto;}
+th{text-align:left;padding:.5rem .7rem;color:#4a5568;font-weight:700;font-size:.67rem;
+  text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid rgba(99,179,237,.1);}
+td{padding:.62rem .7rem;border-bottom:1px solid rgba(255,255,255,.03);color:#cbd5e0;vertical-align:middle;}
+tr:hover td{background:rgba(99,179,237,.03);}
+.tag{display:inline-block;font-size:.67rem;padding:2px 7px;border-radius:20px;}
+.tn{background:rgba(72,187,120,.15);color:#68d391;border:1px solid rgba(72,187,120,.25);}
+.tc{background:rgba(99,179,237,.15);color:#63b3ed;border:1px solid rgba(99,179,237,.25);}
+.tv{background:rgba(246,173,85,.15);color:#f6ad55;border:1px solid rgba(246,173,85,.25);}
+.td{background:rgba(239,68,68,.1);color:#fc8181;border:1px solid rgba(239,68,68,.2);}
+.bp{background:linear-gradient(135deg,#1a56db,#1e40af);color:#fff;border:none;
+  padding:.62rem 1.4rem;border-radius:8px;font-size:.83rem;font-weight:600;cursor:pointer;
+  transition:all .18s;font-family:inherit;display:inline-flex;align-items:center;gap:6px;}
+.bp:hover{transform:translateY(-1px);box-shadow:0 5px 16px rgba(26,86,219,.4);}
+.bs{background:rgba(99,179,237,.1);border:1px solid rgba(99,179,237,.3);color:#63b3ed;
+  padding:.5rem 1rem;border-radius:7px;font-size:.78rem;font-weight:600;cursor:pointer;
+  font-family:inherit;display:inline-flex;align-items:center;gap:6px;transition:all .18s;}
+.bs:hover{background:rgba(99,179,237,.18);}
+.bd{background:rgba(220,53,69,.12);color:#fc8181;border:1px solid rgba(220,53,69,.25);
+  padding:.32rem .7rem;border-radius:5px;font-size:.73rem;cursor:pointer;font-family:inherit;}
+.bd:hover{background:rgba(220,53,69,.22);}
+.fb{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;gap:.7rem;flex-wrap:wrap;}
+.sb{background:#0a0e1a;border:1px solid rgba(99,179,237,.22);border-radius:7px;
+  padding:.52rem .85rem;color:var(--text);font-size:.84rem;width:230px;outline:none;font-family:inherit;}
+.sb:focus{border-color:#63b3ed;}
+.fsel{background:#0a0e1a;border:1px solid rgba(99,179,237,.22);border-radius:7px;
+  padding:.52rem .7rem;color:var(--text);font-size:.78rem;cursor:pointer;font-family:inherit;outline:none;}
+.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:1000;
+  align-items:center;justify-content:center;}
+.mo.open{display:flex;}
+.md{background:#0d1530;border:1px solid rgba(99,179,237,.22);border-radius:15px;
+  padding:1.6rem;width:510px;max-width:95vw;max-height:90vh;overflow-y:auto;}
+.md h3{color:#90cdf4;margin-bottom:1rem;font-size:1rem;display:flex;align-items:center;justify-content:space-between;}
+.mc{background:none;border:none;color:var(--dim);font-size:1.2rem;cursor:pointer;}
+.fg{margin-bottom:.85rem}
+label{display:block;font-size:.72rem;color:var(--dim);margin-bottom:4px;}
+input[type=text],input[type=email],input[type=tel],input[type=url],textarea,select{
+  width:100%;background:#0a0e1a;border:1px solid rgba(99,179,237,.22);border-radius:7px;
+  padding:.55rem .7rem;color:var(--text);font-size:.84rem;outline:none;transition:border .2s;font-family:inherit;}
+input:focus,textarea:focus,select:focus{border-color:#63b3ed;}
+textarea{resize:vertical;min-height:65px;}
+.toast{position:fixed;bottom:1.6rem;right:1.6rem;background:#1a56db;color:#fff;
+  padding:.7rem 1.2rem;border-radius:9px;font-size:.84rem;font-weight:600;
+  z-index:9999;opacity:0;transform:translateY(10px);transition:all .3s;pointer-events:none;}
+.toast.show{opacity:1;transform:translateY(0);}
+.toast.ok{background:#065f46;}
+.toast.err{background:#7f1d1d;}
+.pc{background:rgba(255,255,255,.03);border:1px solid var(--bd);border-radius:11px;
+  padding:.9rem 1.1rem;display:flex;align-items:center;justify-content:space-between;gap:.9rem;margin-bottom:.55rem;}
+.pc:hover{background:rgba(99,179,237,.04);}
+.pc h4{font-size:.85rem;font-weight:600;color:#e2e8f0;margin-bottom:2px;}
+.pc p{font-size:.7rem;color:var(--dim);}
+.pca{display:flex;gap:6px;flex-shrink:0;}
+.tcrd{background:rgba(255,255,255,.03);border:1px solid var(--bd);border-radius:11px;
+  padding:.9rem 1.1rem;display:flex;align-items:center;gap:.9rem;margin-bottom:.55rem;}
+.tav{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#1a56db,#6366f1);
+  display:flex;align-items:center;justify-content:center;font-size:.95rem;font-weight:700;color:#fff;flex-shrink:0;}
+.ti{flex:1}
+.ti h4{font-size:.85rem;font-weight:600;color:#e2e8f0;}
+.ti p{font-size:.7rem;color:var(--dim);}
+.tb{font-size:.63rem;padding:2px 7px;border-radius:20px;margin-left:5px;}
+.tba{background:rgba(239,68,68,.1);color:#fca5a5;border:1px solid rgba(239,68,68,.2);}
+.tbe{background:rgba(99,102,241,.12);color:#a78bfa;border:1px solid rgba(139,92,246,.2);}
+.br{display:flex;align-items:center;gap:9px;margin-bottom:5px;}
+.bl{font-size:.73rem;color:var(--dim);min-width:120px;}
+.bt{flex:1;background:rgba(255,255,255,.05);border-radius:4px;height:8px;overflow:hidden;}
+.bf{height:100%;border-radius:4px;transition:width .5s ease;}
+.bc{font-size:.7rem;color:var(--dim);min-width:26px;text-align:right;}
+.ncrd{background:rgba(255,255,255,.03);border:1px solid var(--bd);border-radius:9px;padding:.85rem;margin-bottom:.55rem;}
+.sp{display:inline-block;font-size:.66rem;padding:2px 7px;border-radius:10px;white-space:nowrap;}
+.sp-popup{background:rgba(99,179,237,.12);color:#63b3ed;}
+.sp-referral{background:rgba(246,173,85,.12);color:#f6ad55;}
+.sp-checklist{background:rgba(72,187,120,.12);color:#68d391;}
+.sp-blog{background:rgba(139,92,246,.12);color:#c4b5fd;}
+.sp-pdf{background:rgba(16,185,129,.12);color:#6ee7b7;}
+.sp-admin{background:rgba(99,179,237,.07);color:#475569;}
+@media(max-width:768px){
+  .layout{grid-template-columns:1fr}.sidebar{display:none}
+  .stats{grid-template-columns:1fr 1fr}.g2,.g3{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<script>
+(function(){
+  if(sessionStorage.getItem('sd_auth_token')!=='authenticated'){
+    window.location.replace('./login.html');
+  }
+})();
+</script>
+
+<div class="topbar">
+  <div class="tl">
+    <a href="../index.html" class="logo">&#128737; SECURDATA.PRO</a>
+    <span style="color:#4a5568;font-size:.73rem;">/ Backend Admin</span>
+  </div>
+  <div class="tr">
+    <span id="userBadge" class="rbadge">Admin</span>
+    <div class="sync-info">
+      <div class="sdot loading" id="syncDot"></div>
+      <span id="syncText">Caricamento&hellip;</span>
+    </div>
+    <button class="logout" onclick="logout()">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+        <polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+      </svg>Esci
+    </button>
+  </div>
+</div>
+
+<div class="layout">
+<div class="sidebar">
+  <div class="ns">Principale</div>
+  <div class="ni active" onclick="nav('dashboard',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+      <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+    </svg>Dashboard
+  </div>
+  <div class="ns">Gestione</div>
+  <div class="ni" onclick="nav('leads',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/>
+      <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+    </svg>Gestione Lead
+  </div>
+  <div class="ni" onclick="nav('blog',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/>
+    </svg>Blog
+  </div>
+  <div class="ni" onclick="nav('note',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+      <polyline points="14,2 14,8 20,8"/>
+      <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+    </svg>Note
+  </div>
+  <div class="ns">Sito Web</div>
+  <div class="ni" onclick="nav('sito',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
+      <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/>
+    </svg>Pagine Sito
+  </div>
+  <div class="ni" id="nav-profilo" onclick="nav('profilo',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+    </svg>Profilo &amp; Biglietto
+  </div>
+  <div class="ns">Impostazioni</div>
+  <div class="ni" id="nav-team" onclick="nav('team',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/>
+      <path d="M23 21v-2a4 4 0 00-3-3.87"/>
+    </svg>Team &amp; Accessi
+  </div>
+  <div class="ni" id="nav-settings" onclick="nav('settings',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="12" r="3"/>
+      <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+    </svg>Impostazioni
+  </div>
+  <div style="padding:1.2rem 1.3rem .5rem;border-top:1px solid rgba(99,179,237,.07);margin-top:.8rem;">
+    <a href="../vito_qrcode_contact/admin.html" style="font-size:.7rem;color:#334155;text-decoration:none;display:flex;align-items:center;gap:6px;">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
+      </svg>Admin Biglietto (v1)
+    </a>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- DASHBOARD -->
+<div class="page active" id="page-dashboard">
+  <h2>&#128202; Dashboard</h2>
+  <div class="stats">
+    <div class="stat"><div class="sn" id="st-tot">&#8212;</div><div class="sl">Lead Totali</div></div>
+    <div class="stat"><div class="sn" id="st-wk">&#8212;</div><div class="sl">Nuovi (7 giorni)</div></div>
+    <div class="stat"><div class="sn" id="st-ct">&#8212;</div><div class="sl">Contattati</div></div>
+    <div class="stat"><div class="sn" id="st-cv">&#8212;</div><div class="sl">Convertiti</div></div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="ct">&#128100; Ultimi Lead</div>
+      <div id="dash-recent"><div class="lrow"><div class="spin"></div>Caricamento&hellip;</div></div>
+    </div>
+    <div class="card">
+      <div class="ct">&#128202; Lead per Fonte</div>
+      <div id="dash-sources"><div class="lrow"><div class="spin"></div></div></div>
+    </div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="ct">&#128279; Accesso Rapido</div>
+      <div style="display:grid;gap:7px;margin-top:4px;">
+        <a href="../index.html" target="_blank" class="bs" style="font-size:.77rem;">&#127968; Home Page</a>
+        <a href="../vito_qrcode_contact.html" target="_blank" class="bs" style="font-size:.77rem;">&#127820; Biglietto Digitale</a>
+        <a href="../checklist/checklist-sicurezza-pmi-2025.html" target="_blank" class="bs" style="font-size:.77rem;">&#9989; Checklist Sicurezza</a>
+        <a href="../blog.html" target="_blank" class="bs" style="font-size:.77rem;">&#128203; Blog</a>
+        <a href="../tempore/index.html" target="_blank" class="bs" style="font-size:.77rem;">&#128336; TEMPORE</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ct">&#128196; Ultime Note</div>
+      <div id="dash-notes"></div>
+    </div>
+  </div>
+</div>
+
+<!-- LEADS -->
+<div class="page" id="page-leads">
+  <div class="fb">
+    <h2 style="margin:0">&#128100; Gestione Lead</h2>
+    <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap;">
+      <button class="bs" onclick="syncLeads()" id="syncBtn">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
+          <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+        </svg>Sincronizza
+      </button>
+      <input class="sb" id="leadSearch" placeholder="&#128269; Cerca&hellip;" oninput="renderLeads()">
+      <select class="fsel" id="filtSrc" onchange="renderLeads()">
+        <option value="">Tutte le fonti</option>
+        <option value="popup">Popup</option>
+        <option value="referral">Referral</option>
+        <option value="checklist">Checklist</option>
+        <option value="blog">Blog</option>
+        <option value="admin">Admin</option>
+      </select>
+      <select class="fsel" id="filtSt" onchange="renderLeads()">
+        <option value="">Tutti gli stati</option>
+        <option value="new">Nuovo</option>
+        <option value="contact">Contattato</option>
+        <option value="converted">Convertito</option>
+        <option value="discard">Scartato</option>
+      </select>
+      <button class="bs" onclick="exportCSV()">&#11015; CSV</button>
+      <button class="bp" onclick="openAddLead()">+ Aggiungi</button>
+    </div>
+  </div>
+  <div class="card" style="padding:0;">
+    <div class="tw"><table>
+      <thead><tr>
+        <th>#</th><th>Nome</th><th>Email</th><th>Telefono</th>
+        <th>Attivit&agrave;</th><th>Settore</th><th>Fonte</th>
+        <th>Data</th><th>Stato</th><th>Azioni</th>
+      </tr></thead>
+      <tbody id="leadsBody"></tbody>
+    </table></div>
+  </div>
+  <div id="leadsPager" style="font-size:.76rem;color:var(--dim);margin-top:.4rem;"></div>
+</div>
+
+<!-- BLOG -->
+<div class="page" id="page-blog">
+  <div class="fb">
+    <h2 style="margin:0">&#128203; Blog</h2>
+    <button class="bp" onclick="openAddArticle()">+ Nuovo Articolo</button>
+  </div>
+  <div id="blogList"><div class="lrow"><div class="spin"></div>Caricamento&hellip;</div></div>
+</div>
+
+<!-- NOTE -->
+<div class="page" id="page-note">
+  <h2>&#128221; Note &amp; Archivio</h2>
+  <div class="card">
+    <div class="ct">Nuova Nota</div>
+    <div class="fg"><label>Titolo</label><input type="text" id="noteTitle" placeholder="Titolo (opzionale)"></div>
+    <div class="fg"><label>Contenuto</label><textarea id="noteContent" rows="4" placeholder="Scrivi una nota&hellip;"></textarea></div>
+    <button class="bp" onclick="addNote()">Salva Nota</button>
+  </div>
+  <div id="notesList"></div>
+</div>
+
+<!-- SITO -->
+<div class="page" id="page-sito">
+  <h2>&#127760; Pagine del Sito</h2>
+  <div class="card">
+    <div class="ct">Pagine Pubbliche</div>
+    <div id="sitePages"></div>
+  </div>
+  <div class="card">
+    <div class="ct">Codice Embed Lead Popup</div>
+    <div class="fg">
+      <label>Incolla in qualsiasi pagina per attivare la raccolta lead</label>
+      <div style="display:flex;gap:7px;">
+        <input type="text" id="embedCode" readonly
+          value="&lt;script src=&quot;https://profitpickers.github.io/securdata.pro/vito_qrcode_contact/lead-popup.js&quot;&gt;&lt;/script&gt;"
+          style="font-size:.76rem;font-family:monospace;color:#63b3ed;">
+        <button class="bs" onclick="copyEmbed()">Copia</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROFILO -->
+<div class="page" id="page-profilo">
+  <h2>&#128100; Profilo &amp; Biglietto da Visita</h2>
+  <div class="g2">
+    <div>
+      <div class="card">
+        <div class="ct">Dati Personali</div>
+        <div class="fg"><label>Nome Completo</label><input type="text" id="p_nome" value="Vito Iacobellis"></div>
+        <div class="fg"><label>Ruolo</label><input type="text" id="p_ruolo" value="CEO &amp; Founder"></div>
+        <div class="fg"><label>Azienda</label><input type="text" id="p_azienda" value="SecurData.Pro"></div>
+        <div class="fg"><label>Telefono</label><input type="tel" id="p_tel" value="+39 327 759 9079"></div>
+        <div class="fg"><label>Email</label><input type="email" id="p_email" value="info@vitoiacobellis.it"></div>
+        <div class="fg"><label>Sito Web</label><input type="url" id="p_web" value="https://www.securdata.pro"></div>
+        <div class="fg"><label>LinkedIn</label><input type="url" id="p_linkedin" value="https://linkedin.com/in/vito-i-73bb14220"></div>
+        <div class="fg"><label>Bio</label><textarea id="p_bio" rows="2">Sicurezza dati e Integrazioni AI per PMI e aziende.</textarea></div>
+        <button class="bp" onclick="saveProfile()">&#128190; Salva Profilo</button>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="ct">Azioni Biglietto</div>
+        <div style="display:grid;gap:7px;">
+          <a href="../vito_qrcode_contact.html" target="_blank" class="bp" style="justify-content:center;">&#127820; Visualizza Biglietto</a>
+          <a href="../vito_qrcode_contact/admin.html" target="_blank" class="bs" style="justify-content:center;">&#9881; Admin Biglietto (v1)</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TEAM -->
+<div class="page" id="page-team">
+  <h2>&#128101; Team &amp; Accessi</h2>
+  <div class="card">
+    <div class="ct">Utenti Attivi</div>
+    <div class="tcrd">
+      <div class="tav">VI</div>
+      <div class="ti">
+        <h4>Vito Iacobellis <span class="tb tba">Admin</span></h4>
+        <p>Username: admin &middot; 2FA: attivo &middot; Accesso completo</p>
+      </div>
+    </div>
+    <div class="tcrd">
+      <div class="tav" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);">T</div>
+      <div class="ti">
+        <h4>Team <span class="tb tbe">Editor</span></h4>
+        <p>Username: team &middot; 2FA: non richiesto &middot; Lead + Blog + Dashboard</p>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ct">&#128273; Aggiungere un Collaboratore</div>
+    <ol style="font-size:.82rem;color:var(--dim);line-height:2.2;padding-left:1.1rem;">
+      <li>Scegli username e password per il collaboratore</li>
+      <li>Calcola SHA-256: <a href="https://emn178.github.io/online-tools/sha256.html" target="_blank" style="color:#63b3ed;">emn178.github.io/online-tools/sha256.html</a></li>
+      <li>Apri <code style="color:#63b3ed;">admin/login.html</code> e aggiungi un oggetto nella variabile <code style="color:#63b3ed;">USERS</code></li>
+      <li>Imposta <code style="color:#63b3ed;">role: "editor"</code> e <code style="color:#63b3ed;">require2fa: false</code></li>
+      <li>Condividi credenziali al collaboratore via canale sicuro</li>
+    </ol>
+    <div style="margin-top:.9rem;padding:.8rem;background:rgba(99,179,237,.05);border:1px solid rgba(99,179,237,.15);border-radius:7px;font-size:.78rem;color:#63b3ed;">
+      <strong>Password default team:</strong> TeamSecur2026 &mdash; <span style="color:var(--dim);">modificarla subito!</span>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="page" id="page-settings">
+  <h2>&#9881; Impostazioni</h2>
+  <div class="card">
+    <div class="ct">GitHub &amp; Dati</div>
+    <p style="font-size:.82rem;color:var(--dim);margin-bottom:.9rem;">
+      I lead vengono salvati in <code style="color:#63b3ed;">data/leads.csv</code> dal popup di acquisizione.<br>
+      Il token GitHub per la scrittura &egrave; in <code style="color:#63b3ed;">vito_qrcode_contact/lead-popup.js</code>.
+    </p>
+    <div class="fg">
+      <label>URL CSV Raw (lettura pubblica)</label>
+      <div style="display:flex;gap:7px;">
+        <input type="text" readonly id="csvUrl"
+          value="https://raw.githubusercontent.com/Profitpickers/securdata.pro/main/data/leads.csv"
+          style="font-size:.76rem;font-family:monospace;color:#63b3ed;">
+        <button class="bs" onclick="copyCsv()">Copia</button>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ct">Sessione Corrente</div>
+    <div style="font-size:.82rem;color:var(--dim);line-height:2.1;">
+      <div>Utente: <span id="sess-u" style="color:#e2e8f0;"></span></div>
+      <div>Ruolo: <span id="sess-r" style="color:#63b3ed;"></span></div>
+      <div>Scadenza: chiusura browser (sessionStorage)</div>
+    </div>
+    <button class="bd" style="margin-top:.9rem;" onclick="logout()">Termina Sessione</button>
+  </div>
+</div>
+
+</div><!-- /main -->
+</div><!-- /layout -->
+
+<!-- MODAL LEAD -->
+<div class="mo" id="leadMo">
+  <div class="md">
+    <h3><span id="leadMoT">Aggiungi Lead</span><button class="mc" onclick="closeLeadMo()">&times;</button></h3>
+    <input type="hidden" id="lEditKey" value="">
+    <div class="fg"><label>Nome *</label><input type="text" id="l_nome" placeholder="Nome Cognome"></div>
+    <div class="fg"><label>Email *</label><input type="email" id="l_email" placeholder="email@esempio.it"></div>
+    <div class="fg"><label>Telefono</label><input type="tel" id="l_tel" placeholder="+39 320 000 0000"></div>
+    <div class="fg"><label>Attivit&agrave;</label><input type="text" id="l_att" placeholder="Es. Studio Legale"></div>
+    <div class="fg"><label>Settore</label><input type="text" id="l_set" placeholder="Es. Consulenza"></div>
+    <div class="fg"><label>Note interne</label><textarea id="l_note" rows="2" placeholder="Note private"></textarea></div>
+    <div class="fg"><label>Stato</label>
+      <select id="l_stato">
+        <option value="new">&#128994; Nuovo</option>
+        <option value="contact">&#128309; Contattato</option>
+        <option value="converted">&#128992; Convertito</option>
+        <option value="discard">&#128997; Scartato</option>
+      </select>
+    </div>
+    <div style="display:flex;gap:7px;margin-top:1rem;">
+      <button class="bp" onclick="saveLead()">Salva Lead</button>
+      <button class="bs" onclick="closeLeadMo()">Annulla</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL BLOG -->
+<div class="mo" id="blogMo">
+  <div class="md">
+    <h3><span id="blogMoT">Nuovo Articolo</span><button class="mc" onclick="closeBlogMo()">&times;</button></h3>
+    <input type="hidden" id="bEditId" value="">
+    <div class="fg"><label>Titolo *</label><input type="text" id="b_title" placeholder="Titolo articolo"></div>
+    <div class="fg"><label>Slug URL</label><input type="text" id="b_slug" placeholder="titolo-articolo"></div>
+    <div class="fg"><label>Data</label><input type="text" id="b_date" placeholder="01/01/2026"></div>
+    <div class="fg"><label>Categoria</label><input type="text" id="b_cat" placeholder="Cybersecurity"></div>
+    <div class="fg"><label>Estratto</label><textarea id="b_exc" rows="3" placeholder="Breve descrizione..."></textarea></div>
+    <div class="fg"><label>Tag (virgola)</label><input type="text" id="b_tags" placeholder="AI, GDPR, PMI"></div>
+    <div style="display:flex;gap:7px;margin-top:1rem;">
+      <button class="bp" onclick="saveBlog()">Salva Articolo</button>
+      <button class="bs" onclick="closeBlogMo()">Annulla</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ═══════════════════════ CONFIGURAZIONE ══════════════════════════ */
+var RAW_CSV  = 'https://raw.githubusercontent.com/Profitpickers/securdata.pro/main/data/leads.csv';
+var BLOG_URL = '../data/blog-posts.json';
+
+/* ═══════════════════════ STATE ══════════════════════════════════ */
+var currentRole    = sessionStorage.getItem('sd_user_role')    || 'editor';
+var currentDisplay = sessionStorage.getItem('sd_user_display') || 'Utente';
+var currentUser    = sessionStorage.getItem('sd_username')     || '\u2014';
+
+var ghLeads    = [];
+var localSt    = {};
+var adminLeads = [];
+var articles   = [];
+var notes      = [];
+
+/* ═══════════════════════ INIT ═══════════════════════════════════ */
+(function init(){
+  var badge = document.getElementById('userBadge');
+  if (currentRole === 'admin') {
+    badge.textContent = currentUser + ' (Admin)';
+  } else {
+    badge.className = 'rbadge ed';
+    badge.textContent = currentUser + ' (Editor)';
+    ['nav-profilo','nav-team','nav-settings'].forEach(function(id){
+      var el = document.getElementById(id);
+      if (el) el.classList.add('hidden');
+    });
+  }
+  var su = document.getElementById('sess-u');
+  var sr = document.getElementById('sess-r');
+  if (su) su.textContent = currentDisplay;
+  if (sr) sr.textContent = currentRole === 'admin' ? 'Amministratore (accesso completo)' : 'Editor (accesso limitato)';
+
+  localSt    = JSON.parse(localStorage.getItem('sdp_lead_status') || '{}');
+  adminLeads = JSON.parse(localStorage.getItem('sdp_admin_leads') || '[]');
+  notes      = JSON.parse(localStorage.getItem('sdp_notes')       || '[]');
+
+  loadLeads();
+  loadArticles();
+  renderNotes();
+  renderSitePages();
+  renderDashNotes();
+})();
+
+/* ═══════════════════════ NAV ════════════════════════════════════ */
+function nav(id, el) {
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.ni').forEach(function(n){ n.classList.remove('active'); });
+  document.getElementById('page-'+id).classList.add('active');
+  if (el) el.classList.add('active');
+  if (id === 'leads')     renderLeads();
+  if (id === 'dashboard') renderDashboard();
+  if (id === 'blog')      renderBlog();
+  if (id === 'note')      renderNotes();
+}
+
+function logout() {
+  sessionStorage.clear();
+  window.location.replace('./login.html');
+}
+
+/* ═══════════════════════ TOAST ══════════════════════════════════ */
+function toast(msg, type) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (type ? ' ' + type : '');
+  clearTimeout(t._t);
+  t._t = setTimeout(function(){ t.classList.remove('show'); }, 2600);
+}
+
+/* ═══════════════════════ CSV PARSE ══════════════════════════════ */
+function parseCsvLine(line) {
+  var res = [], cur = '', inQ = false;
+  for (var i = 0; i < line.length; i++) {
+    var c = line[i];
+    if (c === '"') { if (inQ && line[i+1]==='"') { cur+='"'; i++; } else { inQ=!inQ; } }
+    else if (c === ',' && !inQ) { res.push(cur); cur=''; }
+    else { cur += c; }
+  }
+  res.push(cur);
+  return res;
+}
+
+function csvToLeads(csv) {
+  var lines = csv.replace(/\r/g,'').split('\n').filter(function(l){ return l.trim(); });
+  if (lines.length <= 1) return [];
+  var arr = [];
+  for (var i = 1; i < lines.length; i++) {
+    var c = parseCsvLine(lines[i]);
+    if (!c[2]) continue;
+    arr.push({
+      timestamp: c[0]||'', nome: c[1]||'', email: c[2]||'',
+      tel: c[3]||'', attivita: c[4]||'', settore: c[5]||'',
+      source: c[6]||'', referrer: c[7]||'',
+      _gh: true
+    });
+  }
+  return arr;
+}
+
+function leadKey(l) {
+  return (l.email||'').toLowerCase().trim() + '|' + (l.timestamp||'');
+}
+
+function allLeads() {
+  var all = ghLeads.map(function(l) {
+    var ov = localSt[leadKey(l)] || {};
+    return Object.assign({}, l, { stato: ov.stato||'new', noteInt: ov.noteInt||'' });
+  });
+  adminLeads.forEach(function(l){ all.push(l); });
+  return all;
+}
+
+/* ═══════════════════════ SYNC STATUS ═══════════════════════════ */
+function setSyncState(st, msg) {
+  document.getElementById('syncDot').className = 'sdot ' + st;
+  document.getElementById('syncText').innerHTML = msg;
+}
+
+/* ═══════════════════════ LOAD LEADS ════════════════════════════ */
+function loadLeads() {
+  setSyncState('loading','Sincronizzazione&hellip;');
+  fetch(RAW_CSV + '?t=' + Date.now())
+    .then(function(r){
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      return r.text();
+    })
+    .then(function(csv){
+      ghLeads = csvToLeads(csv);
+      var t = new Date().toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
+      setSyncState('ok', ghLeads.length + ' lead &middot; ' + t);
+      renderDashboard();
+      renderLeads();
+    })
+    .catch(function(err){
+      setSyncState('err','Errore: '+err.message);
+      toast('Errore caricamento lead: '+err.message,'err');
+      renderDashboard();
+      renderLeads();
+    });
+}
+
+function syncLeads() {
+  var btn = document.getElementById('syncBtn');
+  if (btn) btn.disabled = true;
+  loadLeads();
+  setTimeout(function(){ if (btn) btn.disabled = false; }, 3000);
+}
+
+/* ═══════════════════════ DASHBOARD ═════════════════════════════ */
+function renderDashboard() {
+  var all  = allLeads();
+  var week = Date.now() - 7*86400000;
+  var nw   = all.filter(function(l){ return new Date(l.timestamp).getTime() > week; }).length;
+  var ct   = all.filter(function(l){ return l.stato==='contact'; }).length;
+  var cv   = all.filter(function(l){ return l.stato==='converted'; }).length;
+
+  document.getElementById('st-tot').textContent = all.length;
+  document.getElementById('st-wk').textContent  = nw;
+  document.getElementById('st-ct').textContent  = ct;
+  document.getElementById('st-cv').textContent  = cv;
+
+  var recent = all.slice(-6).reverse();
+  var rHtml = recent.length
+    ? recent.map(function(l){
+        return '<div style="padding:.45rem 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:.81rem;">'
+          +'<span style="color:#e2e8f0;font-weight:600;">'+esc(l.nome||l.email)+'</span>'
+          +' <span style="color:#4a5568;font-size:.7rem;">&mdash; '+esc(l.source||'\u2014')+'</span>'
+          +'<span style="float:right;font-size:.68rem;color:#334155;">'+(l.timestamp||l.date||'').substring(0,10)+'</span>'
+          +'</div>';
+      }).join('')
+    : '<p style="color:#4a5568;font-size:.84rem;">Nessun lead ancora.</p>';
+  document.getElementById('dash-recent').innerHTML = rHtml;
+
+  var srcs = {};
+  all.forEach(function(l){
+    var s = (l.source||'diretto').toLowerCase();
+    if (s.startsWith('referral')) s = 'referral';
+    srcs[s] = (srcs[s]||0) + 1;
+  });
+  var colors = {popup:'#63b3ed',referral:'#f6ad55',checklist:'#68d391',blog:'#c4b5fd',admin:'#475569',diretto:'#4a5568'};
+  var sHtml = '';
+  Object.keys(srcs).forEach(function(s){
+    var pct = all.length ? Math.round(srcs[s]/all.length*100) : 0;
+    sHtml += '<div class="br"><div class="bl">'+esc(s)+'</div>'
+      +'<div class="bt"><div class="bf" style="width:'+pct+'%;background:'+(colors[s]||'#63b3ed')+';"></div></div>'
+      +'<div class="bc">'+srcs[s]+'</div></div>';
+  });
+  document.getElementById('dash-sources').innerHTML = sHtml || '<p style="color:#4a5568;font-size:.84rem;">Nessun dato.</p>';
+
+  renderDashNotes();
+}
+
+/* ═══════════════════════ RENDER LEADS ══════════════════════════ */
+var PAGE_SZ = 50, currentPage = 0;
+
+function renderLeads() {
+  var q   = (document.getElementById('leadSearch')||{}).value || '';
+  var src = (document.getElementById('filtSrc')||{}).value   || '';
+  var st  = (document.getElementById('filtSt')||{}).value    || '';
+  var all = allLeads().filter(function(l){
+    var qs  = JSON.stringify(l).toLowerCase().includes(q.toLowerCase());
+    var ss  = !src || (l.source||'').toLowerCase().includes(src);
+    var sts = !st  || l.stato === st;
+    return qs && ss && sts;
+  });
+
+  var total = all.length;
+  var pages = Math.max(1, Math.ceil(total / PAGE_SZ));
+  if (currentPage >= pages) currentPage = pages - 1;
+  var slice = all.slice(currentPage * PAGE_SZ, (currentPage+1) * PAGE_SZ);
+
+  var tbody = document.getElementById('leadsBody');
+  if (!tbody) return;
+
+  if (!slice.length) {
+    tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:#4a5568;padding:2rem;">Nessun lead trovato</td></tr>';
+  } else {
+    tbody.innerHTML = slice.map(function(l, idx){
+      var gIdx = all.indexOf(l);
+      var stTag = stateTag(l.stato);
+      var srcHtml = sourcePill(l.source||'');
+      return '<tr>'
+        +'<td style="color:#4a5568;">'+(gIdx+1)+'</td>'
+        +'<td style="font-weight:600;color:#e2e8f0;">'+esc(l.nome)+'</td>'
+        +'<td><a href="mailto:'+esc(l.email)+'" style="color:#63b3ed;">'+esc(l.email)+'</a></td>'
+        +'<td>'+esc(l.tel)+'</td>'
+        +'<td>'+esc(l.attivita)+'</td>'
+        +'<td style="color:#718096;">'+esc(l.settore)+'</td>'
+        +'<td>'+srcHtml+'</td>'
+        +'<td style="color:#4a5568;white-space:nowrap;">'+(l.timestamp||l.date||'').substring(0,10)+'</td>'
+        +'<td>'+stTag+'</td>'
+        +'<td style="white-space:nowrap;">'
+        +'<button class="bs" style="padding:.28rem .6rem;font-size:.7rem;margin-right:4px;" onclick="editLead(\'' + leadKey(l).replace(/'/g,"\\'") + '\','+JSON.stringify(l._gh||false)+')">Modifica</button>'
+        +(l._gh ? '' : '<button class="bd" onclick="deleteLead(\'' + leadKey(l).replace(/'/g,"\\'") + '\')">Elimina</button>')
+        +'</td></tr>';
+    }).join('');
+  }
+
+  var pager = document.getElementById('leadsPager');
+  if (pager) {
+    if (pages > 1) {
+      var pHtml = '<span>Pagina '+(currentPage+1)+'/'+pages+' ('+total+' totali)</span> ';
+      if (currentPage > 0) pHtml += '<button class="bs" style="padding:.25rem .6rem;font-size:.72rem;" onclick="currentPage--;renderLeads();">&larr;</button> ';
+      if (currentPage < pages-1) pHtml += '<button class="bs" style="padding:.25rem .6rem;font-size:.72rem;" onclick="currentPage++;renderLeads();">&rarr;</button>';
+      pager.innerHTML = pHtml;
+    } else {
+      pager.innerHTML = total ? total + ' lead trovati' : '';
+    }
+  }
+}
+
+function stateTag(st) {
+  var map = {new:'tn Nuovo',contact:'tc Contattato',converted:'tv Convertito',discard:'td Scartato'};
+  var c = (map[st]||'tn Nuovo').split(' ');
+  return '<span class="tag '+c[0]+'">'+c[1]+'</span>';
+}
+
+function sourcePill(src) {
+  if (!src) return '<span style="color:#4a5568;">\u2014</span>';
+  var s = src.toLowerCase();
+  var cls = 'sp-admin';
+  if (s==='popup')              cls='sp-popup';
+  else if (s.startsWith('referral')) cls='sp-referral';
+  else if (s==='checklist')     cls='sp-checklist';
+  else if (s==='blog')          cls='sp-blog';
+  else if (s==='pdf')           cls='sp-pdf';
+  return '<span class="sp '+cls+'">'+esc(src)+'</span>';
+}
+
+/* ═══════════════════════ ADD/EDIT LEAD ════════════════════════ */
+function openAddLead() {
+  document.getElementById('leadMoT').textContent = 'Aggiungi Lead';
+  document.getElementById('lEditKey').value = '';
+  ['l_nome','l_email','l_tel','l_att','l_set','l_note'].forEach(function(id){
+    var el=document.getElementById(id); if(el) el.value='';
+  });
+  document.getElementById('l_stato').value = 'new';
+  document.getElementById('leadMo').classList.add('open');
+}
+
+function editLead(key, isGh) {
+  var all = allLeads();
+  var lead = null;
+  for (var i=0;i<all.length;i++) { if (leadKey(all[i])===key) { lead=all[i]; break; } }
+  if (!lead) return;
+  document.getElementById('leadMoT').textContent = 'Modifica Lead';
+  document.getElementById('lEditKey').value = key;
+  document.getElementById('l_nome').value  = lead.nome||'';
+  document.getElementById('l_email').value = lead.email||'';
+  document.getElementById('l_tel').value   = lead.tel||'';
+  document.getElementById('l_att').value   = lead.attivita||'';
+  document.getElementById('l_set').value   = lead.settore||'';
+  document.getElementById('l_note').value  = lead.noteInt||'';
+  document.getElementById('l_stato').value = lead.stato||'new';
+  document.getElementById('leadMo').classList.add('open');
+}
+
+function saveLead() {
+  var nome  = document.getElementById('l_nome').value.trim();
+  var email = document.getElementById('l_email').value.trim();
+  if (!nome || !email) { toast('Nome ed Email sono obbligatori','err'); return; }
+
+  var key   = document.getElementById('lEditKey').value;
+  var stato = document.getElementById('l_stato').value;
+  var note  = document.getElementById('l_note').value;
+
+  if (key) {
+    var all = allLeads();
+    var lead = null;
+    for (var i=0;i<all.length;i++) { if (leadKey(all[i])===key) { lead=all[i]; break; } }
+    if (lead && lead._gh) {
+      localSt[key] = { stato: stato, noteInt: note };
+      localStorage.setItem('sdp_lead_status', JSON.stringify(localSt));
+      toast('Stato aggiornato!','ok');
+    } else {
+      for (var j=0;j<adminLeads.length;j++) {
+        if (leadKey(adminLeads[j])===key) {
+          adminLeads[j].nome     = nome;
+          adminLeads[j].email    = email;
+          adminLeads[j].tel      = document.getElementById('l_tel').value;
+          adminLeads[j].attivita = document.getElementById('l_att').value;
+          adminLeads[j].settore  = document.getElementById('l_set').value;
+          adminLeads[j].noteInt  = note;
+          adminLeads[j].stato    = stato;
+          break;
+        }
+      }
+      localStorage.setItem('sdp_admin_leads', JSON.stringify(adminLeads));
+      toast('Lead aggiornato!','ok');
+    }
+  } else {
+    var now = new Date();
+    var newLead = {
+      timestamp: now.toISOString(),
+      nome: nome, email: email,
+      tel:  document.getElementById('l_tel').value,
+      attivita: document.getElementById('l_att').value,
+      settore:  document.getElementById('l_set').value,
+      source: 'admin', referrer: '',
+      stato: stato, noteInt: note, _gh: false
+    };
+    adminLeads.push(newLead);
+    localStorage.setItem('sdp_admin_leads', JSON.stringify(adminLeads));
+    toast('Lead aggiunto!','ok');
+  }
+  closeLeadMo();
+  renderLeads();
+  renderDashboard();
+}
+
+function deleteLead(key) {
+  if (!confirm('Eliminare questo lead?')) return;
+  adminLeads = adminLeads.filter(function(l){ return leadKey(l) !== key; });
+  localStorage.setItem('sdp_admin_leads', JSON.stringify(adminLeads));
+  toast('Lead eliminato');
+  renderLeads();
+  renderDashboard();
+}
+
+function closeLeadMo() { document.getElementById('leadMo').classList.remove('open'); }
+
+/* ═══════════════════════ EXPORT CSV ════════════════════════════ */
+function exportCSV() {
+  var all = allLeads();
+  if (!all.length) { toast('Nessun lead da esportare','err'); return; }
+  var hdr = 'Nome,Email,Telefono,Attivita,Settore,Fonte,Referrer,Data,Stato,Note';
+  var rows = all.map(function(l){
+    return [l.nome,l.email,l.tel,l.attivita,l.settore,l.source,l.referrer,
+      l.timestamp||'',l.stato||'new',l.noteInt||'']
+      .map(function(v){ return '"'+(v||'').replace(/"/g,'""')+'"'; }).join(',');
+  });
+  var csv = hdr + '\n' + rows.join('\n');
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));
+  a.download = 'leads_securdata_' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+  toast('CSV esportato!','ok');
+}
+
+/* ═══════════════════════ BLOG ══════════════════════════════════ */
+function loadArticles() {
+  articles = JSON.parse(localStorage.getItem('sdp_articles')||'[]');
+  fetch(BLOG_URL + '?t=' + Date.now())
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      var ids = articles.map(function(a){ return a.id; });
+      data.forEach(function(a){
+        if (ids.indexOf(a.id) === -1) articles.push(a);
+      });
+      localStorage.setItem('sdp_articles', JSON.stringify(articles));
+      renderBlog();
+    }).catch(function(){ renderBlog(); });
+}
+
+function renderBlog() {
+  var el = document.getElementById('blogList');
+  if (!el) return;
+  if (!articles.length) { el.innerHTML = '<p style="color:#4a5568;font-size:.84rem;">Nessun articolo. Aggiungi il primo!</p>'; return; }
+  el.innerHTML = articles.map(function(a,i){
+    return '<div class="pc">'
+      +'<div><h4>'+esc(a.title||'Senza titolo')+'</h4>'
+      +'<p>'+(a.date||'')+(a.category?' &middot; '+esc(a.category):'')+'</p></div>'
+      +'<div class="pca">'
+      +(a.slug ? '<a href="../blog/'+a.slug+'.html" target="_blank" class="bs" style="padding:.28rem .6rem;font-size:.7rem;">Apri</a>' : '')
+      +'<button class="bs" style="padding:.28rem .6rem;font-size:.7rem;" onclick="editArticle('+i+')">Modifica</button>'
+      +'<button class="bd" onclick="deleteArticle('+i+')">Elimina</button>'
+      +'</div></div>';
+  }).join('');
+}
+
+function openAddArticle() {
+  document.getElementById('blogMoT').textContent = 'Nuovo Articolo';
+  document.getElementById('bEditId').value = '';
+  ['b_title','b_slug','b_date','b_cat','b_exc','b_tags'].forEach(function(id){
+    var el=document.getElementById(id); if(el) el.value='';
+  });
+  document.getElementById('blogMo').classList.add('open');
+}
+
+function editArticle(i) {
+  var a = articles[i];
+  if (!a) return;
+  document.getElementById('blogMoT').textContent = 'Modifica Articolo';
+  document.getElementById('bEditId').value  = i;
+  document.getElementById('b_title').value  = a.title||'';
+  document.getElementById('b_slug').value   = a.slug||'';
+  document.getElementById('b_date').value   = a.date||'';
+  document.getElementById('b_cat').value    = a.category||'';
+  document.getElementById('b_exc').value    = a.excerpt||'';
+  document.getElementById('b_tags').value   = (a.tags||[]).join(', ');
+  document.getElementById('blogMo').classList.add('open');
+}
+
+function saveBlog() {
+  var title = document.getElementById('b_title').value.trim();
+  if (!title) { toast('Titolo obbligatorio','err'); return; }
+  var art = {
+    id:       'art_'+Date.now(),
+    title:    title,
+    slug:     document.getElementById('b_slug').value.trim(),
+    date:     document.getElementById('b_date').value.trim(),
+    category: document.getElementById('b_cat').value.trim(),
+    excerpt:  document.getElementById('b_exc').value.trim(),
+    tags:     document.getElementById('b_tags').value.split(',').map(function(t){return t.trim();}).filter(Boolean)
+  };
+  var idx = document.getElementById('bEditId').value;
+  if (idx !== '') { art.id = articles[+idx].id; articles[+idx] = art; }
+  else            { articles.unshift(art); }
+  localStorage.setItem('sdp_articles', JSON.stringify(articles));
+  closeBlogMo();
+  renderBlog();
+  toast('Articolo salvato!','ok');
+}
+
+function deleteArticle(i) {
+  if (!confirm('Eliminare questo articolo?')) return;
+  articles.splice(i,1);
+  localStorage.setItem('sdp_articles', JSON.stringify(articles));
+  renderBlog();
+  toast('Articolo eliminato');
+}
+
+function closeBlogMo() { document.getElementById('blogMo').classList.remove('open'); }
+
+/* ═══════════════════════ NOTE ══════════════════════════════════ */
+function addNote() {
+  var t = document.getElementById('noteTitle').value.trim();
+  var c = document.getElementById('noteContent').value.trim();
+  if (!c) { toast('Scrivi qualcosa prima','err'); return; }
+  notes.unshift({ title:t, content:c, date:new Date().toLocaleDateString('it-IT') });
+  localStorage.setItem('sdp_notes', JSON.stringify(notes));
+  document.getElementById('noteTitle').value   = '';
+  document.getElementById('noteContent').value = '';
+  renderNotes();
+  renderDashNotes();
+  toast('Nota salvata!','ok');
+}
+
+function renderNotes() {
+  var el = document.getElementById('notesList');
+  if (!el) return;
+  if (!notes.length) { el.innerHTML='<p style="color:#4a5568;font-size:.84rem;">Nessuna nota.</p>'; return; }
+  el.innerHTML = notes.map(function(n,i){
+    return '<div class="ncrd">'
+      +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.4rem;">'
+      +'<span style="font-weight:600;color:#90cdf4;font-size:.84rem;">'+esc(n.title||'Nota')+'</span>'
+      +'<span style="font-size:.7rem;color:#4a5568;">'+n.date+'</span></div>'
+      +'<p style="font-size:.82rem;color:#cbd5e0;line-height:1.6;">'+esc(n.content)+'</p>'
+      +'<button class="bd" style="margin-top:.6rem;" onclick="deleteNote('+i+')">Elimina</button>'
+      +'</div>';
+  }).join('');
+}
+
+function renderDashNotes() {
+  var el = document.getElementById('dash-notes');
+  if (!el) return;
+  if (!notes.length) { el.innerHTML='<p style="color:#4a5568;font-size:.84rem;">Nessuna nota ancora.</p>'; return; }
+  el.innerHTML = notes.slice(0,3).map(function(n){
+    return '<div style="padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:.8rem;">'
+      +'<span style="color:#90cdf4;font-weight:600;">'+esc(n.title||'Nota')+'</span>'
+      +'<p style="color:#718096;margin-top:2px;font-size:.75rem;">'+esc((n.content||'').substring(0,60))+'&hellip;</p>'
+      +'</div>';
+  }).join('');
+}
+
+function deleteNote(i) {
+  notes.splice(i,1);
+  localStorage.setItem('sdp_notes', JSON.stringify(notes));
+  renderNotes();
+  renderDashNotes();
+  toast('Nota eliminata');
+}
+
+/* ═══════════════════════ SITE PAGES ═══════════════════════════ */
+var PAGES = [
+  {name:'Home', path:'../index.html', desc:'Pagina principale'},
+  {name:'Biglietto Digitale', path:'../vito_qrcode_contact.html', desc:'Business card QR'},
+  {name:'TEMPORE', path:'../tempore/index.html', desc:'Analisi spazio-temporale'},
+  {name:'Blog', path:'../blog.html', desc:'Lista articoli'},
+  {name:'Checklist Sicurezza PMI', path:'../checklist/checklist-sicurezza-pmi-2025.html', desc:'Lead capture + PDF'},
+  {name:'Risorse Gratuite', path:'../risorse-gratuite.html', desc:'Download risorse'},
+  {name:'Privacy Policy', path:'../privacy-policy.html', desc:'Informativa privacy'},
+  {name:'Termini di Servizio', path:'../termini-di-servizio.html', desc:'Termini'},
+  {name:'PRD Questionnaire', path:'../prd-questionnaire.html', desc:'Questionario prodotto'},
+  {name:'Card', path:'../card.html', desc:'Pagina card'},
+];
+
+function renderSitePages() {
+  var el = document.getElementById('sitePages');
+  if (!el) return;
+  el.innerHTML = PAGES.map(function(p){
+    return '<div class="pc">'
+      +'<div><h4>'+esc(p.name)+'</h4><p>'+esc(p.desc)+' &middot; <code style="color:#4a5568;">'+esc(p.path.replace('../',''))+'</code></p></div>'
+      +'<div class="pca">'
+      +'<a href="'+p.path+'" target="_blank" class="bs" style="padding:.28rem .6rem;font-size:.7rem;">Apri</a>'
+      +'</div></div>';
+  }).join('');
+}
+
+/* ═══════════════════════ PROFILE ═══════════════════════════════ */
+function saveProfile() {
+  var profile = {
+    nome:     document.getElementById('p_nome').value,
+    ruolo:    document.getElementById('p_ruolo').value,
+    azienda:  document.getElementById('p_azienda').value,
+    tel:      document.getElementById('p_tel').value,
+    email:    document.getElementById('p_email').value,
+    web:      document.getElementById('p_web').value,
+    linkedin: document.getElementById('p_linkedin').value,
+    bio:      document.getElementById('p_bio').value,
+  };
+  localStorage.setItem('sdp_profile', JSON.stringify(profile));
+  toast('Profilo salvato!','ok');
+}
+
+/* ═══════════════════════ HELPERS ═══════════════════════════════ */
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function copyEmbed() {
+  var el = document.getElementById('embedCode');
+  el.select();
+  document.execCommand('copy');
+  toast('Codice embed copiato!','ok');
+}
+
+function copyCsv() {
+  var el = document.getElementById('csvUrl');
+  el.select();
+  document.execCommand('copy');
+  toast('URL copiato!','ok');
+}
+
+['leadMo','blogMo'].forEach(function(id){
+  var el = document.getElementById(id);
+  if (el) el.addEventListener('click', function(e){ if(e.target===this) this.classList.remove('open'); });
+});
+</script>
+</body>
+</html>
