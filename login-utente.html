@@ -517,6 +517,46 @@ async function sha256(str) {
   return Array.from(new Uint8Array(buf)).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
 }
 
+// ── GitHub lead sync – mirrors lead-popup.js configuration ──
+var GH_TOKEN = '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';
+var GH_OWNER = 'Profitpickers';
+var GH_REPO  = 'securdata.pro';
+var GH_FILE  = 'data/leads.csv';
+
+function _toBase64Lead(str) {
+  var bytes = new TextEncoder().encode(str);
+  var binary = '';
+  bytes.forEach(function(b){ binary += String.fromCharCode(b); });
+  return btoa(binary);
+}
+function _fromBase64Lead(b64) {
+  var binary = atob(b64.replace(/\n/g,''));
+  var bytes = new Uint8Array(binary.length);
+  for (var i = 0; i < binary.length; i++) { bytes[i] = binary.charCodeAt(i); }
+  return new TextDecoder('utf-8').decode(bytes);
+}
+function saveLeadToGitHub(nome, email, tipo) {
+  if (!GH_TOKEN || GH_TOKEN === '__INSERISCI_TOKEN_QUI__') return;
+  var apiUrl = 'https://api.github.com/repos/' + GH_OWNER + '/' + GH_REPO + '/contents/' + GH_FILE;
+  var headers = { 'Authorization': 'Bearer ' + GH_TOKEN, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
+  fetch(apiUrl, { headers: headers })
+    .then(function(r){ return r.json(); })
+    .then(function(fileData){
+      var current = '';
+      try { current = _fromBase64Lead(fileData.content); } catch(_){ current = ''; }
+      var row = [new Date().toISOString(), nome, email, '', '', tipo || '', 'login-registration', '']
+        .map(function(v){ return '"' + String(v).replace(/"/g,'""') + '"'; }).join(',');
+      var newContent = current + row + '\n';
+      return fetch(apiUrl, { method: 'PUT', headers: headers, body: JSON.stringify({ message: 'lead: nuova registrazione', content: _toBase64Lead(newContent), sha: fileData.sha }) });
+    })
+    .then(function(putResp){
+      if (putResp && !putResp.ok) {
+        putResp.text().then(function(t){ console.warn('sdp: GitHub PUT error (' + putResp.status + '):', t); });
+      }
+    })
+    .catch(function(err){ console.warn('sdp: errore salvataggio lead GitHub (registrazione):', err.message || err); });
+}
+
 // ── Storage keys ──
 var USERS_KEY   = 'sdp_users_v1';
 var SESSION_KEY = 'sdp_user_session';
@@ -752,6 +792,7 @@ async function handleRegister(e) {
     };
     users.push(newUser);
     saveUsers(users);
+    saveLeadToGitHub(nome, email, selectedType);
 
     // Auto-login after registration
     var session = { userId: newUser.id, username: newUser.username, nome: newUser.nome, email: newUser.email, type: newUser.type, loginAt: Date.now() };
