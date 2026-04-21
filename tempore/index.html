@@ -7,8 +7,8 @@
   <meta name="description" content="Orologio, meteo locale, borse mondiali, life bar e citazioni stoiche. Il tuo strumento gratuito di analisi spazio-temporale.">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV/XN/WLEo=" crossorigin=""></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV/XN/WLEo=" crossorigin="anonymous"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
     *, *::before, *::after { box-sizing: border-box; }
@@ -1044,7 +1044,7 @@ function initGeoMap(lt, ln) {
   const mapEl = $('geo-map');
   if (!mapEl || typeof L === 'undefined') return;
   mapEl.innerHTML = '';
-  const map = L.map('geo-map', { zoomControl: true, attributionControl: false, scrollWheelZoom: true });
+  const map = L.map('geo-map', { zoomControl: true, attributionControl: true, scrollWheelZoom: true });
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(map);
   map.setView([lt, ln], 12);
   const marker = L.circleMarker([lt, ln], { radius: 8, fillColor: '#6366f1', color: '#fff', weight: 2, fillOpacity: 0.9 }).addTo(map);
@@ -1915,7 +1915,7 @@ const NEWS_GLOBAL = {
     {t:'Scoperto zero-day in sistema operativo diffuso', src:'Wired', ago:'3h', url:'https://www.wired.com'},
     {t:'Ransomware colpisce ospedale negli USA: crisi', src:'CNN Tech', ago:'5h', url:'https://edition.cnn.com'},
     {t:'FBI: arrestato gruppo specializzato in BEC fraud', src:'CISA', ago:'8h', url:'https://www.cisa.gov'},
-    {t:'Vulnerabilit\u00e0 critica in VPN enterprise patchata', src:'Bleeping Computer', ago:'11h', url:'https://www.bleepingcomputer.com'},
+    {t:'Vulnerabilità critica in VPN enterprise patchata', src:'Bleeping Computer', ago:'11h', url:'https://www.bleepingcomputer.com'},
   ]
 };
 function _renderNewsList(listId, data, cat) {
@@ -1924,7 +1924,7 @@ function _renderNewsList(listId, data, cat) {
   el.innerHTML = items.map(n =>
     '<div class="news-item">' +
       '<a href="' + n.url + '" target="_blank" rel="noopener noreferrer">' + n.t + '</a>' +
-      '<div class="news-meta">\uD83D\uDCF0 ' + n.src + ' &nbsp;\u00b7&nbsp; ' + n.ago + ' fa</div>' +
+      '<div class="news-meta">📰 ' + n.src + ' · ' + n.ago + ' fa</div>' +
     '</div>'
   ).join('');
 }
@@ -2016,7 +2016,7 @@ setInterval(blogNext, 8000);
     const tgtIdx = cards.indexOf(target);
     if (srcIdx < tgtIdx) grid.insertBefore(dragSrc, target.nextSibling);
     else grid.insertBefore(dragSrc, target);
-    showToast('\uD83D\uDD04 Layout aggiornato (sessione corrente)');
+    showToast('🔄 Layout aggiornato (sessione corrente)');
   });
   getCards().forEach(c => c.setAttribute('draggable', 'true'));
 })();
