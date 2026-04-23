@@ -970,6 +970,7 @@ fetch('../data/blog-posts.json')
       });
       localStorage.setItem('sdp_articles', JSON.stringify(articles));
     }
+    syncBlogPosts();
     renderBlog();
   })
   .catch(function(err){ console.error('Failed to load blog-posts.json:', err); renderBlog(); });
@@ -1028,6 +1029,35 @@ function closeBlogEditor(){
   document.getElementById('blogEditor').style.display='none';
 }
 
+function normalizeGitHubUrl(url){
+  if(!url) return url;
+  // Convert https://github.com/OWNER/REPO/blob/BRANCH/PATH
+  // to    https://raw.githubusercontent.com/OWNER/REPO/BRANCH/PATH
+  var m=url.match(/^https?:\/\/github\.com\/([^/]+\/[^/]+)\/blob\/(.+)$/);
+  if(m) return 'https://raw.githubusercontent.com/'+m[1]+'/'+m[2];
+  return url;
+}
+
+function syncBlogPosts(){
+  var blogPosts=articles.map(function(a){
+    return {
+      id:a.id,
+      slug:a.slug,
+      title:a.title,
+      excerpt:a.excerpt,
+      content:a.content,
+      author:a.author,
+      date:a.date,
+      tags:a.tags,
+      category:a.category,
+      image:a.image||'',
+      readTime:a.readTime,
+      published:a.status==='published'
+    };
+  });
+  localStorage.setItem('blog_posts',JSON.stringify(blogPosts));
+}
+
 function saveBlogPost(forceStatus){
   var title=document.getElementById('blog_title').value.trim();
   if(!title){ toast('Inserisci un titolo!'); return; }
@@ -1040,7 +1070,7 @@ function saveBlogPost(forceStatus){
     title:title,
     category:document.getElementById('blog_cat').value.trim(),
     tags:document.getElementById('blog_tags').value.split(',').map(function(t){return t.trim();}).filter(Boolean),
-    image:document.getElementById('blog_img').value.trim(),
+    image:normalizeGitHubUrl(document.getElementById('blog_img').value.trim()),
     excerpt:document.getElementById('blog_excerpt').value.trim(),
     content:document.getElementById('blog_content').innerHTML,
     status:status,
@@ -1051,6 +1081,7 @@ function saveBlogPost(forceStatus){
   if (existing && existing.id != null) art.id = existing.id;
   if(idx>=0){ articles[idx]=art; } else { articles.unshift(art); }
   localStorage.setItem('sdp_articles',JSON.stringify(articles));
+  syncBlogPosts();
   closeBlogEditor();
   renderBlog();
   toast(status==='published'?'Articolo pubblicato!':'Bozza salvata!');
@@ -1064,6 +1095,7 @@ function publishBlogPost(){
 function toggleBlogStatus(i){
   articles[i].status=articles[i].status==='published'?'draft':'published';
   localStorage.setItem('sdp_articles',JSON.stringify(articles));
+  syncBlogPosts();
   renderBlog();
   toast(articles[i].status==='published'?'Articolo pubblicato!':'Tornato in bozza!');
 }
@@ -1072,6 +1104,7 @@ function deleteBlogPost(i){
   if(!confirm('Eliminare definitivamente questo articolo?')) return;
   articles.splice(i,1);
   localStorage.setItem('sdp_articles',JSON.stringify(articles));
+  syncBlogPosts();
   renderBlog();
   toast('Articolo eliminato.');
 }
@@ -1173,7 +1206,9 @@ function loadBlogImg(input){
 }
 
 function blogImgPreview(){
-  var src=document.getElementById('blog_img').value;
+  var raw=document.getElementById('blog_img').value;
+  var src=normalizeGitHubUrl(raw);
+  if(src!==raw) document.getElementById('blog_img').value=src;
   var prev=document.getElementById('blog_img_preview');
   if(src){ prev.src=src; prev.style.display='block'; } else { prev.style.display='none'; }
 }
