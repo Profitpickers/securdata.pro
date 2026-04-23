@@ -461,7 +461,16 @@ function getPostImage(post) {
 }
 
 function loadPosts() {
-  // Pubblico: fonte master = JSON nel repo (GitHub Pages)
+  // Try localStorage first (backoffice-created posts), then fall back to JSON file
+  var stored = localStorage.getItem('blog_posts');
+  if (stored) {
+    try {
+      var parsed = JSON.parse(stored);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return Promise.resolve(parsed.filter(function(p) { return p.published !== false; }));
+      }
+    } catch(e) {}
+  }
   return fetch('./data/blog-posts.json').then(function(r) { return r.json(); });
 }
 
