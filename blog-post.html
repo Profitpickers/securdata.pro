@@ -301,6 +301,21 @@ function categoryColor(cat) {
   return map[cat] || 'text-indigo-300 bg-indigo-500/15 border-indigo-500/30';
 }
 
+// ── Publish status helper (retrocompat + alias) ────────────────
+function isPublished(post) {
+  if (!post || typeof post !== 'object') return false;
+
+  // Retrocompat: se status non esiste, è pubblicato
+  if (!('status' in post)) return true;
+
+  var s = String(post.status || '').toLowerCase().trim();
+  if (s === 'published' || s === 'public') return true;
+  if (s === 'draft') return false;
+
+  // Stato sconosciuto -> per sicurezza non pubblicare
+  return false;
+}
+
 // ── Slug helper for heading IDs ───────────────────────────────
 function slugify(text) {
   return text
@@ -446,13 +461,7 @@ function getPostImage(post) {
 }
 
 function loadPosts() {
-  var stored = localStorage.getItem('blog_posts');
-  if (stored) {
-    try {
-      var p = JSON.parse(stored);
-      if (Array.isArray(p) && p.length) return Promise.resolve(p);
-    } catch(e) {}
-  }
+  // Pubblico: fonte master = JSON nel repo (GitHub Pages)
   return fetch('./data/blog-posts.json').then(function(r) { return r.json(); });
 }
 
@@ -544,12 +553,17 @@ if (!postId) {
   document.getElementById('error-state').classList.remove('hidden');
 } else {
   loadPosts().then(function(posts) {
-    var post = posts.find(function(p) { return String(p.id) === String(postId); });
+    var publishedPosts = Array.isArray(posts) ? posts.filter(isPublished) : [];
+
+    var post = publishedPosts.find(function(p) {
+      return String(p.id) === String(postId);
+    });
+
     if (!post) {
       document.getElementById('loading').style.display = 'none';
       document.getElementById('error-state').classList.remove('hidden');
     } else {
-      renderArticle(post, posts.filter(function(p){ return p.published !== false; }));
+      renderArticle(post, publishedPosts);
     }
   }).catch(function() {
     document.getElementById('loading').style.display = 'none';
