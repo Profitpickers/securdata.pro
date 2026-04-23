@@ -1345,7 +1345,7 @@ function loadRepoImages(){
   var listEl = document.getElementById('repoImgList');
   // Known blog images from GitHub repo
   var apiUrl = 'https://api.github.com/repos/Profitpickers/securdata.pro/contents/blog/photo';
-  if(listEl._loaded) return;
+  if(listEl.getAttribute('data-loaded')) return;
   listEl.innerHTML = '<p style="color:#4a5568;font-size:0.82rem;padding:0.5rem;">Caricamento…</p>';
   fetch(apiUrl)
     .then(function(r){ return r.json(); })
@@ -1363,11 +1363,15 @@ function loadRepoImages(){
       }
       listEl.innerHTML = imgFiles.map(function(f){
         var rawUrl = f.download_url || ('https://raw.githubusercontent.com/Profitpickers/securdata.pro/main/blog/photo/'+encodeURIComponent(f.name));
-        return '<div onclick="selectRepoImg(\''+rawUrl.replace(/'/g,"\\'")+'\')" title="'+escHtml(f.name)+'" style="cursor:pointer;border-radius:7px;overflow:hidden;border:2px solid transparent;width:80px;height:60px;flex-shrink:0;background:#0a0e1a;">'
+        return '<div data-img-url="'+escHtml(rawUrl)+'" title="'+escHtml(f.name)+'" style="cursor:pointer;border-radius:7px;overflow:hidden;border:2px solid transparent;width:80px;height:60px;flex-shrink:0;background:#0a0e1a;">'
           +'<img src="'+escHtml(rawUrl)+'" alt="'+escHtml(f.name)+'" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentNode.style.display=\'none\'">'
           +'</div>';
       }).join('');
-      listEl._loaded = true;
+      listEl.setAttribute('data-loaded', '1');
+      listEl.addEventListener('click', function(e){
+        var item = e.target.closest('[data-img-url]');
+        if(item) selectRepoImg(item.getAttribute('data-img-url'));
+      });
     })
     .catch(function(){
       listEl.innerHTML = '<p style="color:#fc8181;font-size:0.82rem;padding:0.5rem;">Errore nel caricamento. Prova con URL diretto.</p>';
@@ -1380,7 +1384,8 @@ function selectRepoImg(url){
   document.getElementById('insertImgPreviewWrap').style.display = 'block';
   // Highlight selected
   document.querySelectorAll('#repoImgList > div').forEach(function(d){
-    d.style.borderColor = (d.querySelector('img') && d.querySelector('img').src === url)
+    var imgEl = d.querySelector('img');
+    d.style.borderColor = (imgEl && imgEl.src === url)
       ? 'rgba(139,92,246,0.7)' : 'transparent';
   });
   switchImgTab('url');
@@ -1390,7 +1395,9 @@ function confirmInsertImg(){
   var url = normalizeGitHubUrl(document.getElementById('blogInsImgUrl').value.trim());
   if(!url){ toast('Inserisci un URL o carica un\'immagine!'); return; }
   var alt = document.getElementById('blogInsImgAlt').value.trim();
-  var align = document.getElementById('blogInsImgAlign').value;
+  var allowedAligns = ['none','left','center','right','full'];
+  var align = allowedAligns.indexOf(document.getElementById('blogInsImgAlign').value) !== -1
+    ? document.getElementById('blogInsImgAlign').value : 'none';
   var style = 'max-width:100%;border-radius:8px;margin:0.75rem 0;';
   var wrapStyle = 'display:block;margin:0.75rem 0;';
   if(align==='center') wrapStyle += 'text-align:center;';
@@ -1404,7 +1411,7 @@ function confirmInsertImg(){
   contentEl.focus();
   var sel = window.getSelection();
   if(_blogImgSavedRange){
-    try { sel.removeAllRanges(); sel.addRange(_blogImgSavedRange); } catch(e){}
+    try { sel.removeAllRanges(); sel.addRange(_blogImgSavedRange); } catch(e){ console.warn('Range restore failed:', e); }
   }
   document.execCommand('insertHTML', false, imgHtml);
   closeBlogImgModal();
