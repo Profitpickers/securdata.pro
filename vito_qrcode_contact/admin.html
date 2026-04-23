@@ -912,7 +912,8 @@ var articles = JSON.parse(localStorage.getItem('sdp_articles') || 'null') || [];
 (function deduplicateArticles(){
   var seen = {};
   articles = articles.filter(function(a){
-    var key = a.id != null ? 'id:' + a.id : 'slug:' + a.slug;
+    var key = a.id != null ? 'id:' + a.id : (a.slug ? 'slug:' + a.slug : null);
+    if (!key) return true;
     if (seen[key]) return false;
     seen[key] = true;
     return true;
@@ -1036,7 +1037,6 @@ function saveBlogPost(forceStatus){
   var existing = (idx >= 0 && articles[idx]) ? articles[idx] : null;
   var existingDate = existing ? existing.date : new Date().toISOString();
   var art={
-    id: existing ? existing.id : undefined,
     title:title,
     category:document.getElementById('blog_cat').value.trim(),
     tags:document.getElementById('blog_tags').value.split(',').map(function(t){return t.trim();}).filter(Boolean),
@@ -1048,6 +1048,7 @@ function saveBlogPost(forceStatus){
     date:existingDate,
     updated:new Date().toISOString()
   };
+  if (existing && existing.id != null) art.id = existing.id;
   if(idx>=0){ articles[idx]=art; } else { articles.unshift(art); }
   localStorage.setItem('sdp_articles',JSON.stringify(articles));
   closeBlogEditor();
