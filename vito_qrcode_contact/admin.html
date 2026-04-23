@@ -1033,8 +1033,8 @@ function normalizeGitHubUrl(url){
   if(!url) return url;
   // Convert https://github.com/OWNER/REPO/blob/BRANCH/PATH
   // to    https://raw.githubusercontent.com/OWNER/REPO/BRANCH/PATH
-  var m=url.match(/^https?:\/\/github\.com\/([^/]+\/[^/]+)\/blob\/(.+)$/);
-  if(m) return 'https://raw.githubusercontent.com/'+m[1]+'/'+m[2];
+  var m=url.match(/^https?:\/\/github\.com\/([^/]+\/[^/]+)\/blob\/([^/]+)\/(.+)$/);
+  if(m) return 'https://raw.githubusercontent.com/'+m[1]+'/'+m[2]+'/'+m[3];
   return url;
 }
 
@@ -1208,7 +1208,10 @@ function loadBlogImg(input){
 function blogImgPreview(){
   var raw=document.getElementById('blog_img').value;
   var src=normalizeGitHubUrl(raw);
-  if(src!==raw) document.getElementById('blog_img').value=src;
+  if(src!==raw){
+    document.getElementById('blog_img').value=src;
+    toast('🔗 URL convertito in link diretto (raw)');
+  }
   var prev=document.getElementById('blog_img_preview');
   if(src){ prev.src=src; prev.style.display='block'; } else { prev.style.display='none'; }
 }
