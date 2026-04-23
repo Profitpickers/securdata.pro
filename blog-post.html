@@ -301,12 +301,37 @@ function categoryColor(cat) {
   return map[cat] || 'text-indigo-300 bg-indigo-500/15 border-indigo-500/30';
 }
 
+// ── Slug helper for heading IDs ───────────────────────────────
+function slugify(text) {
+  return text
+    .replace(/[^\x20-\x7E]/g, ' ') // Replace non-ASCII (emoji, accented chars) with space
+    .replace(/[^a-z0-9\s]/gi, ' ')
+    .toLowerCase().trim()
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
 // ── Markdown-like content renderer ───────────────────────────
 function renderContent(raw) {
   if (!raw) return '';
+
+  // First pass: collect all h2 headings for the auto-generated ToC
+  var h2Headings = [];
+  raw.split('\n').forEach(function(l) {
+    if (/^## /.test(l)) {
+      var plain = l.replace(/^## /, '')
+                   .replace(/\*\*(.+?)\*\*/g, '$1')
+                   .replace(/\*(.+?)\*/g, '$1')
+                   .replace(/`(.+?)`/g, '$1');
+      h2Headings.push({ id: 'sec-' + slugify(plain), text: plain });
+    }
+  });
+
   var lines = raw.split('\n');
   var html = '';
   var inUl = false, inOl = false, inTable = false, tableRowIdx = 0;
+  var h2Counter = 0;
 
   function closeLists() {
     if (inUl) { html += '</ul>'; inUl = false; }
@@ -317,6 +342,21 @@ function renderContent(raw) {
   }
 
   lines.forEach(function(line) {
+    // Table of Contents marker – renders an interactive anchor index
+    if (line.trim() === '<!-- toc -->') {
+      closeLists(); closeTable();
+      if (h2Headings.length > 0) {
+        html += '<div style="background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.25);border-radius:12px;padding:1.25rem 1.5rem;margin:1.5rem 0">';
+        html += '<p style="font-size:0.8rem;font-weight:700;color:#a5b4fc;text-transform:uppercase;letter-spacing:0.05em;margin:0 0 0.75rem">📋 In questo articolo</p>';
+        html += '<ol style="margin:0;padding-left:1.25rem;color:#94a3b8;font-size:0.875rem;line-height:1.8">';
+        h2Headings.forEach(function(h) {
+          html += '<li><a href="#' + h.id + '" style="color:#818cf8;text-decoration:none" onmouseover="this.style.color=\'#c7d2fe\'" onmouseout="this.style.color=\'#818cf8\'">' + escapeHtml(h.text) + '</a></li>';
+        });
+        html += '</ol></div>';
+      }
+      return;
+    }
+
     // Apply inline formatting
     line = line.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
     line = line.replace(/\*(.+?)\*/g, '<em>$1</em>');
@@ -354,7 +394,9 @@ function renderContent(raw) {
     closeTable();
     if (/^## /.test(line)) {
       closeLists();
-      html += '<h2>' + escapeTag(line.replace(/^## /, '')) + '</h2>';
+      var headingId = h2Headings[h2Counter] ? h2Headings[h2Counter].id : 'sec-' + h2Counter;
+      h2Counter++;
+      html += '<h2 id="' + headingId + '">' + escapeTag(line.replace(/^## /, '')) + '</h2>';
     } else if (/^### /.test(line)) {
       closeLists();
       html += '<h3>' + escapeTag(line.replace(/^### /, '')) + '</h3>';
