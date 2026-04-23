@@ -908,14 +908,26 @@ function deleteNote(i){ notes.splice(i,1); localStorage.setItem('sdp_notes',JSON
    ========================================================= */
 var articles = JSON.parse(localStorage.getItem('sdp_articles') || 'null') || [];
 
+// Deduplicate articles already in localStorage (by id, then by slug)
+(function deduplicateArticles(){
+  var seen = {};
+  articles = articles.filter(function(a){
+    var key = a.id != null ? 'id:' + a.id : 'slug:' + a.slug;
+    if (seen[key]) return false;
+    seen[key] = true;
+    return true;
+  });
+})();
+
 // Always fetch JSON and merge new articles (ensures new posts appear without cache clearing)
 fetch('../data/blog-posts.json')
   .then(function(r){ return r.json(); })
   .then(function(data){
     var existingIds = articles.map(function(a){ return a.id; });
+    var existingSlugs = articles.map(function(a){ return a.slug; });
     var merged = false;
     data.forEach(function(a){
-      if (existingIds.indexOf(a.id) === -1) {
+      if (existingIds.indexOf(a.id) === -1 && existingSlugs.indexOf(a.slug) === -1) {
         articles.push({
           id: a.id,
           slug: a.slug,
@@ -1021,8 +1033,10 @@ function saveBlogPost(forceStatus){
   var idx=parseInt(document.getElementById('blogEditIndex').value);
   var status=forceStatus||document.getElementById('blog_status').value;
   var slug=document.getElementById('blog_slug').value.trim()||slugify(title);
-  var existingDate = (idx >= 0 && articles[idx]) ? articles[idx].date : new Date().toISOString();
+  var existing = (idx >= 0 && articles[idx]) ? articles[idx] : null;
+  var existingDate = existing ? existing.date : new Date().toISOString();
   var art={
+    id: existing ? existing.id : undefined,
     title:title,
     category:document.getElementById('blog_cat').value.trim(),
     tags:document.getElementById('blog_tags').value.split(',').map(function(t){return t.trim();}).filter(Boolean),
