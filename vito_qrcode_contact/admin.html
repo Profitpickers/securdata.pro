@@ -1020,7 +1020,7 @@ fetch('../data/blog-posts.json')
       }
     });
     if (merged) {
-      localStorage.setItem('sdp_articles', JSON.stringify(articles));
+      safeSetItem('sdp_articles', JSON.stringify(articles));
     }
     if (!articles.length) {
       articles = data.map(function(a){
@@ -1040,7 +1040,7 @@ fetch('../data/blog-posts.json')
           status: 'published'
         };
       });
-      localStorage.setItem('sdp_articles', JSON.stringify(articles));
+      safeSetItem('sdp_articles', JSON.stringify(articles));
     }
     syncBlogPosts();
     renderBlog();
@@ -1110,6 +1110,31 @@ function normalizeGitHubUrl(url){
   return url;
 }
 
+// ── localStorage helpers ───────────────────────────────────────
+function safeSetItem(key, value){
+  try {
+    localStorage.setItem(key, value);
+    return true;
+  } catch(e){
+    if(e && (e.name === 'QuotaExceededError' || e.code === 22 || e.code === 1014)){
+      toast('⚠️ Spazio locale esaurito. Usa URL per le immagini invece di caricare file.');
+    } else {
+      toast('⚠️ Errore nel salvataggio locale: ' + (e && e.message ? e.message : e));
+    }
+    return false;
+  }
+}
+
+// Replace base64 <img> tags in HTML with a placeholder and return stripped html + count
+function stripBase64Images(html){
+  var count = 0;
+  var stripped = html.replace(/<img[^>]+src=["']data:[^"']+["'][^>]*\/?>/gi, function(){
+    count++;
+    return '<p style="color:#e53e3e;font-size:0.85em;">[Immagine non salvata: usa un URL diretto]</p>';
+  });
+  return { html: stripped, count: count };
+}
+
 function syncBlogPosts(){
   var blogPosts=articles.map(function(a){
     return {
@@ -1127,7 +1152,7 @@ function syncBlogPosts(){
       published:a.status==='published'
     };
   });
-  localStorage.setItem('blog_posts',JSON.stringify(blogPosts));
+  safeSetItem('blog_posts',JSON.stringify(blogPosts));
 }
 
 function saveBlogPost(forceStatus){
@@ -1138,21 +1163,37 @@ function saveBlogPost(forceStatus){
   var slug=document.getElementById('blog_slug').value.trim()||slugify(title);
   var existing = (idx >= 0 && articles[idx]) ? articles[idx] : null;
   var existingDate = existing ? existing.date : new Date().toISOString();
+  var coverImg = normalizeGitHubUrl(document.getElementById('blog_img').value.trim());
+  var rawContent = document.getElementById('blog_content').innerHTML;
+
+  // Strip base64 inline images from content to avoid localStorage quota errors
+  var stripped = stripBase64Images(rawContent);
+  if(stripped.count > 0){
+    toast('⚠️ ' + stripped.count + ' immagine/i locale/i rimossa/e dal contenuto: usa URL diretti.');
+    document.getElementById('blog_content').innerHTML = stripped.html;
+  }
+
   var art={
     title:title,
     category:document.getElementById('blog_cat').value.trim(),
     tags:document.getElementById('blog_tags').value.split(',').map(function(t){return t.trim();}).filter(Boolean),
-    image:normalizeGitHubUrl(document.getElementById('blog_img').value.trim()),
+    image: coverImg.startsWith('data:') ? '' : coverImg,
     excerpt:document.getElementById('blog_excerpt').value.trim(),
-    content:document.getElementById('blog_content').innerHTML,
+    content:stripped.html,
     status:status,
     slug:slug,
     date:existingDate,
     updated:new Date().toISOString()
   };
   if (existing && existing.id != null) art.id = existing.id;
+
+  // Store base64 cover image separately so blog.html can find it via blog_img_{id}
+  if(coverImg.startsWith('data:') && art.id != null){
+    safeSetItem('blog_img_' + art.id, coverImg);
+  }
+
   if(idx>=0){ articles[idx]=art; } else { articles.unshift(art); }
-  localStorage.setItem('sdp_articles',JSON.stringify(articles));
+  if(!safeSetItem('sdp_articles',JSON.stringify(articles))) return;
   syncBlogPosts();
   closeBlogEditor();
   renderBlog();
@@ -1166,7 +1207,7 @@ function publishBlogPost(){
 
 function toggleBlogStatus(i){
   articles[i].status=articles[i].status==='published'?'draft':'published';
-  localStorage.setItem('sdp_articles',JSON.stringify(articles));
+  safeSetItem('sdp_articles',JSON.stringify(articles));
   syncBlogPosts();
   renderBlog();
   toast(articles[i].status==='published'?'Articolo pubblicato!':'Tornato in bozza!');
@@ -1175,7 +1216,7 @@ function toggleBlogStatus(i){
 function deleteBlogPost(i){
   if(!confirm('Eliminare definitivamente questo articolo?')) return;
   articles.splice(i,1);
-  localStorage.setItem('sdp_articles',JSON.stringify(articles));
+  safeSetItem('sdp_articles',JSON.stringify(articles));
   syncBlogPosts();
   renderBlog();
   toast('Articolo eliminato.');

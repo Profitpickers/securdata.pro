@@ -400,9 +400,9 @@ function getPostImage(post) {
     var local = localStorage.getItem('blog_img_' + post.id);
     if (local) return local;
   } catch(e) {}
-  // Fall back to imageUrl field or legacy image field
-  if (post.imageUrl && (post.imageUrl.startsWith('http://') || post.imageUrl.startsWith('https://'))) return post.imageUrl;
-  if (post.image && (post.image.startsWith('http://') || post.image.startsWith('https://'))) return post.image;
+  // Fall back to imageUrl field or legacy image field (http/https or data: URLs)
+  if (post.imageUrl && (post.imageUrl.startsWith('http://') || post.imageUrl.startsWith('https://') || post.imageUrl.startsWith('data:'))) return post.imageUrl;
+  if (post.image && (post.image.startsWith('http://') || post.image.startsWith('https://') || post.image.startsWith('data:'))) return post.image;
   return '';
 }
 
