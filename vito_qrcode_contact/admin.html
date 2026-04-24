@@ -1185,10 +1185,16 @@ function saveBlogPost(forceStatus){
     date:existingDate,
     updated:new Date().toISOString()
   };
-  if (existing && existing.id != null) art.id = existing.id;
+  // Assign id: preserve existing, or generate a new unique numeric id
+  if (existing && existing.id != null) {
+    art.id = existing.id;
+  } else {
+    var maxId = articles.reduce(function(m, a){ return (a.id != null && +a.id > m) ? +a.id : m; }, 0);
+    art.id = maxId + 1;
+  }
 
   // Store base64 cover image separately so blog.html can find it via blog_img_{id}
-  if(coverImg.startsWith('data:') && art.id != null){
+  if(coverImg.startsWith('data:')){
     safeSetItem('blog_img_' + art.id, coverImg);
   }
 
