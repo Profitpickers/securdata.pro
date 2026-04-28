@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scanner Diagnostico FREE — Download | SecurData PRO</title>
+  <meta name="description" content="Scarica gratuitamente lo Scanner Diagnostico CMD di SecurData PRO. Analisi hardware, software, rete e sicurezza per Windows 10 e 11.">
+  <link rel="icon" href="https://profitpickers.github.io/securdata.pro/logo-00-securdata-pro.svg" type="image/svg+xml">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+
+    .bg-gradient-dark { background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%); }
+    .bg-gradient-accent { background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); }
+
+    .card-glass {
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(148, 163, 184, 0.1);
+    }
+    .card-glass:hover { border-color: rgba(99, 102, 241, 0.3); }
+    .hover-lift { transition: transform 0.3s ease; }
+    .hover-lift:hover { transform: translateY(-4px); }
+
+    .btn-download {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-download:hover { opacity: 0.92; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(34,197,94,0.4); }
+
+    .logo-container img { filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.6)); }
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: #6366f1; border-radius: 4px; }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in-up { animation: fadeInUp 0.6s ease-out both; }
+    .animate-delay-1 { animation-delay: 0.1s; }
+    .animate-delay-2 { animation-delay: 0.2s; }
+
+    .terminal {
+      background: #0d1117;
+      border: 1px solid rgba(34,197,94,0.3);
+      border-radius: 12px;
+      font-family: 'Courier New', Consolas, monospace;
+    }
+    .terminal-header {
+      background: rgba(34,197,94,0.08);
+      border-bottom: 1px solid rgba(34,197,94,0.15);
+      padding: 8px 16px;
+      border-radius: 11px 11px 0 0;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+    #progress-bar {
+      position: fixed; top: 0; left: 0; height: 3px; width: 0%;
+      background: linear-gradient(90deg, #22c55e, #16a34a);
+      z-index: 100;
+    }
+
+    .step-num {
+      width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 0.85rem;
+    }
+
+    /* Copy button */
+    .copy-btn {
+      background: rgba(99,102,241,0.1);
+      border: 1px solid rgba(99,102,241,0.3);
+      transition: all 0.2s;
+    }
+    .copy-btn:hover { background: rgba(99,102,241,0.2); }
+  </style>
+</head>
+<body class="bg-gradient-dark text-slate-100 min-h-screen">
+
+<div id="progress-bar"></div>
+
+<!-- NAVBAR -->
+<nav class="fixed w-full top-0 z-50 bg-slate-950/80 backdrop-blur-md border-b border-slate-800" style="top:3px">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-14">
+      <a href="https://profitpickers.github.io/securdata.pro/" class="flex items-center gap-3 logo-container group">
+        <img src="https://profitpickers.github.io/securdata.pro/logo-00-securdata-pro.svg" alt="SECURDATA.PRO Logo" class="h-9 w-auto rounded-full">
+        <div class="hidden sm:block">
+          <span class="font-bold text-sm tracking-tight text-white group-hover:text-indigo-300 transition">SECURDATA.PRO</span>
+          <span class="block text-xs text-slate-400">Scanner Diagnostico FREE</span>
+        </div>
+      </a>
+      <div class="flex items-center gap-3">
+        <a href="../../risorse-gratuite.html" class="text-slate-400 hover:text-indigo-400 transition text-sm font-medium hidden sm:block">← Risorse Gratuite</a>
+        <a href="../../risorse-gratuite.html" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-indigo-300 border border-indigo-500/40 hover:bg-indigo-500/10 rounded-lg transition">
+          🛠️ Toolkit PRO
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<main class="pt-20 pb-16 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-3xl mx-auto">
+
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 text-xs text-slate-500 mb-6 pt-4">
+      <a href="https://profitpickers.github.io/securdata.pro/" class="hover:text-indigo-400 transition">Home</a>
+      <span>›</span>
+      <a href="../../risorse-gratuite.html" class="hover:text-indigo-400 transition">Risorse Gratuite</a>
+      <span>›</span>
+      <span class="text-slate-400">Scanner FREE</span>
+    </nav>
+
+    <!-- HERO -->
+    <div class="animate-fade-in-up mb-8">
+      <div class="flex flex-wrap items-center gap-3 mb-4">
+        <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-green-500/15 border border-green-500/30 text-green-300">✅ GRATUITO — Nessuna registrazione</span>
+        <span class="text-xs text-slate-500">🖥️ Windows 10 / 11</span>
+        <span class="text-xs text-slate-500">📁 Sola lettura</span>
+      </div>
+
+      <h1 class="text-3xl sm:text-4xl font-extrabold mb-4">
+        🔍 Scanner Diagnostico FREE
+        <span class="block text-xl sm:text-2xl font-bold text-green-400 mt-1">SecurData PRO v1.0</span>
+      </h1>
+
+      <p class="text-slate-400 leading-relaxed border-l-2 border-green-500/40 pl-4 mb-6">
+        Script CMD di <strong class="text-slate-300">sola lettura</strong> che analizza il tuo PC Windows in profondità
+        e genera una cartella di report strutturati in meno di 3 minuti.
+        Nessun dato inviato a server. Nessuna modifica al sistema.
+      </p>
+
+      <!-- Download box -->
+      <div class="card-glass rounded-2xl p-6 border border-green-500/30 mb-8">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
+          <div>
+            <div class="font-bold text-white text-lg mb-1">📦 SecurData_Scanner_FREE.bat</div>
+            <div class="text-sm text-slate-400">Script Batch · Windows 10/11 · ~17 KB · v1.0</div>
+            <div class="flex flex-wrap gap-3 mt-2 text-xs text-slate-500">
+              <span>✓ Sola lettura</span>
+              <span>✓ Nessun installer</span>
+              <span>✓ Codice aperto</span>
+              <span>✓ Compatibile Win11 24H2+</span>
+            </div>
+          </div>
+          <a href="bin/SecurData_Scanner_FREE.bat" download="SecurData_Scanner_FREE.bat"
+             class="btn-download px-7 py-3 text-white rounded-xl font-bold text-sm whitespace-nowrap flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            Download .bat
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- TERMINAL PREVIEW -->
+    <div class="animate-fade-in-up animate-delay-1 mb-10">
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="dot bg-red-500"></div>
+          <div class="dot bg-yellow-500"></div>
+          <div class="dot bg-green-500"></div>
+          <span class="text-xs text-slate-400 ml-2">SecurData_Scanner_FREE.bat — CMD (Admin)</span>
+        </div>
+        <div class="p-5 text-xs text-green-400 leading-7 overflow-x-auto">
+          <p class="text-indigo-300">╔══════════════════════════════════════════════════════╗</p>
+          <p class="text-indigo-300">║     SECURDATA PRO — FREE DIAGNOSTIC SCANNER v1.0    ║</p>
+          <p class="text-indigo-300">╠══════════════════════════════════════════════════════╣</p>
+          <p class="text-indigo-300">║  Cartella output: Report_Diagnostico_2026-04-27_18   ║</p>
+          <p class="text-indigo-300">╚══════════════════════════════════════════════════════╝</p>
+          <p class="mt-1 text-slate-400">── Avanzamento ─────────────────────────────────────────</p>
+          <p><span class="text-yellow-400">[1/6]</span> Analisi Hardware in corso...</p>
+          <p><span class="text-slate-500">      CPU : Intel Core i9-13900K / 24 Core / 5.8 GHz</span></p>
+          <p><span class="text-slate-500">      RAM : 32 GB DDR5 6000 MHz × 2 slot (Samsung)</span></p>
+          <p><span class="text-slate-500">      SSD : Samsung 990 Pro 2TB — Status: OK</span></p>
+          <p><span class="text-slate-500">      GPU : NVIDIA RTX 4080 — 16 GB VRAM</span></p>
+          <p class="text-green-400"><span class="text-yellow-400">[2/6]</span> Analisi Sistema Operativo... <span>[OK]</span></p>
+          <p class="text-green-400"><span class="text-yellow-400">[3/6]</span> Inventario Software (127 app trovate)... <span>[OK]</span></p>
+          <p class="text-green-400"><span class="text-yellow-400">[4/6]</span> Analisi Rete e Connettività... <span>[OK]</span></p>
+          <p class="text-green-400"><span class="text-yellow-400">[5/6]</span> Analisi Sicurezza... <span>[OK]</span></p>
+          <p class="text-green-400"><span class="text-yellow-400">[6/6]</span> File Sistema Nascosti... <span>[OK]</span></p>
+          <p class="mt-2 text-white">╔══════════════════════════════════════════════════════╗</p>
+          <p class="text-white">║  <span class="text-green-400">ANALISI COMPLETATA!</span> Premi un tasto per aprire...  ║</p>
+          <p class="text-white">╚══════════════════════════════════════════════════════╝</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ISTRUZIONI -->
+    <div class="animate-fade-in-up animate-delay-2 mb-10">
+      <h2 class="text-lg font-bold text-white mb-5 flex items-center gap-2">
+        <span class="w-1 h-5 rounded-full bg-gradient-to-b from-green-400 to-emerald-400 inline-block"></span>
+        Come si usa
+      </h2>
+      <div class="space-y-4">
+        <div class="flex gap-4 items-start">
+          <div class="step-num bg-green-600 text-white shadow-lg shadow-green-500/30">1</div>
+          <div>
+            <div class="font-semibold text-white text-sm mb-1">Scarica e salva il file</div>
+            <p class="text-slate-400 text-sm">Clicca il bottone "Download .bat" qui sopra. Salva il file in una cartella locale (es. <code class="text-green-300 bg-green-500/10 px-1 rounded">C:\SecurData\</code>). Non eseguirlo direttamente dalla cartella Download o da uno ZIP compresso.</p>
+          </div>
+        </div>
+        <div class="flex gap-4 items-start">
+          <div class="step-num bg-green-600 text-white shadow-lg shadow-green-500/30">2</div>
+          <div>
+            <div class="font-semibold text-white text-sm mb-1">Esegui come Amministratore (consigliato)</div>
+            <p class="text-slate-400 text-sm">Clic destro sul file → <strong class="text-slate-300">"Esegui come amministratore"</strong>. Se compare Windows Defender SmartScreen, clicca "Ulteriori informazioni" → "Esegui comunque". Funziona anche senza Admin, ma alcuni dati potrebbero essere parziali.</p>
+          </div>
+        </div>
+        <div class="flex gap-4 items-start">
+          <div class="step-num bg-green-600 text-white shadow-lg shadow-green-500/30">3</div>
+          <div>
+            <div class="font-semibold text-white text-sm mb-1">Attendi il completamento</div>
+            <p class="text-slate-400 text-sm">L'analisi richiede <strong class="text-slate-300">1–5 minuti</strong> (la sezione software è la più lenta). Non chiudere la finestra CMD durante l'esecuzione.</p>
+          </div>
+        </div>
+        <div class="flex gap-4 items-start">
+          <div class="step-num bg-green-600 text-white shadow-lg shadow-green-500/30">4</div>
+          <div>
+            <div class="font-semibold text-white text-sm mb-1">Leggi il tuo report</div>
+            <p class="text-slate-400 text-sm">La cartella <code class="text-green-300 bg-green-500/10 px-1 rounded">Report_Diagnostico_[data]_[ora]</code> si apre automaticamente. Usa <strong class="text-slate-300">Notepad++</strong> o il Blocco Note per una lettura più comoda dei file .txt.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FILE GENERATI -->
+    <div class="mb-10">
+      <h2 class="text-lg font-bold text-white mb-5 flex items-center gap-2">
+        <span class="w-1 h-5 rounded-full bg-gradient-to-b from-indigo-400 to-purple-400 inline-block"></span>
+        File generati nel report
+      </h2>
+      <div class="space-y-3">
+        <div class="card-glass rounded-xl p-4 flex gap-3">
+          <span class="text-green-400 font-mono text-xs mt-0.5 flex-shrink-0">00_RIEPILOGO.txt</span>
+          <p class="text-slate-400 text-xs leading-relaxed">Indice di tutti i file con descrizione, data/ora analisi, computer e utente.</p>
+        </div>
+        <div class="card-glass rounded-xl p-4 flex gap-3">
+          <span class="text-green-400 font-mono text-xs mt-0.5 flex-shrink-0">01_Hardware.txt</span>
+          <p class="text-slate-400 text-xs leading-relaxed">CPU (core, GHz, cache L2/L3), ogni banco RAM (velocità, produttore, slot), tutti i dischi con stato SMART, GPU (driver, VRAM), scheda madre + versione BIOS, batteria.</p>
+        </div>
+        <div class="card-glass rounded-xl p-4 flex gap-3">
+          <span class="text-green-400 font-mono text-xs mt-0.5 flex-shrink-0">02_Sistema.txt</span>
+          <p class="text-slate-400 text-xs leading-relaxed">Versione e build Windows, uptime sistema, variabili d'ambiente, patch installate (KB).</p>
+        </div>
+        <div class="card-glass rounded-xl p-4 flex gap-3">
+          <span class="text-green-400 font-mono text-xs mt-0.5 flex-shrink-0">03_Software.txt</span>
+          <p class="text-slate-400 text-xs leading-relaxed">Tutte le app installate (Win32 + Store) con versione e data, processi in esecuzione, servizi di sistema, task pianificati, driver installati.</p>
+        </div>
+        <div class="card-glass rounded-xl p-4 flex gap-3">
+          <span class="text-green-400 font-mono text-xs mt-0.5 flex-shrink-0">04_Rete.txt</span>
+          <p class="text-slate-400 text-xs leading-relaxed">Configurazione IP completa, tabella ARP (IP→MAC), porte aperte e connessioni attive, DNS cache, cartelle condivise, routing, ping test Google.</p>
+        </div>
+        <div class="card-glass rounded-xl p-4 flex gap-3">
+          <span class="text-green-400 font-mono text-xs mt-0.5 flex-shrink-0">05_Sicurezza.txt</span>
+          <p class="text-slate-400 text-xs leading-relaxed">Profili Firewall Windows, criteri di gruppo applicati, account utenti locali e gruppi Admin, audit policy, certificati utente, sessioni attive.</p>
+        </div>
+        <div class="card-glass rounded-xl p-4 flex gap-3">
+          <span class="text-green-400 font-mono text-xs mt-0.5 flex-shrink-0">06_File_Sistema_Nascosti.txt</span>
+          <p class="text-slate-400 text-xs leading-relaxed">pagefile.sys / hiberfil.sys / swapfile.sys con dimensioni. Presenza e dimensione di Windows.old. Copie Shadow VSS. Flussi di Dati Alternativi (ADS) su file utente.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- TIPS -->
+    <div class="card-glass rounded-2xl p-6 mb-10 border-l-4 border-green-500/50">
+      <h3 class="font-bold text-white mb-4 flex items-center gap-2"><span>💡</span> Tips di lettura del report</h3>
+      <ul class="space-y-3 text-sm text-slate-400">
+        <li class="flex gap-2"><span class="text-green-400 flex-shrink-0">→</span> In <code class="text-green-300 bg-green-500/10 px-1 rounded">01_Hardware.txt</code> sezione DISCHI: se <code class="text-green-300 bg-green-500/10 px-1 rounded">Status=OK</code> il disco è sano. Qualsiasi altro valore (es. "Pred Fail") → backup immediato!</li>
+        <li class="flex gap-2"><span class="text-green-400 flex-shrink-0">→</span> In <code class="text-green-300 bg-green-500/10 px-1 rounded">03_Software.txt</code> → sezione APP: cerca software installato a tua insaputa (toolbars, trial scaduti, bloatware).</li>
+        <li class="flex gap-2"><span class="text-green-400 flex-shrink-0">→</span> In <code class="text-green-300 bg-green-500/10 px-1 rounded">02_Sistema.txt</code>: le righe con "KB" numerati sono patch di sicurezza installate. Confronta con i bollettini Microsoft.</li>
+        <li class="flex gap-2"><span class="text-green-400 flex-shrink-0">→</span> In <code class="text-green-300 bg-green-500/10 px-1 rounded">06_File_Sistema_Nascosti.txt</code>: se <code class="text-green-300 bg-green-500/10 px-1 rounded">Windows.old</code> è presente può pesare 20–40 GB. Usa il Toolkit PRO per rimuoverla in sicurezza.</li>
+      </ul>
+    </div>
+
+    <!-- CTA PRO -->
+    <div class="card-glass rounded-2xl p-6 text-center border border-indigo-500/30 mb-8">
+      <p class="text-slate-400 text-sm mb-4">Trovato qualcosa da sistemare nel report? <strong class="text-white">Il Toolkit PRO</strong> ti aiuta a risolverlo — pulizia, backup, riparazione sistema e molto altro.</p>
+      <a href="../../risorse-gratuite.html" class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-accent text-white rounded-xl font-bold text-sm">
+        🛠️ Ottieni il Toolkit PRO (Gratis per Iscritti) →
+      </a>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="pt-8 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+      <span>© 2026 SecurData PRO — ProfitPickers</span>
+      <div class="flex gap-4">
+        <a href="https://profitpickers.github.io/securdata.pro/privacy-policy.html" class="hover:text-indigo-400 transition">Privacy Policy</a>
+        <a href="https://profitpickers.github.io/securdata.pro/" class="hover:text-indigo-400 transition">Sito Principale</a>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script>
+window.addEventListener('scroll', function() {
+  var p = (document.documentElement.scrollTop / (document.documentElement.scrollHeight - document.documentElement.clientHeight)) * 100;
+  document.getElementById('progress-bar').style.width = p + '%';
+});
+</script>
+</body>
+</html>
