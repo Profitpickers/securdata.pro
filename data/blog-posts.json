@@ -1,5 +1,33 @@
 [
   {
+    "id": "11",
+    "slug": "bonifica-markdown-ai-ready-pipeline-pre-agi",
+    "title": "🧹 Guida Definitiva: Markdown Puro per Dataset AI Generativa",
+    "excerpt": "La qualità del dato è la variabile più critica in qualunque pipeline AI: un solo carattere invisibile fuori posto può degradare silenziosamente migliaia di campioni. Guida completa alla bonifica in 7 moduli — tabella Unicode tossici, normalizzazione tipografica, omoglifi, artefatti PDF e strumento gratuito.",
+    "author": "Vito Iacobellis",
+    "date": "2026-05-03",
+    "tags": [
+      "Markdown",
+      "AI Tools",
+      "Dataset AI",
+      "Pre-processing",
+      "Omoglifi Unicode",
+      "Pipeline AI",
+      "LLM",
+      "RAG",
+      "Sicurezza Dati",
+      "Python",
+      "Unicode",
+      "Tipografia",
+      "Zero-Width Characters",
+      "Fingerprinting"
+    ],
+    "category": "AI Tools",
+    "featured": true,
+    "image": "",
+    "readTime": "9 min"
+  },
+  {
     "id": "10",
     "slug": "ai-sprawl-rischi-governance-enterprise-2026",
     "title": "🚨 AI Sprawl: il Nemico Silenzioso che Sta Sabotando la Tua Strategia IA",

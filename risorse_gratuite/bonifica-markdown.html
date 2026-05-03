@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bonifica Markdown AI-Ready | SECURDATA.PRO – Strumenti Gratuiti</title>
+  <meta name="description" content="Pipeline gratuita di bonifica file Markdown per dataset AI: rimuovi backslash fantasma, decodifica entità HTML, rileva omoglifi Unicode, artefatti PDF e pseudo-tabelle. Tool online — nessun dato inviato a server.">
+  <link rel="icon" href="../logo-00-securdata-pro.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../css/cookie-consent.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+
+    .bg-gradient-dark { background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%); }
+    .bg-gradient-accent { background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); }
+
+    .card-glass {
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(148, 163, 184, 0.1);
+    }
+    .card-glass:hover { border-color: rgba(99, 102, 241, 0.35); }
+
+    .hover-lift { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+    .hover-lift:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(99,102,241,0.18); }
+
+    .action-btn {
+      background: linear-gradient(135deg, #6366f1, #a855f7);
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .action-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+    .action-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+    .outline-btn {
+      border: 1px solid rgba(99,102,241,0.45);
+      color: #a5b4fc;
+      background: rgba(99,102,241,0.07);
+      transition: all 0.2s;
+    }
+    .outline-btn:hover { background: rgba(99,102,241,0.15); border-color: rgba(99,102,241,0.7); }
+
+    .logo-container img { filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.6)); }
+
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: #6366f1; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #a855f7; }
+
+    #progress-bar {
+      position: fixed; top: 0; left: 0; height: 3px; width: 0%;
+      background: linear-gradient(90deg, #6366f1, #a855f7);
+      z-index: 100; transition: width 0.1s linear;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in-up { animation: fadeInUp 0.55s ease-out both; }
+    .animate-delay-1 { animation-delay: 0.08s; }
+    .animate-delay-2 { animation-delay: 0.16s; }
+    .animate-delay-3 { animation-delay: 0.24s; }
+
+    textarea {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(148,163,184,0.15);
+      color: #cbd5e1;
+      resize: vertical;
+      font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+      font-size: 0.82rem;
+      line-height: 1.65;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    textarea:focus { border-color: rgba(99,102,241,0.55); }
+
+    .module-badge {
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      padding: 2px 7px;
+      border-radius: 999px;
+      text-transform: uppercase;
+    }
+    .badge-fix  { background: rgba(99,102,241,0.2);  border: 1px solid rgba(99,102,241,0.4);  color: #a5b4fc; }
+    .badge-check{ background: rgba(168,85,247,0.2);  border: 1px solid rgba(168,85,247,0.4);  color: #d8b4fe; }
+    .badge-info { background: rgba(100,116,139,0.2); border: 1px solid rgba(100,116,139,0.35); color: #94a3b8; }
+
+    /* Result sections */
+    .result-section { border-left: 3px solid rgba(99,102,241,0.5); }
+    .result-section.warning { border-left-color: rgba(245,158,11,0.7); }
+    .result-section.error   { border-left-color: rgba(239,68,68,0.7); }
+    .result-section.success { border-left-color: rgba(34,197,94,0.7); }
+
+    .highlight-homoglyph { background: rgba(239,68,68,0.25); border-radius: 2px; outline: 1px solid rgba(239,68,68,0.5); }
+    .highlight-pdf       { background: rgba(245,158,11,0.22); border-radius: 2px; outline: 1px solid rgba(245,158,11,0.5); }
+    .highlight-table     { background: rgba(99,102,241,0.18); border-radius: 2px; outline: 1px solid rgba(99,102,241,0.45); }
+
+    .toggle-switch {
+      position: relative; display: inline-flex; align-items: center;
+      width: 38px; height: 22px; cursor: pointer;
+    }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .toggle-track {
+      position: absolute; inset: 0; background: rgba(100,116,139,0.35);
+      border-radius: 999px; transition: background 0.2s;
+    }
+    .toggle-switch input:checked + .toggle-track { background: linear-gradient(135deg,#6366f1,#a855f7); }
+    .toggle-thumb {
+      position: absolute; top: 3px; left: 3px;
+      width: 16px; height: 16px; background: white;
+      border-radius: 50%; transition: transform 0.2s;
+    }
+    .toggle-switch input:checked ~ .toggle-thumb { transform: translateX(16px); }
+
+    code.inline-code {
+      background: rgba(99,102,241,0.12);
+      border: 1px solid rgba(99,102,241,0.25);
+      border-radius: 4px;
+      padding: 1px 5px;
+      font-family: monospace;
+      font-size: 0.8em;
+      color: #a5b4fc;
+    }
+  </style>
+</head>
+<body class="bg-gradient-dark text-slate-100 min-h-screen">
+
+<div id="progress-bar"></div>
+
+<!-- ═══ NAVBAR ═══ -->
+<nav class="fixed w-full top-0 z-50 bg-slate-950/80 backdrop-blur-md border-b border-slate-800" style="top:3px">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-14">
+      <a href="../index.html" class="flex items-center gap-3 logo-container group">
+        <img src="../logo-00-securdata-pro.svg" alt="SECURDATA.PRO Logo" class="h-9 w-auto rounded-full">
+        <div class="hidden sm:block">
+          <span class="font-bold text-sm tracking-tight text-white group-hover:text-indigo-300 transition">SECURDATA.PRO</span>
+          <span class="block text-xs text-slate-400">Bonifica Markdown</span>
+        </div>
+      </a>
+      <div class="flex items-center gap-3">
+        <a href="../risorse-gratuite.html" class="text-slate-400 hover:text-indigo-400 transition text-sm font-medium hidden sm:block">← Risorse Gratuite</a>
+        <a href="../login-utente.html" class="flex items-center gap-1.5 px-3 py-1.5 action-btn text-white rounded-lg font-semibold text-xs">
+          Accedi
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<main class="pt-20 pb-16 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-4xl mx-auto">
+
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 text-xs text-slate-500 mb-6 pt-4">
+      <a href="../index.html" class="hover:text-indigo-400 transition">Home</a>
+      <span>›</span>
+      <a href="../risorse-gratuite.html" class="hover:text-indigo-400 transition">Risorse Gratuite</a>
+      <span>›</span>
+      <span class="text-slate-400">Bonifica Markdown</span>
+    </nav>
+
+    <!-- Header -->
+    <div class="animate-fade-in-up mb-8">
+      <div class="flex flex-wrap items-center gap-3 mb-4">
+        <span class="text-xs font-bold px-2.5 py-1 rounded border text-indigo-300 bg-indigo-500/15 border-indigo-500/30">AI Tools</span>
+        <span class="text-xs text-slate-500">🔒 Elaborazione 100% locale — nessun dato inviato a server</span>
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-white leading-tight mb-4">
+        🧹 Bonifica Markdown
+        <span class="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">AI-Ready</span>
+      </h1>
+      <p class="text-slate-400 text-base leading-relaxed border-l-2 border-indigo-500/40 pl-4 italic">
+        Pipeline di pulizia per file <code class="inline-code">.md</code> destinati a dataset AI generativa.
+        Cinque moduli specializzati: backslash fantasma, entità HTML, omoglifi Unicode, artefatti PDF e pseudo-tabelle.
+        Tutto elaborato nel browser — zero upload, zero tracciamento.
+      </p>
+    </div>
+
+    <!-- Module toggles -->
+    <div class="animate-fade-in-up animate-delay-1 card-glass rounded-2xl p-5 mb-6">
+      <h2 class="text-sm font-bold text-white mb-4 flex items-center gap-2">
+        <span class="w-1 h-5 rounded-full bg-gradient-to-b from-indigo-400 to-purple-400 inline-block"></span>
+        Moduli attivi
+      </h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+
+        <label class="flex items-center justify-between gap-3 p-3 rounded-xl bg-slate-800/40 border border-slate-700/50 cursor-pointer hover:border-indigo-500/40 transition">
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-0.5">
+              <span class="text-sm font-semibold text-slate-200">Backslash fantasma</span>
+              <span class="module-badge badge-fix">FIX</span>
+            </div>
+            <p class="text-xs text-slate-500">Rimuove escape inutili aggiunti da pandoc / Word export</p>
+          </div>
+          <label class="toggle-switch flex-shrink-0">
+            <input type="checkbox" id="mod-backslash" checked>
+            <div class="toggle-track"></div>
+            <div class="toggle-thumb"></div>
+          </label>
+        </label>
+
+        <label class="flex items-center justify-between gap-3 p-3 rounded-xl bg-slate-800/40 border border-slate-700/50 cursor-pointer hover:border-indigo-500/40 transition">
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-0.5">
+              <span class="text-sm font-semibold text-slate-200">Entità HTML</span>
+              <span class="module-badge badge-fix">FIX</span>
+            </div>
+            <p class="text-xs text-slate-500">Decodifica &amp;amp; &amp;lt; &amp;gt; &amp;nbsp; e altri</p>
+          </div>
+          <label class="toggle-switch flex-shrink-0">
+            <input type="checkbox" id="mod-html" checked>
+            <div class="toggle-track"></div>
+            <div class="toggle-thumb"></div>
+          </label>
+        </label>
+
+        <label class="flex items-center justify-between gap-3 p-3 rounded-xl bg-slate-800/40 border border-slate-700/50 cursor-pointer hover:border-indigo-500/40 transition">
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-0.5">
+              <span class="text-sm font-semibold text-slate-200">Omoglifi Unicode</span>
+              <span class="module-badge badge-check">CHECK</span>
+            </div>
+            <p class="text-xs text-slate-500">Rileva caratteri Cirillici/Greci visivamente identici ai latini</p>
+          </div>
+          <label class="toggle-switch flex-shrink-0">
+            <input type="checkbox" id="mod-homo" checked>
+            <div class="toggle-track"></div>
+            <div class="toggle-thumb"></div>
+          </label>
+        </label>
+
+        <label class="flex items-center justify-between gap-3 p-3 rounded-xl bg-slate-800/40 border border-slate-700/50 cursor-pointer hover:border-indigo-500/40 transition">
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-0.5">
+              <span class="text-sm font-semibold text-slate-200">Artefatti PDF</span>
+              <span class="module-badge badge-check">CHECK</span>
+            </div>
+            <p class="text-xs text-slate-500">Numeri pagina, intestazioni ripetute, separatori</p>
+          </div>
+          <label class="toggle-switch flex-shrink-0">
+            <input type="checkbox" id="mod-pdf" checked>
+            <div class="toggle-track"></div>
+            <div class="toggle-thumb"></div>
+          </label>
+        </label>
+
+        <label class="flex items-center justify-between gap-3 p-3 rounded-xl bg-slate-800/40 border border-slate-700/50 cursor-pointer hover:border-red-500/30 transition">
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-0.5">
+              <span class="text-sm font-semibold text-slate-200">Caratteri tossici</span>
+              <span class="module-badge" style="background:rgba(239,68,68,0.2);border:1px solid rgba(239,68,68,0.4);color:#fca5a5">FIX</span>
+            </div>
+            <p class="text-xs text-slate-500">Zero-width, BOM, bidi override, non-characters — tabella §1.2 guida v2.1</p>
+          </div>
+          <label class="toggle-switch flex-shrink-0">
+            <input type="checkbox" id="mod-toxic" checked>
+            <div class="toggle-track"></div>
+            <div class="toggle-thumb"></div>
+          </label>
+        </label>
+
+        <label class="flex items-center justify-between gap-3 p-3 rounded-xl bg-slate-800/40 border border-slate-700/50 cursor-pointer hover:border-amber-500/30 transition">
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-0.5">
+              <span class="text-sm font-semibold text-slate-200">Tipografia → ASCII</span>
+              <span class="module-badge" style="background:rgba(245,158,11,0.2);border:1px solid rgba(245,158,11,0.4);color:#fcd34d">FIX</span>
+            </div>
+            <p class="text-xs text-slate-500">Virgolette curve, em-dash, ellissi, legature ﬁ ﬂ → equivalenti ASCII</p>
+          </div>
+          <label class="toggle-switch flex-shrink-0">
+            <input type="checkbox" id="mod-typo" checked>
+            <div class="toggle-track"></div>
+            <div class="toggle-thumb"></div>
+          </label>
+        </label>
+
+        <label class="flex items-center justify-between gap-3 p-3 rounded-xl bg-slate-800/40 border border-slate-700/50 cursor-pointer hover:border-indigo-500/40 transition sm:col-span-2">
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-0.5">
+              <span class="text-sm font-semibold text-slate-200">Pseudo-tabelle</span>
+              <span class="module-badge badge-info">INFO</span>
+            </div>
+            <p class="text-xs text-slate-500">Segnala righe con spazi multipli che simulano colonne (sempre attivo)</p>
+          </div>
+          <span class="text-xs text-slate-500 flex-shrink-0 mr-1">sempre attivo</span>
+        </label>
+
+      </div>
+    </div>
+
+    <!-- Input area -->
+    <div class="animate-fade-in-up animate-delay-1 mb-6">
+      <div class="flex items-center justify-between mb-2">
+        <label class="text-sm font-semibold text-slate-300">Input Markdown</label>
+        <div class="flex items-center gap-2">
+          <label for="file-upload" class="outline-btn text-xs font-semibold px-3 py-1.5 rounded-lg cursor-pointer">
+            📂 Carica file
+          </label>
+          <input id="file-upload" type="file" accept=".md,.txt,.markdown" class="hidden">
+          <button onclick="clearInput()" class="outline-btn text-xs font-semibold px-3 py-1.5 rounded-lg">
+            🗑 Pulisci
+          </button>
+        </div>
+      </div>
+      <textarea
+        id="input-text"
+        rows="12"
+        class="w-full rounded-xl px-4 py-3"
+        placeholder="Incolla qui il tuo testo Markdown oppure carica un file .md …
+
+Esempio: testo con \* backslash fantasma, &amp; entità HTML,
+parole con cаrатtеri cirillici invisibili,
+
+1
+
+Pagina 2 di 5
+
+Colonna1     Colonna2     Colonna3"></textarea>
+      <p class="text-xs text-slate-600 mt-1.5 flex items-center gap-1.5">
+        <span>ℹ️</span> Il testo viene elaborato interamente nel tuo browser — nessun dato viene inviato a server esterni.
+      </p>
+    </div>
+
+    <!-- Run button -->
+    <div class="flex flex-wrap gap-3 mb-8">
+      <button onclick="runBonifica()" id="run-btn"
+        class="action-btn px-6 py-3 rounded-xl font-bold text-sm text-white flex items-center gap-2">
+        🚀 Esegui Bonifica
+      </button>
+      <button onclick="loadExample()" class="outline-btn px-4 py-3 rounded-xl font-semibold text-sm">
+        📄 Carica esempio
+      </button>
+    </div>
+
+    <!-- Results -->
+    <div id="results-container" class="hidden animate-fade-in-up animate-delay-2 space-y-5 mb-8">
+
+      <!-- Summary bar -->
+      <div class="card-glass rounded-2xl p-5">
+        <div class="flex items-center justify-between flex-wrap gap-3 mb-4">
+          <h2 class="text-base font-bold text-white flex items-center gap-2">
+            <span id="result-icon">✅</span> Risultati Bonifica
+          </h2>
+          <div class="flex gap-2">
+            <button onclick="downloadClean()" id="dl-clean-btn"
+              class="action-btn px-3 py-1.5 rounded-lg text-xs font-bold text-white flex items-center gap-1.5">
+              ⬇ Scarica .md pulito
+            </button>
+            <button onclick="downloadReport()" id="dl-report-btn"
+              class="outline-btn px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5">
+              📋 Report JSON
+            </button>
+          </div>
+        </div>
+        <div id="summary-stats" class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center"></div>
+      </div>
+
+      <!-- Module results -->
+      <div id="module-results" class="space-y-4"></div>
+
+      <!-- Output preview -->
+      <div class="card-glass rounded-2xl p-5">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-sm font-bold text-white">Testo bonificato</h3>
+          <button onclick="copyOutput()" id="copy-out-btn" class="outline-btn text-xs font-semibold px-3 py-1.5 rounded-lg">
+            📋 Copia
+          </button>
+        </div>
+        <textarea id="output-text" rows="10" readonly class="w-full rounded-xl px-4 py-3 opacity-90"></textarea>
+        <p id="sha256-display" class="text-xs text-slate-600 mt-2 font-mono break-all"></p>
+      </div>
+
+    </div>
+
+    <!-- Download CLI section -->
+    <div class="animate-fade-in-up animate-delay-3 card-glass rounded-2xl p-6 mb-8">
+      <div class="flex items-start gap-4">
+        <div class="text-3xl flex-shrink-0">🖥️</div>
+        <div class="flex-1">
+          <h3 class="font-bold text-white text-base mb-1">Versione CLI — <code class="inline-code">bonifica.py</code></h3>
+          <p class="text-slate-400 text-sm leading-relaxed mb-4">
+            Per automatizzare la pipeline su centinaia di file o integrarla in un workflow CI/CD,
+            usa lo script Python CLI. Funziona con Python 3.8+ senza dipendenze esterne — solo stdlib.
+          </p>
+          <div class="bg-slate-900/60 rounded-xl p-4 mb-4 font-mono text-xs text-slate-300 border border-slate-700/50 overflow-x-auto">
+            <span class="text-slate-500"># Installa: nessuna dipendenza — Python 3.8+</span><br>
+            <span class="text-indigo-400">python</span> bonifica.py articolo.md <span class="text-purple-400">--full-check</span><br>
+            <span class="text-indigo-400">python</span> bonifica.py articolo.md <span class="text-purple-400">--fix-backslash --fix-html --fix-toxic --fix-typography --output</span> clean.md<br>
+            <span class="text-indigo-400">python</span> bonifica.py articolo.md <span class="text-purple-400">--check-homoglyphs --report</span> report.json
+          </div>
+          <a href="../bonifica.py" download="bonifica.py"
+            class="inline-flex items-center gap-2 action-btn px-5 py-2.5 rounded-xl font-semibold text-sm text-white">
+            ⬇ Scarica bonifica.py
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Info cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8 animate-fade-in-up animate-delay-3">
+
+      <div class="card-glass rounded-2xl p-5">
+        <div class="text-2xl mb-2">🛡️</div>
+        <h3 class="font-bold text-white text-sm mb-1">Privacy garantita</h3>
+        <p class="text-slate-400 text-xs leading-relaxed">
+          Tutto l'elaborazione avviene nel tuo browser con JavaScript puro.
+          Nessun testo viene trasmesso, memorizzato o analizzato da server esterni.
+        </p>
+      </div>
+
+      <div class="card-glass rounded-2xl p-5">
+        <div class="text-2xl mb-2">⚡</div>
+        <h3 class="font-bold text-white text-sm mb-1">Perché bonificare prima dell'AI?</h3>
+        <p class="text-slate-400 text-xs leading-relaxed">
+          I file Markdown "sporchi" contengono artefatti invisibili che degradano la qualità
+          dei dataset per LLM. La bonifica riduce token waste, evita allucinazioni e migliora
+          l'embedding quality dei modelli generativi.
+        </p>
+      </div>
+
+    </div>
+
+    <!-- CTA -->
+    <div class="card-glass rounded-xl p-5 text-center animate-fade-in-up animate-delay-3">
+      <p class="text-sm text-slate-400 mb-3">Stai costruendo una pipeline AI più complessa?</p>
+      <a href="mailto:info@securdata.pro?subject=Pipeline%20AI%20Markdown%20Bonifica"
+        class="inline-flex items-center gap-2 action-btn px-5 py-2.5 rounded-xl font-semibold text-sm text-white">
+        ✉️ Parliamo della tua pipeline
+      </a>
+    </div>
+
+  </div>
+</main>
+
+<!-- ═══ FOOTER ═══ -->
+<footer class="border-t border-slate-800 bg-slate-950/60 py-8 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+    <a href="../index.html" class="flex items-center gap-3 logo-container group">
+      <img src="../logo-00-securdata-pro.svg" alt="Logo" class="h-8 w-auto rounded-full">
+      <span class="font-bold text-sm text-slate-300 group-hover:text-indigo-300 transition">SECURDATA.PRO</span>
+    </a>
+    <div class="flex gap-5 text-xs text-slate-500">
+      <a href="../blog.html" class="hover:text-indigo-400 transition">Blog</a>
+      <a href="../risorse-gratuite.html" class="hover:text-indigo-400 transition">Risorse</a>
+      <a href="../privacy-policy.html" class="hover:text-indigo-400 transition">Privacy</a>
+      <a href="../termini-di-servizio.html" class="hover:text-indigo-400 transition">Termini</a>
+      <a href="mailto:info@securdata.pro" class="hover:text-indigo-400 transition">Contatti</a>
+    </div>
+    <p class="text-xs text-slate-600">© 2025 SecurData.Pro</p>
+  </div>
+</footer>
+
+<script src="../js/cookie-consent.js" defer></script>
+<script>
+// ─── Progress bar ──────────────────────────────────────────────────────────
+window.addEventListener('scroll', function() {
+  var total = document.documentElement.scrollHeight - window.innerHeight;
+  var pct = total > 0 ? Math.round((window.scrollY / total) * 100) : 0;
+  document.getElementById('progress-bar').style.width = pct + '%';
+});
+
+// ─── File upload ───────────────────────────────────────────────────────────
+document.getElementById('file-upload').addEventListener('change', function(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    document.getElementById('input-text').value = ev.target.result;
+  };
+  reader.readAsText(file, 'UTF-8');
+});
+
+function clearInput() {
+  document.getElementById('input-text').value = '';
+  document.getElementById('results-container').classList.add('hidden');
+}
+
+// ─── Example text ─────────────────────────────────────────────────────────
+function loadExample() {
+  document.getElementById('input-text').value =
+`# Guida alla Sicurezza &amp; Privacy
+
+Questo documento descrive le best practice per la sicurezza dei dati\\.
+
+## Obiettivi \*principali\*
+
+- Proteggere i dati \*sensibili\*
+- Rispettare il &lt;GDPR&gt; e la normativa vigente
+- Implementare \`autenticazione\` a due fattori
+
+## Tabella configurazioni
+
+Server      Porta     Protocollo
+web-01      443       HTTPS
+db-master   5432      PostgreSQL
+
+1
+
+Pagina 2 di 5
+
+Сontiene caratteri cіrillici nascosti.
+
+----------
+
+42
+
+\`\`\`python
+# In questo blocco \* i backslash e &amp; le entità NON devono cambiare
+print("&amp; questo rimane intatto")
+\`\`\`
+
+Fine documento.`;
+}
+
+// ─── BONIFICA ENGINE (JavaScript port of bonifica.py) ─────────────────────
+
+// Helper: split code blocks
+function splitCodeBlocks(text) {
+  var segments = [];
+  var re = /```(?:[^\n]*)\n[\s\S]*?```/g;
+  var last = 0, m;
+  while ((m = re.exec(text)) !== null) {
+    if (m.index > last) segments.push([text.slice(last, m.index), false]);
+    segments.push([text.slice(m.index, m.index + m[0].length), true]);
+    last = m.index + m[0].length;
+  }
+  if (last < text.length) segments.push([text.slice(last), false]);
+  return segments;
+}
+
+// SHA-256 (via SubtleCrypto async — fallback to simple hex display)
+async function sha256(str) {
+  var buf = new TextEncoder().encode(str);
+  var hashBuf = await crypto.subtle.digest('SHA-256', buf);
+  return Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+// Modulo 1: rimuovi backslash fantasma
+function rimuoviBackslashFantasma(text) {
+  var re = /\\([*.!()\[\]{}\+\-=#|`~\\])/g;
+  var count = 0;
+  var segments = splitCodeBlocks(text);
+  var out = segments.map(function(seg) {
+    if (seg[1]) return seg[0];
+    return seg[0].replace(re, function(_, c) { count++; return c; });
+  }).join('');
+  return { text: out, count: count };
+}
+
+// Modulo 2: normalizza tabelle (check only)
+function normalizzaTabelle(text) {
+  var warnings = [];
+  var lines = text.split('\n');
+  var pseudoRe = /\S[ ]{3,}\S/;
+  var fenceRe = /^[`~]{3,}\s*$/;
+  lines.forEach(function(line, i) {
+    if (pseudoRe.test(line)) {
+      warnings.push({ riga: i+1, tipo: 'pseudo_tabella', contenuto: line.trim(),
+        azione: 'verifica — converti in tabella Markdown con pipe |' });
+    } else if (fenceRe.test(line)) {
+      warnings.push({ riga: i+1, tipo: 'code_fence_residuo', contenuto: line.trim(),
+        azione: 'verifica — possibile residuo di code fence mal convertito' });
+    }
+  });
+  return warnings;
+}
+
+// Modulo 3: rileva omoglifi
+var OMOGLIFI = {
+  '\u0430': {sostituto:'a', blocco:'Cirillico'},
+  '\u0435': {sostituto:'e', blocco:'Cirillico'},
+  '\u043E': {sostituto:'o', blocco:'Cirillico'},
+  '\u0440': {sostituto:'r', blocco:'Cirillico'},
+  '\u0441': {sostituto:'c', blocco:'Cirillico'},
+  '\u0445': {sostituto:'x', blocco:'Cirillico'},
+  '\u03BF': {sostituto:'o', blocco:'Greco'},
+  '\u03B1': {sostituto:'a', blocco:'Greco'},
+  '\u03B5': {sostituto:'e', blocco:'Greco'},
+  '\u03B9': {sostituto:'i', blocco:'Greco'},
+};
+
+function rilevaOmoglifi(text) {
+  var found = [];
+  for (var i = 0; i < text.length; i++) {
+    var ch = text[i];
+    if (OMOGLIFI[ch]) {
+      found.push({
+        posizione: i,
+        carattere: ch,
+        codepoint: 'U+' + ch.codePointAt(0).toString(16).toUpperCase().padStart(4,'0'),
+        blocco: OMOGLIFI[ch].blocco,
+        sostituto: OMOGLIFI[ch].sostituto
+      });
+    }
+  }
+  return found;
+}
+
+// Modulo 4: decodifica entità HTML
+var HTML_ENTITIES = [
+  ['&#160;', ' '],['&#38;', '&'],['&nbsp;', ' '],['&amp;', '&'],
+  ['&lt;', '<'],['&gt;', '>'],['&quot;', '"'],['&apos;', "'"]
+];
+
+function decodificaEntitaHtml(text) {
+  var count = 0;
+  var segments = splitCodeBlocks(text);
+  var out = segments.map(function(seg) {
+    if (seg[1]) return seg[0];
+    var s = seg[0];
+    HTML_ENTITIES.forEach(function(pair) {
+      var re = new RegExp(pair[0].replace(/[.*+?^${}()|[\]\\]/g,'\\$&'), 'g');
+      s = s.replace(re, function() { count++; return pair[1]; });
+    });
+    return s;
+  }).join('');
+  return { text: out, count: count };
+}
+
+// Modulo 6: rimuovi caratteri tossici
+var TOSSICI_MAP = {
+  0x0000:['NULL','critico'], 0x0008:['BACKSPACE','alto'],
+  0x000B:['VERTICAL_TAB','medio'], 0x000C:['FORM_FEED','medio'],
+  0x001A:['SUBSTITUTE_EOF_DOS','alto'], 0x001B:['ESCAPE_ANSI','critico'],
+  0x00AD:['SOFT_HYPHEN','alto'],
+  0x200B:['ZERO_WIDTH_SPACE','critico'], 0x200C:['ZERO_WIDTH_NON_JOINER','critico'],
+  0x200D:['ZERO_WIDTH_JOINER','critico'], 0x200E:['LEFT_TO_RIGHT_MARK','alto'],
+  0x200F:['RIGHT_TO_LEFT_MARK','alto'], 0x2028:['LINE_SEPARATOR','medio'],
+  0x2029:['PARAGRAPH_SEPARATOR','medio'], 0x202A:['LTR_EMBEDDING','alto'],
+  0x202B:['RTL_EMBEDDING','alto'], 0x202C:['POP_DIRECTIONAL_FORMATTING','alto'],
+  0x202D:['LTR_OVERRIDE','critico'], 0x202E:['RTL_OVERRIDE','critico'],
+  0x2060:['WORD_JOINER','alto'], 0x2061:['FUNCTION_APPLICATION','medio'],
+  0x2062:['INVISIBLE_TIMES','medio'], 0x2063:['INVISIBLE_SEPARATOR','medio'],
+  0x2064:['INVISIBLE_PLUS','medio'], 0x206A:['INHIBIT_SYMMETRIC_SWAPPING','alto'],
+  0x206B:['ACTIVATE_SYMMETRIC_SWAPPING','alto'], 0x206C:['INHIBIT_ARABIC_FORM_SHAPING','alto'],
+  0x206D:['ACTIVATE_ARABIC_FORM_SHAPING','alto'], 0x206E:['NATIONAL_DIGIT_SHAPES','alto'],
+  0x206F:['NOMINAL_DIGIT_SHAPES','alto'], 0xFEFF:['BYTE_ORDER_MARK','critico'],
+  0xFFFE:['NON_CHARACTER_FFFE','critico'], 0xFFFF:['NON_CHARACTER_FFFF','critico']
+};
+
+function rimuoviCaratteriTossici(text) {
+  var rimossi = [];
+  var out = [];
+  for (var i = 0; i < text.length; i++) {
+    var cp = text.codePointAt(i);
+    // Skip second code unit of surrogate pair
+    if (cp > 0xFFFF) i++;
+    var cpHex = 'U+' + cp.toString(16).toUpperCase().padStart(4,'0');
+    if (cp === 0x00A0) {
+      rimossi.push({pos:i, cp:cpHex, nome:'NO_BREAK_SPACE', rischio:'medio', azione:'convertito_in_spazio'});
+      out.push(' ');
+    } else if (TOSSICI_MAP[cp]) {
+      rimossi.push({pos:i, cp:cpHex, nome:TOSSICI_MAP[cp][0], rischio:TOSSICI_MAP[cp][1], azione:'rimosso'});
+      // rimosso — non aggiunto a out
+    } else if (cp >= 0xFDD0 && cp <= 0xFDEF) {
+      rimossi.push({pos:i, cp:cpHex, nome:'NON_CHARACTER_FDD0_FDEF', rischio:'critico', azione:'rimosso'});
+    } else if (cp >= 0xE000 && cp <= 0xF8FF) {
+      rimossi.push({pos:i, cp:cpHex, nome:'PRIVATE_USE_AREA', rischio:'variabile', azione:'rimosso'});
+    } else {
+      out.push(String.fromCodePoint(cp));
+    }
+  }
+  return { text: out.join(''), rimossi: rimossi };
+}
+
+// Modulo 7: normalizza tipografia
+var TIPOGRAFIA = [
+  ['\u201C', '"', 'virgoletta_aperta_doppia'],
+  ['\u201D', '"', 'virgoletta_chiusa_doppia'],
+  ['\u2018', "'", 'virgoletta_aperta_singola'],
+  ['\u2019', "'", 'apostrofo_tipografico'],
+  ['\u2014', '--', 'em_dash'],
+  ['\u2013', '-',  'en_dash'],
+  ['\u2026', '...','ellissi_unicode'],
+  ['\uFB01', 'fi', 'legatura_fi'],
+  ['\uFB02', 'fl', 'legatura_fl'],
+  ['\uFB03', 'ffi','legatura_ffi'],
+  ['\uFB04', 'ffl','legatura_ffl'],
+  ['\u00A0', ' ', 'no_break_space'],
+];
+var TIPOGRAFIA_RE = new RegExp(TIPOGRAFIA.map(function(p){ return p[0].replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }).join('|'), 'g');
+var TIPOGRAFIA_MAP_JS = {};
+TIPOGRAFIA.forEach(function(p){ TIPOGRAFIA_MAP_JS[p[0]] = [p[1], p[2]]; });
+
+function normalizzaTipografia(text) {
+  var sostituzioni = [];
+  var out = text.replace(TIPOGRAFIA_RE, function(m, offset) {
+    var info = TIPOGRAFIA_MAP_JS[m];
+    sostituzioni.push({
+      pos: offset,
+      cp: 'U+' + m.codePointAt(0).toString(16).toUpperCase().padStart(4,'0'),
+      nome: info[1], originale: m, sostituto: info[0]
+    });
+    return info[0];
+  });
+  return { text: out, sostituzioni: sostituzioni };
+}
+
+function rilevaArtefattiPdf(text) {
+  var artefatti = [];
+  var lines = text.split('\n');
+  var numPageRe = /^\s*\d{1,3}\s*$/;
+  var pagXofYRe = /^\s*(pagina\s+\d+\s+di\s+\d+|page\s+\d+\s+of\s+\d+)\s*$/i;
+  var sepRe = /^\s*[-=]{5,}\s*$/;
+
+  // Frequency count for repeated lines (header/footer)
+  var freq = {};
+  lines.forEach(function(l) {
+    var s = l.trim();
+    if (s) { freq[s] = (freq[s] || []).concat(lines.indexOf(l)); }
+  });
+  var lineFreq = {};
+  lines.forEach(function(l, i) {
+    var s = l.trim();
+    if (!lineFreq[s]) lineFreq[s] = 0;
+    lineFreq[s]++;
+  });
+  var repeated = new Set(Object.keys(lineFreq).filter(function(k) { return lineFreq[k] >= 3; }));
+
+  lines.forEach(function(line, i) {
+    var s = line.trim();
+    if (!s) return;
+    if (numPageRe.test(line)) {
+      artefatti.push({ tipo:'numero_pagina', riga:i+1, contenuto:s, azione:'rimuovi' });
+    } else if (pagXofYRe.test(s)) {
+      artefatti.push({ tipo:'intestazione_pagina', riga:i+1, contenuto:s, azione:'rimuovi' });
+    } else if (sepRe.test(line)) {
+      artefatti.push({ tipo:'separatore_pagina', riga:i+1, contenuto:s, azione:'verifica' });
+    } else if (repeated.has(s)) {
+      artefatti.push({ tipo:'header_footer_ripetuto', riga:i+1, contenuto:s, azione:'rimuovi' });
+    }
+  });
+  return artefatti;
+}
+
+// ─── Run pipeline ──────────────────────────────────────────────────────────
+var _lastCleanText = '';
+var _lastReport = {};
+
+async function runBonifica() {
+  var inputText = document.getElementById('input-text').value;
+  if (!inputText.trim()) {
+    alert('Inserisci del testo Markdown prima di eseguire la bonifica.');
+    return;
+  }
+
+  var btn = document.getElementById('run-btn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Elaborazione…';
+
+  var modBackslash = document.getElementById('mod-backslash').checked;
+  var modHtml = document.getElementById('mod-html').checked;
+  var modHomo = document.getElementById('mod-homo').checked;
+  var modPdf = document.getElementById('mod-pdf').checked;
+  var modToxic = document.getElementById('mod-toxic').checked;
+  var modTypo = document.getElementById('mod-typo').checked;
+
+  var text = inputText;
+  var report = { moduli: {} };
+
+  // Always run tabelle check
+  var tabelleWarnings = normalizzaTabelle(text);
+  report.moduli.tabelle = { warnings: tabelleWarnings };
+
+  var backslashCount = 0, htmlCount = 0;
+  var omoglifi = [], artefatti = [], tossici = [], tipografia = [];
+
+  if (modBackslash) {
+    var r = rimuoviBackslashFantasma(text);
+    text = r.text; backslashCount = r.count;
+    report.moduli.backslash = { rimozioni: backslashCount };
+  }
+  if (modHtml) {
+    var r2 = decodificaEntitaHtml(text);
+    text = r2.text; htmlCount = r2.count;
+    report.moduli.html = { conversioni: htmlCount };
+  }
+  if (modToxic) {
+    var r6 = rimuoviCaratteriTossici(text);
+    text = r6.text; tossici = r6.rimossi;
+    report.moduli.tossici = { rimossi: tossici.length, dettagli: tossici };
+  }
+  if (modTypo) {
+    var r7 = normalizzaTipografia(text);
+    text = r7.text; tipografia = r7.sostituzioni;
+    report.moduli.tipografia = { sostituzioni: tipografia.length, dettagli: tipografia };
+  }
+  if (modHomo) {
+    omoglifi = rilevaOmoglifi(text);
+    report.moduli.omoglifi = { trovati: omoglifi.length, dettagli: omoglifi };
+  }
+  if (modPdf) {
+    artefatti = rilevaArtefattiPdf(text);
+    report.moduli.pdf = { artefatti: artefatti.length, dettagli: artefatti };
+  }
+
+  var sha = await sha256(text);
+  report.sha256_finale = sha;
+  _lastCleanText = text;
+  _lastReport = report;
+
+  // ── Render results ────────────────────────────────────────────────────────
+  var totalIssues = backslashCount + htmlCount + omoglifi.length + artefatti.length + tossici.length + tipografia.length + tabelleWarnings.length;
+  document.getElementById('result-icon').textContent = totalIssues === 0 ? '✅' : '⚠️';
+
+  // Summary stats
+  var statsEl = document.getElementById('summary-stats');
+  statsEl.innerHTML = [
+    { label: 'Backslash rimossi', val: backslashCount, active: modBackslash },
+    { label: 'Entità HTML', val: htmlCount, active: modHtml },
+    { label: 'Tossici rimossi', val: tossici.length, active: modToxic },
+    { label: 'Tipografia', val: tipografia.length, active: modTypo },
+    { label: 'Omoglifi', val: omoglifi.length, active: modHomo },
+    { label: 'Artefatti PDF', val: artefatti.length, active: modPdf },
+  ].map(function(s) {
+    var color = !s.active ? 'text-slate-600' : s.val > 0 ? 'text-amber-400' : 'text-emerald-400';
+    return '<div class="bg-slate-800/40 rounded-xl py-3 px-2">' +
+      '<div class="text-xl font-extrabold ' + color + '">' + (s.active ? s.val : '—') + '</div>' +
+      '<div class="text-xs text-slate-500 mt-0.5">' + s.label + '</div>' +
+      '</div>';
+  }).join('');
+  // Override grid for 6 items
+  statsEl.style.gridTemplateColumns = 'repeat(3, 1fr)';
+
+  // Module results
+  var modEl = document.getElementById('module-results');
+  var html_out = '';
+
+  if (modBackslash) {
+    var cls = backslashCount > 0 ? 'warning' : 'success';
+    html_out += renderModuleCard('🔧 Backslash Fantasma', cls,
+      backslashCount > 0
+        ? '<span class="text-amber-400 font-semibold">' + backslashCount + ' backslash rimossi</span> — escape inutili da pandoc/Word eliminati.'
+        : '<span class="text-emerald-400">Nessun backslash fantasma rilevato.</span>');
+  }
+
+  if (modHtml) {
+    var cls2 = htmlCount > 0 ? 'warning' : 'success';
+    html_out += renderModuleCard('🏷️ Entità HTML', cls2,
+      htmlCount > 0
+        ? '<span class="text-amber-400 font-semibold">' + htmlCount + ' entità decodificate</span> — &amp;amp;, &amp;lt;, &amp;gt; e altre convertite in testo normale.'
+        : '<span class="text-emerald-400">Nessuna entità HTML da decodificare.</span>');
+  }
+
+  if (modToxic) {
+    var nCritici = tossici.filter(function(r){ return r.rischio === 'critico'; }).length;
+    var cls6 = tossici.length > 0 ? (nCritici > 0 ? 'error' : 'warning') : 'success';
+    var rows6 = tossici.slice(0,10).map(function(r){
+      var rColor = r.rischio === 'critico' ? 'text-red-400' : r.rischio === 'alto' ? 'text-amber-400' : 'text-slate-400';
+      return '<div class="flex items-center gap-2 py-1.5 border-b border-slate-700/30 last:border-0">' +
+        '<span class="text-xs text-slate-500 w-12 flex-shrink-0">pos ' + r.pos + '</span>' +
+        '<code class="inline-code flex-shrink-0">' + r.cp + '</code>' +
+        '<span class="text-xs ' + rColor + '">' + r.nome + '</span>' +
+        '<span class="text-xs text-slate-600 ml-auto">[' + r.azione + ']</span>' +
+        '</div>';
+    }).join('');
+    if (tossici.length > 10) rows6 += '<div class="text-xs text-slate-600 pt-1">… e altri ' + (tossici.length-10) + '</div>';
+    html_out += renderModuleCard('☠️ Caratteri Tossici', cls6,
+      tossici.length > 0
+        ? '<span class="text-' + (nCritici > 0 ? 'red' : 'amber') + '-400 font-semibold">' + tossici.length + ' rimossi</span> (di cui <strong>' + nCritici + ' critici</strong> — zero-width, BOM, bidi override).<br><div class="mt-2">' + rows6 + '</div>'
+        : '<span class="text-emerald-400">Nessun carattere tossico rilevato.</span>');
+  }
+
+  if (modTypo) {
+    var cls7 = tipografia.length > 0 ? 'warning' : 'success';
+    var rows7 = tipografia.slice(0,10).map(function(s){
+      return '<div class="flex items-center gap-2 py-1.5 border-b border-slate-700/30 last:border-0">' +
+        '<code class="inline-code flex-shrink-0">' + s.cp + '</code>' +
+        '<span class="text-xs text-slate-400">' + s.nome + '</span>' +
+        '<span class="text-xs text-slate-500 ml-auto font-mono">"' + escHtml(s.originale) + '" → "' + escHtml(s.sostituto) + '"</span>' +
+        '</div>';
+    }).join('');
+    if (tipografia.length > 10) rows7 += '<div class="text-xs text-slate-600 pt-1">… e altre ' + (tipografia.length-10) + '</div>';
+    html_out += renderModuleCard('✒️ Tipografia → ASCII', cls7,
+      tipografia.length > 0
+        ? '<span class="text-amber-400 font-semibold">' + tipografia.length + ' sostituzioni</span> — virgolette curve, em-dash, legature normalizzate ad ASCII.<br><div class="mt-2">' + rows7 + '</div>'
+        : '<span class="text-emerald-400">Nessun carattere tipografico da normalizzare.</span>');
+  }
+
+  if (tabelleWarnings.length > 0) {
+    var rows = tabelleWarnings.slice(0,8).map(function(w) {
+      return '<div class="flex items-start gap-2 py-1.5 border-b border-slate-700/30 last:border-0">' +
+        '<span class="text-xs text-slate-500 w-12 flex-shrink-0">riga ' + w.riga + '</span>' +
+        '<span class="module-badge badge-info flex-shrink-0">' + w.tipo.replace('_',' ') + '</span>' +
+        '<span class="text-xs text-slate-400 truncate">' + escHtml(w.contenuto.slice(0,70)) + '</span>' +
+        '</div>';
+    }).join('');
+    if (tabelleWarnings.length > 8) rows += '<div class="text-xs text-slate-600 pt-1">… e altri ' + (tabelleWarnings.length - 8) + '</div>';
+    html_out += renderModuleCard('📊 Pseudo-tabelle & Code Fence', 'warning',
+      '<span class="text-amber-400 font-semibold">' + tabelleWarnings.length + ' avvisi</span> — revisione manuale consigliata.<br><div class="mt-2 space-y-0">' + rows + '</div>');
+  }
+
+  if (modHomo && omoglifi.length > 0) {
+    var rows2 = omoglifi.slice(0,10).map(function(o) {
+      return '<div class="flex items-center gap-3 py-1.5 border-b border-slate-700/30 last:border-0">' +
+        '<span class="text-xs text-slate-500 w-14 flex-shrink-0">pos ' + o.posizione + '</span>' +
+        '<span class="highlight-homoglyph px-1 text-sm font-mono">' + o.carattere + '</span>' +
+        '<span class="text-xs text-slate-400">' + o.codepoint + ' (' + o.blocco + ')</span>' +
+        '<span class="text-xs text-slate-500 ml-auto">→ suggerito <code class="inline-code">' + o.sostituto + '</code></span>' +
+        '</div>';
+    }).join('');
+    if (omoglifi.length > 10) rows2 += '<div class="text-xs text-slate-600 pt-1">… e altri ' + (omoglifi.length-10) + '</div>';
+    html_out += renderModuleCard('🔍 Omoglifi Unicode', 'error',
+      '<span class="text-red-400 font-semibold">' + omoglifi.length + ' caratteri omoglifi</span> — revisione manuale obbligatoria prima di usare in dataset AI.<br><div class="mt-2">' + rows2 + '</div>');
+  } else if (modHomo) {
+    html_out += renderModuleCard('🔍 Omoglifi Unicode', 'success', '<span class="text-emerald-400">Nessun omoglifo rilevato.</span>');
+  }
+
+  if (modPdf && artefatti.length > 0) {
+    var rows3 = artefatti.slice(0,8).map(function(a) {
+      var aClass = a.azione === 'rimuovi' ? 'text-red-400' : 'text-amber-400';
+      return '<div class="flex items-start gap-2 py-1.5 border-b border-slate-700/30 last:border-0">' +
+        '<span class="text-xs text-slate-500 w-12 flex-shrink-0">riga ' + a.riga + '</span>' +
+        '<span class="highlight-pdf px-1 text-xs font-mono">' + escHtml(a.contenuto.slice(0,50)) + '</span>' +
+        '<span class="text-xs ' + aClass + ' ml-auto flex-shrink-0">[' + a.azione + ']</span>' +
+        '</div>';
+    }).join('');
+    if (artefatti.length > 8) rows3 += '<div class="text-xs text-slate-600 pt-1">… e altri ' + (artefatti.length-8) + '</div>';
+    html_out += renderModuleCard('📄 Artefatti PDF', 'warning',
+      '<span class="text-amber-400 font-semibold">' + artefatti.length + ' artefatti rilevati</span><br><div class="mt-2">' + rows3 + '</div>');
+  } else if (modPdf) {
+    html_out += renderModuleCard('📄 Artefatti PDF', 'success', '<span class="text-emerald-400">Nessun artefatto PDF rilevato.</span>');
+  }
+
+  modEl.innerHTML = html_out;
+
+  // Output text
+  document.getElementById('output-text').value = text;
+  document.getElementById('sha256-display').textContent = 'SHA-256: ' + sha;
+
+  document.getElementById('results-container').classList.remove('hidden');
+  document.getElementById('results-container').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  btn.disabled = false;
+  btn.textContent = '🚀 Esegui Bonifica';
+}
+
+function renderModuleCard(title, type, body) {
+  var borderColors = { warning:'border-l-amber-500/60', error:'border-l-red-500/60', success:'border-l-emerald-500/60' };
+  var bc = borderColors[type] || 'border-l-indigo-500/50';
+  return '<div class="card-glass rounded-2xl p-5 border-l-4 ' + bc + '">' +
+    '<h3 class="text-sm font-bold text-white mb-3">' + title + '</h3>' +
+    '<div class="text-sm text-slate-400 leading-relaxed">' + body + '</div>' +
+    '</div>';
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ─── Download helpers ─────────────────────────────────────────────────────
+function downloadClean() {
+  if (!_lastCleanText) return;
+  var blob = new Blob([_lastCleanText], { type: 'text/markdown;charset=utf-8' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = 'bonificato.md';
+  a.click(); URL.revokeObjectURL(url);
+}
+
+function downloadReport() {
+  if (!_lastReport) return;
+  var blob = new Blob([JSON.stringify(_lastReport, null, 2)], { type: 'application/json' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = 'bonifica-report.json';
+  a.click(); URL.revokeObjectURL(url);
+}
+
+function copyOutput() {
+  var text = document.getElementById('output-text').value;
+  navigator.clipboard.writeText(text).then(function() {
+    var btn = document.getElementById('copy-out-btn');
+    btn.textContent = '✅ Copiato!';
+    setTimeout(function() { btn.textContent = '📋 Copia'; }, 2000);
+  });
+}
+</script>
+</body>
+</html>
