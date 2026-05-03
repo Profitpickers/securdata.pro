@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vivere Meglio Costa Meno – Guida PDF Gratuita | SECURDATA.PRO</title>
+  <meta name="description" content="Scarica gratis la guida operativa 'Vivere Meglio Costa Meno': 6 capitoli, 20+ strumenti pratici e una checklist per recuperare 200–500€ al mese. Per le famiglie dei professionisti e delle PMI.">
+  <link rel="icon" href="../logo-00-securdata-pro.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../css/cookie-consent.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+
+    .bg-gradient-dark { background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%); }
+
+    .card-glass {
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(148, 163, 184, 0.1);
+    }
+
+    .hover-lift { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+    .hover-lift:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(20,184,166,0.18); }
+
+    .read-more-btn {
+      background: linear-gradient(135deg, #6366f1, #a855f7);
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .read-more-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+    .teal-btn {
+      background: linear-gradient(135deg, #14b8a6, #0891b2);
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .teal-btn:hover { opacity: 0.9; transform: translateY(-2px); }
+
+    .logo-container img { filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.6)); }
+
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: #14b8a6; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #0891b2; }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in-up { animation: fadeInUp 0.6s ease-out both; }
+    .animate-delay-1 { animation-delay: 0.08s; }
+    .animate-delay-2 { animation-delay: 0.16s; }
+    .animate-delay-3 { animation-delay: 0.24s; }
+    .animate-delay-4 { animation-delay: 0.32s; }
+    .animate-delay-5 { animation-delay: 0.40s; }
+    .animate-delay-6 { animation-delay: 0.48s; }
+
+    .chapter-card {
+      background: rgba(20,184,166,0.06);
+      border: 1px solid rgba(20,184,166,0.20);
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+    }
+    .chapter-card:hover {
+      border-color: rgba(20,184,166,0.45);
+      box-shadow: 0 6px 24px rgba(20,184,166,0.12);
+      transform: translateY(-2px);
+    }
+
+    .checklist-item::before {
+      content: '';
+      display: inline-block;
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: rgba(20,184,166,0.15);
+      border: 1.5px solid rgba(20,184,166,0.4);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .scenario-card {
+      border-radius: 16px;
+      padding: 1.5rem;
+    }
+
+    /* Mobile menu */
+    #mobile-vmcm-menu { display: none; }
+    #mobile-vmcm-menu.open { display: flex; }
+
+    .search-input {
+      background: rgba(15,23,42,0.8);
+      border: 1px solid rgba(148,163,184,0.2);
+      color: #e2e8f0;
+      transition: border-color 0.2s;
+    }
+    .search-input:focus { outline: none; border-color: #14b8a6; box-shadow: 0 0 0 2px rgba(20,184,166,0.2); }
+    .search-input::placeholder { color: #475569; }
+  </style>
+</head>
+<body class="bg-gradient-dark text-slate-100 min-h-screen">
+
+<!-- ═══ NAVBAR ═══ -->
+<nav class="fixed w-full top-0 z-50 bg-slate-950/80 backdrop-blur-md border-b border-slate-800">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-16">
+      <a href="../index.html" class="flex items-center gap-3 logo-container group" title="Torna a SECURDATA.PRO">
+        <img src="../logo-00-securdata-pro.svg" alt="SECURDATA.PRO Logo" class="h-10 w-auto rounded-full">
+        <div class="hidden sm:block">
+          <span class="font-bold text-base tracking-tight text-white group-hover:text-indigo-300 transition">SECURDATA.PRO</span>
+          <span class="block text-xs text-teal-400 font-semibold">Vivere Meglio Costa Meno</span>
+        </div>
+      </a>
+
+      <div class="hidden md:flex gap-5 items-center">
+        <a href="../blog.html" class="text-slate-400 hover:text-indigo-400 transition text-sm font-medium">← Blog</a>
+        <a href="#guida" class="text-slate-300 hover:text-teal-400 transition text-sm font-medium">La Guida</a>
+        <a href="#scarica" class="text-slate-300 hover:text-teal-400 transition text-sm font-medium">Scarica</a>
+      </div>
+
+      <a href="#scarica" class="hidden md:flex items-center gap-2 px-4 py-2 teal-btn text-white rounded-lg font-semibold text-sm">
+        📥 Scarica Gratis
+      </a>
+
+      <button id="vmcm-menu-btn" class="md:hidden text-slate-300 p-1" aria-label="Menu">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+  <div id="mobile-vmcm-menu" class="md:hidden flex-col gap-2 px-4 pb-4 bg-slate-950/95 border-b border-slate-800">
+    <a href="../blog.html" class="block px-3 py-2 rounded-lg text-slate-300 hover:text-indigo-400 hover:bg-slate-800/50 transition text-sm">← Blog</a>
+    <a href="#guida" class="block px-3 py-2 rounded-lg text-slate-300 hover:text-teal-400 hover:bg-slate-800/50 transition text-sm">La Guida</a>
+    <a href="#scarica" class="block px-3 py-2 teal-btn text-white rounded-lg text-sm font-semibold text-center">📥 Scarica Gratis</a>
+  </div>
+</nav>
+
+<main class="pt-16">
+
+  <!-- ═══ HERO ═══ -->
+  <section class="pt-16 pb-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+    <div class="absolute inset-0 pointer-events-none overflow-hidden">
+      <div class="absolute top-0 right-0 w-96 h-72 bg-teal-500/8 rounded-full blur-3xl"></div>
+      <div class="absolute bottom-0 left-0 w-80 h-64 bg-cyan-500/8 rounded-full blur-3xl"></div>
+    </div>
+    <div class="max-w-4xl mx-auto relative text-center animate-fade-in-up">
+      <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold bg-teal-500/20 text-teal-300 border border-teal-500/30 mb-5">
+        <span class="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse"></span>
+        🏠 RUBRICA FAMIGLIA & RISPARMIO — SECURDATA.PRO
+      </div>
+
+      <h1 class="text-4xl sm:text-5xl font-extrabold text-white mb-5 leading-tight">
+        Vivere Meglio<br>
+        <span class="bg-gradient-to-r from-teal-400 to-cyan-400 bg-clip-text text-transparent">Costa Meno</span>
+      </h1>
+
+      <p class="text-slate-300 text-lg max-w-2xl mx-auto mb-3 leading-relaxed">
+        La guida operativa per le famiglie dei professionisti e delle PMI che vogliono <strong class="text-white">recuperare 200–500€ al mese</strong> senza stravolgere la vita.
+      </p>
+      <p class="text-slate-400 text-sm max-w-xl mx-auto mb-8">
+        Bollette, inflazione, crisi socio-economiche: il sistema erode il tuo reddito ogni giorno. Questa guida ti dà gli strumenti per reagire — già oggi.
+      </p>
+
+      <!-- Hero CTA -->
+      <div class="flex flex-col sm:flex-row gap-3 justify-center items-center mb-10">
+        <a href="#scarica" class="teal-btn px-8 py-4 text-white rounded-xl font-bold text-base inline-flex items-center gap-2 shadow-lg">
+          📥 Scarica la Guida Gratuita
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+        </a>
+        <a href="../blog.html?category=Famiglia+%26+Risparmio" class="px-6 py-4 rounded-xl font-semibold text-sm text-slate-300 hover:text-white transition" style="background:rgba(148,163,184,0.08);border:1px solid rgba(148,163,184,0.18)">
+          📖 Leggi gli Articoli
+        </a>
+      </div>
+
+      <!-- Stats bar -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-2xl mx-auto">
+        <div class="rounded-xl p-4" style="background:rgba(20,184,166,0.08);border:1px solid rgba(20,184,166,0.20)">
+          <div class="text-2xl font-extrabold text-teal-300">200–500€</div>
+          <div class="text-xs text-slate-400 mt-1">risparmio/mese stimato</div>
+        </div>
+        <div class="rounded-xl p-4" style="background:rgba(20,184,166,0.08);border:1px solid rgba(20,184,166,0.20)">
+          <div class="text-2xl font-extrabold text-teal-300">6</div>
+          <div class="text-xs text-slate-400 mt-1">capitoli operativi</div>
+        </div>
+        <div class="rounded-xl p-4" style="background:rgba(20,184,166,0.08);border:1px solid rgba(20,184,166,0.20)">
+          <div class="text-2xl font-extrabold text-teal-300">20+</div>
+          <div class="text-xs text-slate-400 mt-1">strumenti pratici</div>
+        </div>
+        <div class="rounded-xl p-4" style="background:rgba(20,184,166,0.08);border:1px solid rgba(20,184,166,0.20)">
+          <div class="text-2xl font-extrabold text-teal-300">0€</div>
+          <div class="text-xs text-slate-400 mt-1">costo della guida</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ IL PROBLEMA ═══ -->
+  <section class="px-4 sm:px-6 lg:px-8 pb-14">
+    <div class="max-w-4xl mx-auto">
+      <div class="card-glass rounded-2xl p-6 sm:p-8 animate-fade-in-up animate-delay-1">
+        <div class="flex items-start gap-4">
+          <span class="text-4xl flex-shrink-0">⚠️</span>
+          <div>
+            <h2 class="text-xl font-bold text-white mb-3">La verità che nessuno ti dice</h2>
+            <p class="text-slate-300 leading-relaxed mb-4">
+              Non è solo un problema di quanto guadagni. È un problema di quanto <strong class="text-white">perdi senza accorgertene</strong>.
+            </p>
+            <p class="text-slate-400 text-sm leading-relaxed mb-4">
+              Il sistema moderno è progettato per farti dipendente: bollette in continua crescita, abbonamenti dimenticati, acqua in bottiglia a prezzi assurdi, cibo che si spreca, auto che costano una fortuna. Moltiplicato per 12 mesi, si parla di migliaia di euro all'anno che escono senza che tu te ne accorga.
+            </p>
+            <div class="grid sm:grid-cols-3 gap-3">
+              <div class="rounded-xl p-3 text-center" style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.20)">
+                <div class="text-lg font-bold text-red-400">+8–12%</div>
+                <div class="text-xs text-slate-400 mt-1">aumento bollette annuo</div>
+              </div>
+              <div class="rounded-xl p-3 text-center" style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.20)">
+                <div class="text-lg font-bold text-red-400">400€/anno</div>
+                <div class="text-xs text-slate-400 mt-1">solo in acqua in bottiglia</div>
+              </div>
+              <div class="rounded-xl p-3 text-center" style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.20)">
+                <div class="text-lg font-bold text-red-400">30%</div>
+                <div class="text-xs text-slate-400 mt-1">del cibo acquistato si spreca</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CONTENUTO GUIDA ═══ -->
+  <section id="guida" class="px-4 sm:px-6 lg:px-8 pb-14 scroll-mt-20">
+    <div class="max-w-4xl mx-auto">
+      <div class="text-center mb-8 animate-fade-in-up animate-delay-1">
+        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-teal-500/20 text-teal-300 border border-teal-500/30 mb-3">📘 COSA TROVI NELLA GUIDA</span>
+        <h2 class="text-2xl font-extrabold text-white">Sistema Intelligente in 6 Capitoli</h2>
+        <p class="text-slate-400 text-sm mt-2">Ogni capitolo è autonomo: scegli da dove iniziare in base alla tua situazione.</p>
+      </div>
+
+      <div class="grid sm:grid-cols-2 gap-4">
+
+        <div class="chapter-card rounded-xl p-5 animate-fade-in-up animate-delay-1">
+          <div class="flex items-start gap-3">
+            <span class="text-3xl flex-shrink-0">📱</span>
+            <div>
+              <div class="text-xs font-bold text-teal-400 mb-1 uppercase tracking-wider">Capitolo 1</div>
+              <h3 class="text-base font-bold text-white mb-2">App per il Budget Familiare</h3>
+              <p class="text-slate-400 text-xs leading-relaxed">Goodbudget, Wallet by BudgetBakers, Money Manager, Monefy. Come tracciare entrate e uscite e risparmiare il 15–20% in più al mese solo grazie alla consapevolezza.</p>
+              <div class="mt-2 text-xs font-semibold text-teal-400">💰 Risparmio: 80–150€/mese</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="chapter-card rounded-xl p-5 animate-fade-in-up animate-delay-2">
+          <div class="flex items-start gap-3">
+            <span class="text-3xl flex-shrink-0">⚡</span>
+            <div>
+              <div class="text-xs font-bold text-teal-400 mb-1 uppercase tracking-wider">Capitolo 2</div>
+              <h3 class="text-base font-bold text-white mb-2">Bollette & Autoproduzione Energetica</h3>
+              <p class="text-slate-400 text-xs leading-relaxed">Comparatori ARERA, Facile.it, Billoo. Kit solare plug & play da balcone (senza permessi sotto 800W). Pannelli riflettenti. Termostati intelligenti.</p>
+              <div class="mt-2 text-xs font-semibold text-teal-400">💰 Risparmio: 50–150€/mese</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="chapter-card rounded-xl p-5 animate-fade-in-up animate-delay-3">
+          <div class="flex items-start gap-3">
+            <span class="text-3xl flex-shrink-0">💧</span>
+            <div>
+              <div class="text-xs font-bold text-teal-400 mb-1 uppercase tracking-wider">Capitolo 3</div>
+              <h3 class="text-base font-bold text-white mb-2">Acqua, Cibo e Orto Domestico</h3>
+              <p class="text-slate-400 text-xs leading-relaxed">Filtri a osmosi inversa (300–500€/anno risparmiati). Sistemi idroponici da interno. Semi antichi e orto in vaso. Compostiere per fertilizzante gratuito.</p>
+              <div class="mt-2 text-xs font-semibold text-teal-400">💰 Risparmio: 60–200€/mese</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="chapter-card rounded-xl p-5 animate-fade-in-up animate-delay-4">
+          <div class="flex items-start gap-3">
+            <span class="text-3xl flex-shrink-0">♻️</span>
+            <div>
+              <div class="text-xs font-bold text-teal-400 mb-1 uppercase tracking-wider">Capitolo 4</div>
+              <h3 class="text-base font-bold text-white mb-2">Economia Circolare</h3>
+              <p class="text-slate-400 text-xs leading-relaxed">Elettrodomestici rigenerati certificati. Riparazione prima di sostituire. Stampanti 3D per pezzi di ricambio. Retrofit elettrico per auto usate.</p>
+              <div class="mt-2 text-xs font-semibold text-teal-400">💰 Risparmio: 30–100€/mese</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="chapter-card rounded-xl p-5 animate-fade-in-up animate-delay-5">
+          <div class="flex items-start gap-3">
+            <span class="text-3xl flex-shrink-0">🤖</span>
+            <div>
+              <div class="text-xs font-bold text-teal-400 mb-1 uppercase tracking-wider">Capitolo 5</div>
+              <h3 class="text-base font-bold text-white mb-2">Automazione Digitale</h3>
+              <p class="text-slate-400 text-xs leading-relaxed">App di budget automatici. Automazione pagamenti ricorrenti. Monitoraggio consumi in tempo reale. Alert intelligenti per spese anomale.</p>
+              <div class="mt-2 text-xs font-semibold text-teal-400">⏳ Risultato: +tempo libero</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="chapter-card rounded-xl p-5 animate-fade-in-up animate-delay-6">
+          <div class="flex items-start gap-3">
+            <span class="text-3xl flex-shrink-0">🤝</span>
+            <div>
+              <div class="text-xs font-bold text-teal-400 mb-1 uppercase tracking-wider">Capitolo 6</div>
+              <h3 class="text-base font-bold text-white mb-2">Comunità & Acquisti Collettivi</h3>
+              <p class="text-slate-400 text-xs leading-relaxed">GAS (Gruppi di Acquisto Solidale). Condivisione connessione internet con vicini. Comunità energetiche incentivate per legge. Acquisti collettivi di carburante e prodotti.</p>
+              <div class="mt-2 text-xs font-semibold text-teal-400">💰 Risparmio: 50–150€/mese</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CHECKLIST ANTEPRIMA ═══ -->
+  <section class="px-4 sm:px-6 lg:px-8 pb-14">
+    <div class="max-w-4xl mx-auto">
+      <div class="rounded-2xl p-6 sm:p-8 animate-fade-in-up" style="background:linear-gradient(135deg,rgba(20,184,166,0.09),rgba(6,182,212,0.06));border:1px solid rgba(20,184,166,0.25)">
+        <div class="text-center mb-6">
+          <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-teal-500/20 text-teal-300 border border-teal-500/30 mb-3">✅ CHECKLIST INCLUSA NEL PDF</span>
+          <h2 class="text-xl font-bold text-white">La tua roadmap in 30 azioni</h2>
+          <p class="text-slate-400 text-sm mt-1">Spunta ogni azione completata. Anche il 30% cambia la situazione.</p>
+        </div>
+
+        <div class="grid sm:grid-cols-2 gap-6">
+          <div>
+            <h3 class="text-sm font-bold text-teal-300 mb-3 uppercase tracking-wider">⚡ Energia</h3>
+            <ul class="space-y-2">
+              <li class="flex items-start gap-2 checklist-item text-sm text-slate-300">Confronta il fornitore su ARERA o Facile.it</li>
+              <li class="flex items-start gap-2 checklist-item text-sm text-slate-300">Installa pannelli riflettenti dietro i termosifoni</li>
+              <li class="flex items-start gap-2 checklist-item text-sm text-slate-300">Valuta kit solare plug & play (sotto 800W)</li>
+              <li class="flex items-start gap-2 checklist-item text-sm text-slate-300">Imposta termostato intelligente</li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-teal-300 mb-3 uppercase tracking-wider">💧 Acqua & Cibo</h3>
+            <ul class="space-y-2">
+              <li class="flex items-start gap-2 checklist-item text-sm text-slate-300">Installa filtro a osmosi inversa</li>
+              <li class="flex items-start gap-2 checklist-item text-sm text-slate-300">Avvia compostaggio domestico</li>
+              <li class="flex items-start gap-2 checklist-item text-sm text-slate-300">Inizia orto in vasi o sistema idroponico</li>
+              <li class="flex items-start gap-2 checklist-item text-sm text-slate-300">Cerca il GAS più vicino a casa</li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-teal-300 mb-3 uppercase tracking-wider">♻️ Economia Circolare</h3>
+            <ul class="space-y-2">
+              <li class="flex items-start gap-2 checklist-item text-sm text-slate-300">Acquista elettrodomestici rigenerati certificati</li>
+              <li class="flex items-start gap-2 checklist-item text-sm text-slate-300">Ripara prima di sostituire</li>
+              <li class="flex items-start gap-2 checklist-item text-sm text-slate-300">Valuta stampante 3D per ricambi</li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-teal-300 mb-3 uppercase tracking-wider">📱 Digitale & Comunità</h3>
+            <ul class="space-y-2">
+              <li class="flex items-start gap-2 checklist-item text-sm text-slate-300">Configura Goodbudget o Wallet</li>
+              <li class="flex items-start gap-2 checklist-item text-sm text-slate-300">Automatizza monitoraggio spese ricorrenti</li>
+              <li class="flex items-start gap-2 checklist-item text-sm text-slate-300">Valuta condivisione internet con vicini</li>
+              <li class="flex items-start gap-2 checklist-item text-sm text-slate-300">Informati su comunità energetiche locali</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 3 SCENARI ═══ -->
+  <section class="px-4 sm:px-6 lg:px-8 pb-14">
+    <div class="max-w-4xl mx-auto">
+      <div class="text-center mb-7 animate-fade-in-up">
+        <h2 class="text-xl font-bold text-white">🧠 Immagina tra 12 mesi</h2>
+        <p class="text-slate-400 text-sm mt-1">Cosa succede se agisci oggi? E se non agisci?</p>
+      </div>
+      <div class="grid sm:grid-cols-3 gap-4">
+        <div class="scenario-card animate-fade-in-up animate-delay-1" style="background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.22)">
+          <div class="text-2xl mb-2">❌</div>
+          <h3 class="font-bold text-red-400 mb-2 text-sm">Scenario 1 — Non fai nulla</h3>
+          <ul class="text-xs text-slate-400 space-y-1.5">
+            <li>• Le stesse bollette, in aumento</li>
+            <li>• Le stesse frustrazioni a fine mese</li>
+            <li>• Nessun margine per il futuro</li>
+            <li>• Il sistema continua a erodere il tuo reddito</li>
+          </ul>
+        </div>
+        <div class="scenario-card animate-fade-in-up animate-delay-2" style="background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.22)">
+          <div class="text-2xl mb-2">⚖️</div>
+          <h3 class="font-bold text-amber-400 mb-2 text-sm">Scenario 2 — Applichi il 50%</h3>
+          <ul class="text-xs text-slate-400 space-y-1.5">
+            <li>• 100–250€ risparmiati ogni mese</li>
+            <li>• Più consapevolezza delle spese</li>
+            <li>• Meno dipendenza dai fornitori</li>
+            <li>• Base per costruire sicurezza finanziaria</li>
+          </ul>
+        </div>
+        <div class="scenario-card animate-fade-in-up animate-delay-3" style="background:rgba(20,184,166,0.07);border:1px solid rgba(20,184,166,0.25)">
+          <div class="text-2xl mb-2">🚀</div>
+          <h3 class="font-bold text-teal-400 mb-2 text-sm">Scenario 3 — Sistema completo</h3>
+          <ul class="text-xs text-slate-400 space-y-1.5">
+            <li>• 250–575€ risparmiati ogni mese</li>
+            <li>• Indipendenza energetica parziale</li>
+            <li>• Cibo e acqua a costo quasi zero</li>
+            <li>• Sistema sostenibile per decenni</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ MODULO DOWNLOAD ═══ -->
+  <section id="scarica" class="px-4 sm:px-6 lg:px-8 pb-16 scroll-mt-20">
+    <div class="max-w-lg mx-auto">
+      <div class="rounded-2xl p-7 sm:p-10 text-center animate-fade-in-up" style="background:linear-gradient(135deg,rgba(20,184,166,0.12),rgba(6,182,212,0.08));border:1px solid rgba(20,184,166,0.35)">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-teal-500/20 text-teal-300 border border-teal-500/30 mb-4">
+          🎁 FREEMIUM — ACCESSO GRATUITO
+        </div>
+        <div class="text-5xl mb-4">📥</div>
+        <h2 class="text-2xl font-extrabold text-white mb-2">Scarica la Guida PDF</h2>
+        <p class="text-slate-400 text-sm mb-6 leading-relaxed">
+          Tutti i capitoli, la checklist operativa completa e la tabella del risparmio in un unico documento. Nessuna carta di credito. Nessun obbligo.
+        </p>
+
+        <div class="space-y-3 mb-6">
+          <input type="text" id="dl-nome" placeholder="Il tuo nome" class="search-input w-full px-4 py-3 rounded-xl text-sm">
+          <input type="email" id="dl-email" placeholder="La tua email" class="search-input w-full px-4 py-3 rounded-xl text-sm">
+        </div>
+
+        <button onclick="downloadGuida()" class="w-full teal-btn px-6 py-4 text-white rounded-xl font-bold text-base inline-flex items-center justify-center gap-2">
+          📥 Scarica Ora — È Gratis
+        </button>
+
+        <div id="dl-msg" class="mt-3 text-sm hidden"></div>
+
+        <p class="text-xs text-slate-500 mt-4">
+          Compilando il modulo accetti la nostra <a href="../privacy-policy.html" class="text-indigo-400 hover:text-indigo-300 transition underline">Privacy Policy</a>. Ti invieremo la guida e potrai ricevere aggiornamenti della rubrica. Cancellazione immediata con un click.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ COLLEGAMENTO SECURDATA ═══ -->
+  <section class="px-4 sm:px-6 lg:px-8 pb-16">
+    <div class="max-w-4xl mx-auto">
+      <div class="card-glass rounded-2xl p-6 sm:p-8 animate-fade-in-up">
+        <div class="flex flex-col sm:flex-row items-start gap-5">
+          <div class="flex-shrink-0">
+            <img src="../logo-00-securdata-pro.svg" alt="SecurData.Pro" class="h-14 w-auto rounded-full" style="filter:drop-shadow(0 0 8px rgba(99,102,241,0.6))">
+          </div>
+          <div class="flex-1">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 mb-3">
+              🔐 IL COLLEGAMENTO CON SECURDATA.PRO
+            </div>
+            <h3 class="text-lg font-bold text-white mb-2">
+              La stessa logica che protegge i tuoi dati aziendali
+            </h3>
+            <p class="text-slate-400 text-sm leading-relaxed mb-4">
+              In azienda, i costi nascosti si combattono con dati, consapevolezza e strumenti giusti. <strong class="text-slate-300">Esattamente come in famiglia.</strong> SecurData.Pro aiuta le PMI a proteggere i dati, ottimizzare i processi e difendersi dalle minacce digitali — lo stesso approccio sistemico che questa guida porta nelle vostre case.
+            </p>
+            <div class="flex flex-wrap gap-3">
+              <a href="../index.html#servizi" class="inline-flex items-center gap-1.5 px-4 py-2 read-more-btn text-white rounded-lg text-sm font-semibold">
+                Scopri i Servizi per PMI →
+              </a>
+              <a href="../blog.html" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold text-slate-300 hover:text-white transition" style="background:rgba(148,163,184,0.08);border:1px solid rgba(148,163,184,0.15)">
+                Blog Sicurezza Dati
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ═══ FOOTER ═══ -->
+<footer class="border-t border-slate-800 bg-slate-950/60 py-8 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+    <a href="../index.html" class="flex items-center gap-3 logo-container group">
+      <img src="../logo-00-securdata-pro.svg" alt="Logo" class="h-8 w-auto rounded-full">
+      <span class="font-bold text-sm text-slate-300 group-hover:text-indigo-300 transition">SECURDATA.PRO</span>
+    </a>
+    <div class="flex gap-5 text-xs text-slate-500">
+      <a href="../blog.html" class="hover:text-teal-400 transition">Blog</a>
+      <a href="../blog.html#rubrica-famiglia" class="hover:text-teal-400 transition">Famiglia & Risparmio</a>
+      <a href="../privacy-policy.html" class="hover:text-indigo-400 transition">Privacy</a>
+      <a href="mailto:info@securdata.pro" class="hover:text-indigo-400 transition">Contatti</a>
+    </div>
+    <p class="text-xs text-slate-600">© 2026 SecurData.Pro</p>
+  </div>
+</footer>
+
+<script>
+// Mobile menu
+document.getElementById('vmcm-menu-btn').addEventListener('click', function() {
+  document.getElementById('mobile-vmcm-menu').classList.toggle('open');
+});
+
+// Download / Lead capture
+function downloadGuida() {
+  var nome  = document.getElementById('dl-nome').value.trim();
+  var email = document.getElementById('dl-email').value.trim();
+  var msgEl = document.getElementById('dl-msg');
+
+  if (!nome) {
+    showMsg('⚠️ Inserisci il tuo nome.', 'text-amber-400');
+    return;
+  }
+  if (!email || !/^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/.test(email)) {
+    showMsg('⚠️ Inserisci un indirizzo email valido.', 'text-amber-400');
+    return;
+  }
+
+  // Save lead locally (same pattern as the rest of the site)
+  try {
+    var leads = JSON.parse(localStorage.getItem('vmcm_leads') || '[]');
+    leads.push({ nome: nome, email: email, ts: new Date().toISOString(), source: 'vivere-meglio-costa-meno' });
+    localStorage.setItem('vmcm_leads', JSON.stringify(leads));
+    localStorage.setItem('nl_pending_email', email);
+  } catch(e) {}
+
+  showMsg('✅ Perfetto! La tua guida è pronta. Ti reindirizziamo per completare la registrazione…', 'text-teal-400');
+
+  document.getElementById('dl-nome').value  = '';
+  document.getElementById('dl-email').value = '';
+
+  // Redirect to article (the guide content) after short delay
+  setTimeout(function() {
+    window.location.href = '../blog-post.html?id=11';
+  }, 1800);
+}
+
+function showMsg(text, colorClass) {
+  var el = document.getElementById('dl-msg');
+  el.textContent = text;
+  el.className = 'mt-3 text-sm ' + colorClass;
+  el.classList.remove('hidden');
+}
+</script>
+
+<script src="../js/cookie-consent.js"></script>
+</body>
+</html>

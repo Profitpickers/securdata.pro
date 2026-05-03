@@ -239,8 +239,8 @@
   </div>
 
   <!-- Promo -->
-  <div class="max-w-3xl mx-auto mt-10">
-    <div style="background:linear-gradient(135deg,rgba(99,102,241,.15),rgba(168,85,247,.1));border:1px solid rgba(99,102,241,.3)"
+  <div class="max-w-3xl mx-auto mt-10" id="post-promo-block">
+    <div id="post-promo-default" style="background:linear-gradient(135deg,rgba(99,102,241,.15),rgba(168,85,247,.1));border:1px solid rgba(99,102,241,.3)"
          class="rounded-2xl p-6 flex flex-col sm:flex-row items-center gap-5">
       <div class="flex-1">
         <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30 mb-2">🎁 RISORSA GRATUITA</div>
@@ -248,6 +248,14 @@
         <p class="text-slate-400 text-sm">20 punti pratici per proteggere i dati della tua azienda.</p>
       </div>
       <a href="./login-utente.html" class="read-more-btn px-5 py-2.5 text-white rounded-xl font-bold text-sm whitespace-nowrap">📥 Scarica Gratis</a>
+    </div>
+    <div id="post-promo-famiglia" class="hidden rounded-2xl p-6 flex flex-col sm:flex-row items-center gap-5" style="background:linear-gradient(135deg,rgba(20,184,166,.12),rgba(6,182,212,.08));border:1px solid rgba(20,184,166,.30)">
+      <div class="flex-1">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-teal-500/20 text-teal-300 border border-teal-500/30 mb-2">🏠 GUIDA FAMIGLIA — FREEMIUM</div>
+        <h3 class="text-lg font-bold text-white mb-1">Vivere Meglio Costa Meno</h3>
+        <p class="text-slate-400 text-sm">La guida operativa completa per recuperare 200–500€ al mese.</p>
+      </div>
+      <a href="./risorse_gratuite/vivere-meglio-costa-meno.html" style="background:linear-gradient(135deg,#14b8a6,#0891b2)" class="px-5 py-2.5 text-white rounded-xl font-bold text-sm whitespace-nowrap">📥 Scarica Gratis</a>
     </div>
   </div>
 </main>
@@ -293,10 +301,11 @@ function formatDate(dateStr) {
 }
 function categoryColor(cat) {
   var map = {
-    'Normativa':        'text-amber-300 bg-amber-500/15 border-amber-500/30',
-    'Sicurezza':        'text-emerald-300 bg-emerald-500/15 border-emerald-500/30',
-    'Minacce':          'text-red-300 bg-red-500/15 border-red-500/30',
-    'AI & Innovazione': 'text-purple-300 bg-purple-500/15 border-purple-500/30',
+    'Normativa':           'text-amber-300 bg-amber-500/15 border-amber-500/30',
+    'Sicurezza':           'text-emerald-300 bg-emerald-500/15 border-emerald-500/30',
+    'Minacce':             'text-red-300 bg-red-500/15 border-red-500/30',
+    'AI & Innovazione':    'text-purple-300 bg-purple-500/15 border-purple-500/30',
+    'Famiglia & Risparmio':'text-teal-300 bg-teal-500/15 border-teal-500/30',
   };
   return map[cat] || 'text-indigo-300 bg-indigo-500/15 border-indigo-500/30';
 }
@@ -573,6 +582,11 @@ if (!postId) {
       document.getElementById('error-state').classList.remove('hidden');
     } else {
       renderArticle(post, publishedPosts);
+      // Show famiglia promo for the Famiglia & Risparmio category
+      if (post.category === 'Famiglia & Risparmio') {
+        document.getElementById('post-promo-default').classList.add('hidden');
+        document.getElementById('post-promo-famiglia').classList.remove('hidden');
+      }
     }
   }).catch(function() {
     document.getElementById('loading').style.display = 'none';

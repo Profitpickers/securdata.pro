@@ -72,6 +72,27 @@
       background: linear-gradient(135deg, rgba(99,102,241,0.15) 0%, rgba(168,85,247,0.1) 100%);
       border: 1px solid rgba(99,102,241,0.3);
     }
+    .rubric-famiglia {
+      background: linear-gradient(135deg, rgba(20,184,166,0.10) 0%, rgba(6,182,212,0.07) 100%);
+      border: 1px solid rgba(20,184,166,0.28);
+    }
+    .rubric-famiglia:hover .rubric-cta {
+      opacity: 1;
+      transform: translateX(4px);
+    }
+    .rubric-cta {
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .famiglia-article-card {
+      background: rgba(20,184,166,0.06);
+      border: 1px solid rgba(20,184,166,0.20);
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+    }
+    .famiglia-article-card:hover {
+      border-color: rgba(20,184,166,0.45);
+      box-shadow: 0 8px 28px rgba(20,184,166,0.12);
+      transform: translateY(-3px);
+    }
     .social-btn {
       background: rgba(255,255,255,0.04);
       border: 1px solid rgba(148,163,184,0.15);
@@ -119,6 +140,7 @@
       <div class="hidden md:flex gap-6 items-center">
         <a href="./index.html" class="text-slate-400 hover:text-indigo-400 transition text-sm font-medium">← Sito Principale</a>
         <a href="#articoli" class="text-slate-300 hover:text-indigo-400 transition text-sm font-medium">Articoli</a>
+        <a href="#rubrica-famiglia" class="text-teal-400 hover:text-teal-300 transition text-sm font-semibold">🏠 Famiglia</a>
         <a href="#promo" class="text-slate-300 hover:text-indigo-400 transition text-sm font-medium">Risorse</a>
       </div>
 
@@ -140,6 +162,7 @@
   <div id="mobile-blog-menu" class="md:hidden flex-col gap-2 px-4 pb-4 bg-slate-950/95 border-b border-slate-800">
     <a href="./index.html" class="block px-3 py-2 rounded-lg text-slate-300 hover:text-indigo-400 hover:bg-slate-800/50 transition text-sm">← Sito Principale</a>
     <a href="#articoli" class="block px-3 py-2 rounded-lg text-slate-300 hover:text-indigo-400 hover:bg-slate-800/50 transition text-sm">Articoli</a>
+    <a href="#rubrica-famiglia" class="block px-3 py-2 rounded-lg text-teal-400 hover:text-teal-300 hover:bg-teal-900/20 transition text-sm font-semibold">🏠 Famiglia & Risparmio</a>
     <a href="#promo" class="block px-3 py-2 rounded-lg text-slate-300 hover:text-indigo-400 hover:bg-slate-800/50 transition text-sm">Risorse Gratuite</a>
     <a href="./login-utente.html" class="block px-3 py-2 read-more-btn text-white rounded-lg text-sm font-semibold text-center">Accedi / Registrati</a>
   </div>
@@ -167,6 +190,68 @@
       <p class="text-slate-400 text-base max-w-2xl">
         Articoli pratici su cybersecurity, GDPR, integrazione AI e protezione dei dati per PMI italiane.
       </p>
+    </div>
+  </section>
+
+  <!-- ═══ RUBRICA FAMIGLIA & RISPARMIO ═══ -->
+  <section id="rubrica-famiglia" class="px-4 sm:px-6 lg:px-8 pb-10 scroll-mt-20">
+    <div class="max-w-7xl mx-auto">
+      <div class="rubric-famiglia rounded-2xl p-6 sm:p-8">
+        <!-- Rubric header -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+          <div>
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-teal-500/20 text-teal-300 border border-teal-500/30 mb-3">
+              🏠 RUBRICA — VIVERE MEGLIO COSTA MENO
+            </div>
+            <h2 class="text-xl sm:text-2xl font-extrabold text-white leading-tight">
+              Per le famiglie dei professionisti e delle PMI
+            </h2>
+            <p class="text-slate-400 text-sm mt-2 max-w-2xl leading-relaxed">
+              Lavori duro per creare ricchezza, ma bollette, inflazione e crisi la consumano inesorabilmente. Questa rubrica ti dà strumenti concreti per recuperare 200–500€ al mese — tecnologie, app e strategie già disponibili nel 2026.
+            </p>
+          </div>
+          <a href="./risorse_gratuite/vivere-meglio-costa-meno.html"
+             class="flex-shrink-0 inline-flex items-center gap-2 px-5 py-3 rounded-xl font-bold text-sm text-white whitespace-nowrap"
+             style="background:linear-gradient(135deg,#14b8a6,#0891b2)">
+            📥 Scarica la Guida PDF
+            <svg class="w-4 h-4 rubric-cta" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+
+        <!-- Quick stats row -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+          <div class="rounded-xl p-3 text-center" style="background:rgba(20,184,166,0.08);border:1px solid rgba(20,184,166,0.18)">
+            <div class="text-2xl font-extrabold text-teal-300">500€</div>
+            <div class="text-xs text-slate-400 mt-0.5">risparmio/mese stimato</div>
+          </div>
+          <div class="rounded-xl p-3 text-center" style="background:rgba(20,184,166,0.08);border:1px solid rgba(20,184,166,0.18)">
+            <div class="text-2xl font-extrabold text-teal-300">20+</div>
+            <div class="text-xs text-slate-400 mt-0.5">strumenti pratici</div>
+          </div>
+          <div class="rounded-xl p-3 text-center" style="background:rgba(20,184,166,0.08);border:1px solid rgba(20,184,166,0.18)">
+            <div class="text-2xl font-extrabold text-teal-300">0€</div>
+            <div class="text-xs text-slate-400 mt-0.5">costo guida PDF</div>
+          </div>
+          <div class="rounded-xl p-3 text-center" style="background:rgba(20,184,166,0.08);border:1px solid rgba(20,184,166,0.18)">
+            <div class="text-2xl font-extrabold text-teal-300">6 cap.</div>
+            <div class="text-xs text-slate-400 mt-0.5">aree di intervento</div>
+          </div>
+        </div>
+
+        <!-- Topic pills -->
+        <div class="flex flex-wrap gap-2">
+          <button onclick="filterFamiglia()" class="famiglia-pill inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-teal-300 border border-teal-500/30 hover:bg-teal-500/15 transition" style="background:rgba(20,184,166,0.07)">⚡ Energia & Bollette</button>
+          <button onclick="filterFamiglia()" class="famiglia-pill inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-teal-300 border border-teal-500/30 hover:bg-teal-500/15 transition" style="background:rgba(20,184,166,0.07)">💧 Acqua & Cibo</button>
+          <button onclick="filterFamiglia()" class="famiglia-pill inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-teal-300 border border-teal-500/30 hover:bg-teal-500/15 transition" style="background:rgba(20,184,166,0.07)">📱 App Budget</button>
+          <button onclick="filterFamiglia()" class="famiglia-pill inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-teal-300 border border-teal-500/30 hover:bg-teal-500/15 transition" style="background:rgba(20,184,166,0.07)">♻️ Economia Circolare</button>
+          <button onclick="filterFamiglia()" class="famiglia-pill inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-teal-300 border border-teal-500/30 hover:bg-teal-500/15 transition" style="background:rgba(20,184,166,0.07)">🤝 Comunità & GAS</button>
+        </div>
+      </div>
+
+      <!-- Articles in this rubric (rendered by JS) -->
+      <div id="famiglia-articles-grid" class="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <!-- Injected by JS -->
+      </div>
     </div>
   </section>
 
@@ -234,9 +319,9 @@
   </section>
 
   <!-- ═══ PROMO BANNER ═══ -->
-  <section id="promo" class="px-4 sm:px-6 lg:px-8 pb-14 scroll-mt-20">
+  <section id="promo" class="px-4 sm:px-6 lg:px-8 pb-8 scroll-mt-20">
     <div class="max-w-7xl mx-auto">
-      <div class="promo-banner rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row items-center gap-6">
+      <div class="promo-banner rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row items-center gap-6 mb-5">
         <div class="flex-1">
           <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30 mb-3">
             🎁 RISORSA GRATUITA
@@ -252,6 +337,27 @@
           </a>
           <a href="./index.html#servizi" class="text-xs text-indigo-400 hover:text-indigo-300 transition text-center">
             Scopri i nostri servizi →
+          </a>
+        </div>
+      </div>
+
+      <!-- Seconda card: guida famiglia -->
+      <div class="rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row items-center gap-6" style="background:linear-gradient(135deg,rgba(20,184,166,0.12),rgba(6,182,212,0.08));border:1px solid rgba(20,184,166,0.30)">
+        <div class="flex-1">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-teal-500/20 text-teal-300 border border-teal-500/30 mb-3">
+            🏠 GUIDA FAMIGLIA — FREEMIUM
+          </div>
+          <h2 class="text-xl font-bold text-white mb-2">Vivere Meglio Costa Meno</h2>
+          <p class="text-slate-400 text-sm leading-relaxed">
+            La guida operativa per le famiglie dei professionisti e delle PMI: 6 capitoli, 20+ strumenti pratici e una checklist per recuperare 200–500€ al mese.
+          </p>
+        </div>
+        <div class="flex flex-col gap-3 sm:items-end shrink-0">
+          <a href="./risorse_gratuite/vivere-meglio-costa-meno.html" class="inline-flex items-center gap-2 px-6 py-3 text-white rounded-xl font-bold text-sm whitespace-nowrap" style="background:linear-gradient(135deg,#14b8a6,#0891b2)">
+            📥 Scarica Gratis
+          </a>
+          <a href="#rubrica-famiglia" class="text-xs text-teal-400 hover:text-teal-300 transition text-center">
+            Vai alla rubrica →
           </a>
         </div>
       </div>
@@ -328,6 +434,9 @@
           <li><a href="./checklist/checklist-sicurezza-pmi-2025.html" class="hover:text-indigo-400 transition flex items-center gap-1.5 text-green-400/80 font-semibold">
             ✅ Checklist Sicurezza PMI
           </a></li>
+          <li><a href="./risorse_gratuite/vivere-meglio-costa-meno.html" class="hover:text-teal-400 transition flex items-center gap-1.5 text-teal-400/80 font-semibold">
+            🏠 Guida Famiglia & Risparmio
+          </a></li>
           <li><a href="./vito_qrcode_contact/login.html" class="hover:text-indigo-400 transition flex items-center gap-1.5 text-indigo-400/70 font-semibold">
             <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
             Area Riservata
@@ -369,6 +478,47 @@
 
 <!-- ═══ JAVASCRIPT ═══ -->
 <script>
+// ── Famiglia & Risparmio rubric ───────────────────────────────
+function renderFamigliaRubric(posts) {
+  var famigliaPosts = posts.filter(function(p) { return p.category === 'Famiglia & Risparmio'; });
+  var grid = document.getElementById('famiglia-articles-grid');
+  if (!famigliaPosts.length) { grid.style.display = 'none'; return; }
+  grid.innerHTML = famigliaPosts.map(function(post, i) {
+    var coverImg = getPostImage(post);
+    var coverHtml = coverImg
+      ? '<div class="w-full rounded-lg overflow-hidden mb-3" style="height:130px;"><img src="' + escapeHtml(coverImg) + '" alt="' + escapeHtml(post.title) + '" class="w-full h-full object-cover"></div>'
+      : '';
+    var tagsHtml = (post.tags || []).slice(0, 3).map(function(t) {
+      return '<span style="background:rgba(20,184,166,0.10);border:1px solid rgba(20,184,166,0.25);color:#5eead4" class="text-xs px-2 py-0.5 rounded">' + escapeHtml(t) + '</span>';
+    }).join('');
+    return '<a href="' + postUrl(post) + '" class="famiglia-article-card rounded-xl p-5 flex flex-col block hover:no-underline animate-fade-in" style="animation-delay:' + (i*0.07) + 's">' +
+      coverHtml +
+      '<div class="flex items-start gap-2 mb-3">' +
+        '<span class="text-2xl mt-0.5">🏠</span>' +
+        '<div class="flex-1 min-w-0">' +
+          '<span class="inline-block text-xs font-bold px-2 py-0.5 rounded border text-teal-300 bg-teal-500/15 border-teal-500/30 mb-1.5">Famiglia & Risparmio</span>' +
+          '<h3 class="text-sm font-bold text-white leading-snug line-clamp-2">' + escapeHtml(post.title) + '</h3>' +
+        '</div>' +
+      '</div>' +
+      '<p class="text-slate-400 text-xs leading-relaxed mb-4 flex-1 line-clamp-3">' + escapeHtml(post.excerpt) + '</p>' +
+      '<div class="flex flex-wrap gap-1 mb-3">' + tagsHtml + '</div>' +
+      '<div class="flex items-center justify-between border-t pt-3" style="border-color:rgba(20,184,166,0.18)">' +
+        '<div class="text-xs text-slate-500">' + formatDate(post.date) + ' · ' + (post.readTime || '5 min') + '</div>' +
+        '<span class="text-xs font-semibold text-teal-400">Leggi →</span>' +
+      '</div>' +
+    '</a>';
+  }).join('');
+}
+
+function filterFamiglia() {
+  state.category = 'Famiglia & Risparmio';
+  document.querySelectorAll('.category-btn').forEach(function(b) {
+    b.classList.toggle('active', b.dataset.category === state.category);
+  });
+  applyFilters();
+  document.getElementById('articoli').scrollIntoView({ behavior: 'smooth' });
+}
+
 // ── Mobile menu ──────────────────────────────────────────────
 document.getElementById('blog-menu-btn').addEventListener('click', function() {
   var m = document.getElementById('mobile-blog-menu');
@@ -415,10 +565,11 @@ function formatDate(dateStr) {
 
 function categoryColor(cat) {
   var map = {
-    'Normativa':      'text-amber-300 bg-amber-500/15 border-amber-500/30',
-    'Sicurezza':      'text-emerald-300 bg-emerald-500/15 border-emerald-500/30',
-    'Minacce':        'text-red-300 bg-red-500/15 border-red-500/30',
-    'AI & Innovazione': 'text-purple-300 bg-purple-500/15 border-purple-500/30',
+    'Normativa':           'text-amber-300 bg-amber-500/15 border-amber-500/30',
+    'Sicurezza':           'text-emerald-300 bg-emerald-500/15 border-emerald-500/30',
+    'Minacce':             'text-red-300 bg-red-500/15 border-red-500/30',
+    'AI & Innovazione':    'text-purple-300 bg-purple-500/15 border-purple-500/30',
+    'Famiglia & Risparmio':'text-teal-300 bg-teal-500/15 border-teal-500/30',
   };
   return map[cat] || 'text-indigo-300 bg-indigo-500/15 border-indigo-500/30';
 }
@@ -656,6 +807,7 @@ function escapeAttr(s) {
 // ── Init ──────────────────────────────────────────────────────
 loadPosts().then(function(posts) {
   allPosts = posts;
+  renderFamigliaRubric(posts);
   renderFeatured(posts);
   buildFilters(posts);
   applyFilters();
