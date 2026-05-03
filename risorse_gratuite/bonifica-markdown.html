@@ -247,6 +247,36 @@
           </label>
         </label>
 
+        <label class="flex items-center justify-between gap-3 p-3 rounded-xl bg-slate-800/40 border border-slate-700/50 cursor-pointer hover:border-red-500/30 transition">
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-0.5">
+              <span class="text-sm font-semibold text-slate-200">Caratteri tossici</span>
+              <span class="module-badge" style="background:rgba(239,68,68,0.2);border:1px solid rgba(239,68,68,0.4);color:#fca5a5">FIX</span>
+            </div>
+            <p class="text-xs text-slate-500">Zero-width, BOM, bidi override, non-characters — tabella §1.2 guida v2.1</p>
+          </div>
+          <label class="toggle-switch flex-shrink-0">
+            <input type="checkbox" id="mod-toxic" checked>
+            <div class="toggle-track"></div>
+            <div class="toggle-thumb"></div>
+          </label>
+        </label>
+
+        <label class="flex items-center justify-between gap-3 p-3 rounded-xl bg-slate-800/40 border border-slate-700/50 cursor-pointer hover:border-amber-500/30 transition">
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-0.5">
+              <span class="text-sm font-semibold text-slate-200">Tipografia → ASCII</span>
+              <span class="module-badge" style="background:rgba(245,158,11,0.2);border:1px solid rgba(245,158,11,0.4);color:#fcd34d">FIX</span>
+            </div>
+            <p class="text-xs text-slate-500">Virgolette curve, em-dash, ellissi, legature ﬁ ﬂ → equivalenti ASCII</p>
+          </div>
+          <label class="toggle-switch flex-shrink-0">
+            <input type="checkbox" id="mod-typo" checked>
+            <div class="toggle-track"></div>
+            <div class="toggle-thumb"></div>
+          </label>
+        </label>
+
         <label class="flex items-center justify-between gap-3 p-3 rounded-xl bg-slate-800/40 border border-slate-700/50 cursor-pointer hover:border-indigo-500/40 transition sm:col-span-2">
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2 mb-0.5">
@@ -356,9 +386,9 @@ Colonna1     Colonna2     Colonna3"></textarea>
             usa lo script Python CLI. Funziona con Python 3.8+ senza dipendenze esterne — solo stdlib.
           </p>
           <div class="bg-slate-900/60 rounded-xl p-4 mb-4 font-mono text-xs text-slate-300 border border-slate-700/50 overflow-x-auto">
-            <span class="text-slate-500"># Installa: nessuna dipendenza</span><br>
+            <span class="text-slate-500"># Installa: nessuna dipendenza — Python 3.8+</span><br>
             <span class="text-indigo-400">python</span> bonifica.py articolo.md <span class="text-purple-400">--full-check</span><br>
-            <span class="text-indigo-400">python</span> bonifica.py articolo.md <span class="text-purple-400">--fix-backslash --fix-html --output</span> clean.md<br>
+            <span class="text-indigo-400">python</span> bonifica.py articolo.md <span class="text-purple-400">--fix-backslash --fix-html --fix-toxic --fix-typography --output</span> clean.md<br>
             <span class="text-indigo-400">python</span> bonifica.py articolo.md <span class="text-purple-400">--check-homoglyphs --report</span> report.json
           </div>
           <a href="../bonifica.py" download="bonifica.py"
@@ -552,7 +582,7 @@ var OMOGLIFI = {
   '\u03B9': {sostituto:'i', blocco:'Greco'},
 };
 
-function rilevाOmoglifi(text) {
+function rilevaOmoglifi(text) {
   var found = [];
   for (var i = 0; i < text.length; i++) {
     var ch = text[i];
@@ -590,8 +620,86 @@ function decodificaEntitaHtml(text) {
   return { text: out, count: count };
 }
 
-// Modulo 5: rileva artefatti PDF
-function rilevаArtefattiPdf(text) {
+// Modulo 6: rimuovi caratteri tossici
+var TOSSICI_MAP = {
+  0x0000:['NULL','critico'], 0x0008:['BACKSPACE','alto'],
+  0x000B:['VERTICAL_TAB','medio'], 0x000C:['FORM_FEED','medio'],
+  0x001A:['SUBSTITUTE_EOF_DOS','alto'], 0x001B:['ESCAPE_ANSI','critico'],
+  0x00AD:['SOFT_HYPHEN','alto'],
+  0x200B:['ZERO_WIDTH_SPACE','critico'], 0x200C:['ZERO_WIDTH_NON_JOINER','critico'],
+  0x200D:['ZERO_WIDTH_JOINER','critico'], 0x200E:['LEFT_TO_RIGHT_MARK','alto'],
+  0x200F:['RIGHT_TO_LEFT_MARK','alto'], 0x2028:['LINE_SEPARATOR','medio'],
+  0x2029:['PARAGRAPH_SEPARATOR','medio'], 0x202A:['LTR_EMBEDDING','alto'],
+  0x202B:['RTL_EMBEDDING','alto'], 0x202C:['POP_DIRECTIONAL_FORMATTING','alto'],
+  0x202D:['LTR_OVERRIDE','critico'], 0x202E:['RTL_OVERRIDE','critico'],
+  0x2060:['WORD_JOINER','alto'], 0x2061:['FUNCTION_APPLICATION','medio'],
+  0x2062:['INVISIBLE_TIMES','medio'], 0x2063:['INVISIBLE_SEPARATOR','medio'],
+  0x2064:['INVISIBLE_PLUS','medio'], 0x206A:['INHIBIT_SYMMETRIC_SWAPPING','alto'],
+  0x206B:['ACTIVATE_SYMMETRIC_SWAPPING','alto'], 0x206C:['INHIBIT_ARABIC_FORM_SHAPING','alto'],
+  0x206D:['ACTIVATE_ARABIC_FORM_SHAPING','alto'], 0x206E:['NATIONAL_DIGIT_SHAPES','alto'],
+  0x206F:['NOMINAL_DIGIT_SHAPES','alto'], 0xFEFF:['BYTE_ORDER_MARK','critico'],
+  0xFFFE:['NON_CHARACTER_FFFE','critico'], 0xFFFF:['NON_CHARACTER_FFFF','critico']
+};
+
+function rimuoviCaratteriTossici(text) {
+  var rimossi = [];
+  var out = [];
+  for (var i = 0; i < text.length; i++) {
+    var cp = text.codePointAt(i);
+    // Skip second code unit of surrogate pair
+    if (cp > 0xFFFF) i++;
+    var cpHex = 'U+' + cp.toString(16).toUpperCase().padStart(4,'0');
+    if (cp === 0x00A0) {
+      rimossi.push({pos:i, cp:cpHex, nome:'NO_BREAK_SPACE', rischio:'medio', azione:'convertito_in_spazio'});
+      out.push(' ');
+    } else if (TOSSICI_MAP[cp]) {
+      rimossi.push({pos:i, cp:cpHex, nome:TOSSICI_MAP[cp][0], rischio:TOSSICI_MAP[cp][1], azione:'rimosso'});
+      // rimosso — non aggiunto a out
+    } else if (cp >= 0xFDD0 && cp <= 0xFDEF) {
+      rimossi.push({pos:i, cp:cpHex, nome:'NON_CHARACTER_FDD0_FDEF', rischio:'critico', azione:'rimosso'});
+    } else if (cp >= 0xE000 && cp <= 0xF8FF) {
+      rimossi.push({pos:i, cp:cpHex, nome:'PRIVATE_USE_AREA', rischio:'variabile', azione:'rimosso'});
+    } else {
+      out.push(String.fromCodePoint(cp));
+    }
+  }
+  return { text: out.join(''), rimossi: rimossi };
+}
+
+// Modulo 7: normalizza tipografia
+var TIPOGRAFIA = [
+  ['\u201C', '"', 'virgoletta_aperta_doppia'],
+  ['\u201D', '"', 'virgoletta_chiusa_doppia'],
+  ['\u2018', "'", 'virgoletta_aperta_singola'],
+  ['\u2019', "'", 'apostrofo_tipografico'],
+  ['\u2014', '--', 'em_dash'],
+  ['\u2013', '-',  'en_dash'],
+  ['\u2026', '...','ellissi_unicode'],
+  ['\uFB01', 'fi', 'legatura_fi'],
+  ['\uFB02', 'fl', 'legatura_fl'],
+  ['\uFB03', 'ffi','legatura_ffi'],
+  ['\uFB04', 'ffl','legatura_ffl'],
+  ['\u00A0', ' ', 'no_break_space'],
+];
+var TIPOGRAFIA_RE = new RegExp(TIPOGRAFIA.map(function(p){ return p[0].replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }).join('|'), 'g');
+var TIPOGRAFIA_MAP_JS = {};
+TIPOGRAFIA.forEach(function(p){ TIPOGRAFIA_MAP_JS[p[0]] = [p[1], p[2]]; });
+
+function normalizzaTipografia(text) {
+  var sostituzioni = [];
+  var out = text.replace(TIPOGRAFIA_RE, function(m, offset) {
+    var info = TIPOGRAFIA_MAP_JS[m];
+    sostituzioni.push({
+      pos: offset,
+      cp: 'U+' + m.codePointAt(0).toString(16).toUpperCase().padStart(4,'0'),
+      nome: info[1], originale: m, sostituto: info[0]
+    });
+    return info[0];
+  });
+  return { text: out, sostituzioni: sostituzioni };
+}
+
+function rilevaArtefattiPdf(text) {
   var artefatti = [];
   var lines = text.split('\n');
   var numPageRe = /^\s*\d{1,3}\s*$/;
@@ -647,6 +755,8 @@ async function runBonifica() {
   var modHtml = document.getElementById('mod-html').checked;
   var modHomo = document.getElementById('mod-homo').checked;
   var modPdf = document.getElementById('mod-pdf').checked;
+  var modToxic = document.getElementById('mod-toxic').checked;
+  var modTypo = document.getElementById('mod-typo').checked;
 
   var text = inputText;
   var report = { moduli: {} };
@@ -656,7 +766,7 @@ async function runBonifica() {
   report.moduli.tabelle = { warnings: tabelleWarnings };
 
   var backslashCount = 0, htmlCount = 0;
-  var omoglifi = [], artefatti = [];
+  var omoglifi = [], artefatti = [], tossici = [], tipografia = [];
 
   if (modBackslash) {
     var r = rimuoviBackslashFantasma(text);
@@ -668,12 +778,22 @@ async function runBonifica() {
     text = r2.text; htmlCount = r2.count;
     report.moduli.html = { conversioni: htmlCount };
   }
+  if (modToxic) {
+    var r6 = rimuoviCaratteriTossici(text);
+    text = r6.text; tossici = r6.rimossi;
+    report.moduli.tossici = { rimossi: tossici.length, dettagli: tossici };
+  }
+  if (modTypo) {
+    var r7 = normalizzaTipografia(text);
+    text = r7.text; tipografia = r7.sostituzioni;
+    report.moduli.tipografia = { sostituzioni: tipografia.length, dettagli: tipografia };
+  }
   if (modHomo) {
-    omoglifi = rilevाOmoglifi(text);
+    omoglifi = rilevaOmoglifi(text);
     report.moduli.omoglifi = { trovati: omoglifi.length, dettagli: omoglifi };
   }
   if (modPdf) {
-    artefatti = rilevаArtefattiPdf(text);
+    artefatti = rilevaArtefattiPdf(text);
     report.moduli.pdf = { artefatti: artefatti.length, dettagli: artefatti };
   }
 
@@ -683,7 +803,7 @@ async function runBonifica() {
   _lastReport = report;
 
   // ── Render results ────────────────────────────────────────────────────────
-  var totalIssues = backslashCount + htmlCount + omoglifi.length + artefatti.length + tabelleWarnings.length;
+  var totalIssues = backslashCount + htmlCount + omoglifi.length + artefatti.length + tossici.length + tipografia.length + tabelleWarnings.length;
   document.getElementById('result-icon').textContent = totalIssues === 0 ? '✅' : '⚠️';
 
   // Summary stats
@@ -691,6 +811,8 @@ async function runBonifica() {
   statsEl.innerHTML = [
     { label: 'Backslash rimossi', val: backslashCount, active: modBackslash },
     { label: 'Entità HTML', val: htmlCount, active: modHtml },
+    { label: 'Tossici rimossi', val: tossici.length, active: modToxic },
+    { label: 'Tipografia', val: tipografia.length, active: modTypo },
     { label: 'Omoglifi', val: omoglifi.length, active: modHomo },
     { label: 'Artefatti PDF', val: artefatti.length, active: modPdf },
   ].map(function(s) {
@@ -700,6 +822,8 @@ async function runBonifica() {
       '<div class="text-xs text-slate-500 mt-0.5">' + s.label + '</div>' +
       '</div>';
   }).join('');
+  // Override grid for 6 items
+  statsEl.style.gridTemplateColumns = 'repeat(3, 1fr)';
 
   // Module results
   var modEl = document.getElementById('module-results');
@@ -719,6 +843,41 @@ async function runBonifica() {
       htmlCount > 0
         ? '<span class="text-amber-400 font-semibold">' + htmlCount + ' entità decodificate</span> — &amp;amp;, &amp;lt;, &amp;gt; e altre convertite in testo normale.'
         : '<span class="text-emerald-400">Nessuna entità HTML da decodificare.</span>');
+  }
+
+  if (modToxic) {
+    var nCritici = tossici.filter(function(r){ return r.rischio === 'critico'; }).length;
+    var cls6 = tossici.length > 0 ? (nCritici > 0 ? 'error' : 'warning') : 'success';
+    var rows6 = tossici.slice(0,10).map(function(r){
+      var rColor = r.rischio === 'critico' ? 'text-red-400' : r.rischio === 'alto' ? 'text-amber-400' : 'text-slate-400';
+      return '<div class="flex items-center gap-2 py-1.5 border-b border-slate-700/30 last:border-0">' +
+        '<span class="text-xs text-slate-500 w-12 flex-shrink-0">pos ' + r.pos + '</span>' +
+        '<code class="inline-code flex-shrink-0">' + r.cp + '</code>' +
+        '<span class="text-xs ' + rColor + '">' + r.nome + '</span>' +
+        '<span class="text-xs text-slate-600 ml-auto">[' + r.azione + ']</span>' +
+        '</div>';
+    }).join('');
+    if (tossici.length > 10) rows6 += '<div class="text-xs text-slate-600 pt-1">… e altri ' + (tossici.length-10) + '</div>';
+    html_out += renderModuleCard('☠️ Caratteri Tossici', cls6,
+      tossici.length > 0
+        ? '<span class="text-' + (nCritici > 0 ? 'red' : 'amber') + '-400 font-semibold">' + tossici.length + ' rimossi</span> (di cui <strong>' + nCritici + ' critici</strong> — zero-width, BOM, bidi override).<br><div class="mt-2">' + rows6 + '</div>'
+        : '<span class="text-emerald-400">Nessun carattere tossico rilevato.</span>');
+  }
+
+  if (modTypo) {
+    var cls7 = tipografia.length > 0 ? 'warning' : 'success';
+    var rows7 = tipografia.slice(0,10).map(function(s){
+      return '<div class="flex items-center gap-2 py-1.5 border-b border-slate-700/30 last:border-0">' +
+        '<code class="inline-code flex-shrink-0">' + s.cp + '</code>' +
+        '<span class="text-xs text-slate-400">' + s.nome + '</span>' +
+        '<span class="text-xs text-slate-500 ml-auto font-mono">"' + escHtml(s.originale) + '" → "' + escHtml(s.sostituto) + '"</span>' +
+        '</div>';
+    }).join('');
+    if (tipografia.length > 10) rows7 += '<div class="text-xs text-slate-600 pt-1">… e altre ' + (tipografia.length-10) + '</div>';
+    html_out += renderModuleCard('✒️ Tipografia → ASCII', cls7,
+      tipografia.length > 0
+        ? '<span class="text-amber-400 font-semibold">' + tipografia.length + ' sostituzioni</span> — virgolette curve, em-dash, legature normalizzate ad ASCII.<br><div class="mt-2">' + rows7 + '</div>'
+        : '<span class="text-emerald-400">Nessun carattere tipografico da normalizzare.</span>');
   }
 
   if (tabelleWarnings.length > 0) {

@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
-bonifica.py — Pipeline di bonifica Markdown pre-AGI
+bonifica.py — Pipeline di bonifica Markdown pre-AGI  v3.1
 SecurData Pro — https://securdata.pro
+Guida di riferimento: "Markdown Puro per Dataset AI Generativa" v2.1
 
 Utilizzo:
     python bonifica.py input.md [opzioni]
@@ -10,10 +11,12 @@ Flag disponibili:
     --output FILE        Salva il testo bonificato su file
     --strict             Interrompe se vengono rilevati artefatti critici
     --report FILE        Salva il report in formato JSON
-    --fix-backslash      Rimuovi backslash-escape inutili
-    --fix-html           Decodifica entità HTML
-    --check-homoglyphs   Segnala caratteri omoglifi (solo report)
-    --check-pdf          Rileva artefatti da estrazione PDF
+    --fix-backslash      Rimuovi backslash-escape inutili (modulo 1)
+    --fix-html           Decodifica entità HTML (modulo 4)
+    --fix-toxic          Rimuovi caratteri Unicode tossici (modulo 6)
+    --fix-typography     Normalizza caratteri tipografici a ASCII (modulo 7)
+    --check-homoglyphs   Segnala caratteri omoglifi — solo report (modulo 3)
+    --check-pdf          Rileva artefatti da estrazione PDF (modulo 5)
     --full-check         Esegui tutti i moduli in sequenza
 
 Esempio:
@@ -336,6 +339,219 @@ def rileva_artefatti_pdf(testo: str) -> List[dict]:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# MODULO 6 — rimuovi_caratteri_tossici
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Caratteri di controllo e invisibili tossici per dataset AI.
+# Fonte: Guida "Markdown Puro per Dataset AI Generativa" v2.1 §1.2
+# Ogni voce: (codepoint, nome_breve, livello_rischio)
+_CARATTERI_TOSSICI: List[Tuple[int, str, str]] = [
+    # ── Controllo C0/C1 ────────────────────────────────────────────────────────
+    (0x0000, "NULL",                         "critico"),
+    (0x0008, "BACKSPACE",                    "alto"),
+    (0x000B, "VERTICAL_TAB",                 "medio"),
+    (0x000C, "FORM_FEED",                    "medio"),
+    (0x001A, "SUBSTITUTE_EOF_DOS",           "alto"),
+    (0x001B, "ESCAPE_ANSI",                  "critico"),
+    # ── Spazi non-standard ─────────────────────────────────────────────────────
+    (0x00A0, "NO_BREAK_SPACE",               "medio"),
+    (0x00AD, "SOFT_HYPHEN",                  "alto"),
+    # ── Zero-width e formato (usati per fingerprinting) ────────────────────────
+    (0x200B, "ZERO_WIDTH_SPACE",             "critico"),
+    (0x200C, "ZERO_WIDTH_NON_JOINER",        "critico"),
+    (0x200D, "ZERO_WIDTH_JOINER",            "critico"),
+    (0x200E, "LEFT_TO_RIGHT_MARK",           "alto"),
+    (0x200F, "RIGHT_TO_LEFT_MARK",           "alto"),
+    (0x2028, "LINE_SEPARATOR",               "medio"),
+    (0x2029, "PARAGRAPH_SEPARATOR",          "medio"),
+    (0x202A, "LTR_EMBEDDING",                "alto"),
+    (0x202B, "RTL_EMBEDDING",                "alto"),
+    (0x202C, "POP_DIRECTIONAL_FORMATTING",   "alto"),
+    (0x202D, "LTR_OVERRIDE",                 "critico"),
+    (0x202E, "RTL_OVERRIDE",                 "critico"),
+    (0x2060, "WORD_JOINER",                  "alto"),
+    (0x2061, "FUNCTION_APPLICATION",         "medio"),
+    (0x2062, "INVISIBLE_TIMES",              "medio"),
+    (0x2063, "INVISIBLE_SEPARATOR",          "medio"),
+    (0x2064, "INVISIBLE_PLUS",               "medio"),
+    (0x206A, "INHIBIT_SYMMETRIC_SWAPPING",   "alto"),
+    (0x206B, "ACTIVATE_SYMMETRIC_SWAPPING",  "alto"),
+    (0x206C, "INHIBIT_ARABIC_FORM_SHAPING",  "alto"),
+    (0x206D, "ACTIVATE_ARABIC_FORM_SHAPING", "alto"),
+    (0x206E, "NATIONAL_DIGIT_SHAPES",        "alto"),
+    (0x206F, "NOMINAL_DIGIT_SHAPES",         "alto"),
+    # ── BOM e non-characters ───────────────────────────────────────────────────
+    (0xFEFF, "BYTE_ORDER_MARK_ZWNBSP",       "critico"),
+    (0xFFFE, "NON_CHARACTER_FFFE",           "critico"),
+    (0xFFFF, "NON_CHARACTER_FFFF",           "critico"),
+]
+
+# Set veloce per lookup O(1)
+_TOSSICI_SET: set = {cp for cp, _, _ in _CARATTERI_TOSSICI}
+# Mappa codepoint → (nome, rischio)
+_TOSSICI_MAP: dict = {cp: (nome, rischio) for cp, nome, rischio in _CARATTERI_TOSSICI}
+
+# Range non-character FDD0–FDEF (sempre tossici)
+_FDD0_FDEF = range(0xFDD0, 0xFDF0)
+# Range Private Use Area E000–F8FF (traccianti proprietari)
+_PUA_START, _PUA_END = 0xE000, 0xF8FF
+
+
+def rimuovi_caratteri_tossici(testo: str) -> Tuple[str, List[dict]]:
+    """Rimuove i caratteri Unicode tossici per i dataset di AI generativa.
+
+    Copre la lista critica definita nella Guida "Markdown Puro per Dataset AI
+    Generativa" v2.1 §1.2: caratteri di controllo, zero-width, bidi override,
+    BOM fuori posizione, non-characters FDD0-FDEF e Private Use Area.
+
+    Il U+00A0 (NO-BREAK SPACE) viene convertito in spazio normale (U+0020)
+    anziché eliminato. Tutti gli altri vengono rimossi.
+    Tabulazioni (U+0009), line feed (U+000A) e carriage return (U+000D)
+    sono esclusi dalla rimozione perché legittimi in Markdown.
+
+    Args:
+        testo: Testo Markdown da bonificare.
+
+    Returns:
+        Tupla (testo_pulito, lista_rimozioni).
+        Ogni rimozione è un dict con chiavi:
+        {posizione_originale, codepoint, nome, rischio, azione}.
+    """
+    rimozioni: List[dict] = []
+    chars_out: List[str] = []
+
+    for pos, ch in enumerate(testo):
+        cp = ord(ch)
+
+        # Converti NO-BREAK SPACE in spazio ordinario
+        if cp == 0x00A0:
+            rimozioni.append({
+                "posizione_originale": pos,
+                "codepoint": f"U+{cp:04X}",
+                "nome": "NO_BREAK_SPACE",
+                "rischio": "medio",
+                "azione": "convertito_in_spazio",
+            })
+            chars_out.append(" ")
+            continue
+
+        # Tossici in lookup diretto
+        if cp in _TOSSICI_SET:
+            nome, rischio = _TOSSICI_MAP[cp]
+            rimozioni.append({
+                "posizione_originale": pos,
+                "codepoint": f"U+{cp:04X}",
+                "nome": nome,
+                "rischio": rischio,
+                "azione": "rimosso",
+            })
+            continue  # carattere eliminato
+
+        # Non-characters FDD0–FDEF
+        if cp in _FDD0_FDEF:
+            rimozioni.append({
+                "posizione_originale": pos,
+                "codepoint": f"U+{cp:04X}",
+                "nome": "NON_CHARACTER_FDD0_FDEF",
+                "rischio": "critico",
+                "azione": "rimosso",
+            })
+            continue
+
+        # Private Use Area (segnala ma rimuove)
+        if _PUA_START <= cp <= _PUA_END:
+            rimozioni.append({
+                "posizione_originale": pos,
+                "codepoint": f"U+{cp:04X}",
+                "nome": "PRIVATE_USE_AREA",
+                "rischio": "variabile",
+                "azione": "rimosso",
+            })
+            continue
+
+        chars_out.append(ch)
+
+    return "".join(chars_out), rimozioni
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# MODULO 7 — normalizza_tipografia
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Sostituzioni tipografiche → ASCII.
+# Fonte: Guida "Markdown Puro per Dataset AI Generativa" v2.1 §1.3
+# Per dataset AI si preferiscono le forme ASCII per coerenza del tokenizer.
+_TIPOGRAFIA: List[Tuple[str, str, str]] = [
+    # virgolette curve doppie
+    ("\u201C", '"', "virgoletta_aperta_doppia"),    # " → "
+    ("\u201D", '"', "virgoletta_chiusa_doppia"),    # " → "
+    # virgolette curve singole / apostrofo tipografico
+    ("\u2018", "'", "virgoletta_aperta_singola"),   # ' → '
+    ("\u2019", "'", "apostrofo_tipografico"),       # ' → '
+    # trattini
+    ("\u2014", "--", "em_dash"),                    # — → --
+    ("\u2013", "-",  "en_dash"),                    # – → -
+    # ellissi
+    ("\u2026", "...", "ellissi_unicode"),            # … → ...
+    # legature tipografiche (problematiche per OCR e ricerca)
+    ("\uFB01", "fi", "legatura_fi"),                # ﬁ → fi
+    ("\uFB02", "fl", "legatura_fl"),                # ﬂ → fl
+    ("\uFB03", "ffi", "legatura_ffi"),              # ﬃ → ffi
+    ("\uFB04", "ffl", "legatura_ffl"),              # ﬄ → ffl
+    # spazio non-break → spazio ordinario (anche gestito in modulo 6)
+    ("\u00A0", " ", "no_break_space"),              # → spazio
+]
+
+_TIPOGRAFIA_RE = re.compile(
+    "|".join(re.escape(orig) for orig, _, _ in _TIPOGRAFIA)
+)
+_TIPOGRAFIA_MAP: dict = {orig: (asc, nome) for orig, asc, nome in _TIPOGRAFIA}
+
+
+def normalizza_tipografia(testo: str) -> Tuple[str, List[dict]]:
+    """Normalizza caratteri tipografici Unicode alle loro equivalenti forme ASCII.
+
+    Converte virgolette curve, em/en dash, ellissi Unicode e legature tipografiche
+    (ﬁ ﬂ ﬃ ﬄ) in caratteri ASCII equivalenti, per coerenza del tokenizer nei
+    dataset di AI generativa.
+
+    Fonte: Guida "Markdown Puro per Dataset AI Generativa" v2.1 §1.3.
+
+    Args:
+        testo: Testo Markdown da bonificare.
+
+    Returns:
+        Tupla (testo_normalizzato, lista_sostituzioni).
+        Ogni sostituzione è un dict con chiavi:
+        {posizione_originale, codepoint, nome, originale, sostituto}.
+    """
+    sostituzioni: List[dict] = []
+    # Tracciamo le posizioni originali prima di modificare la stringa
+    offset = 0
+    risultato: List[str] = []
+    ultimo = 0
+
+    for m in _TIPOGRAFIA_RE.finditer(testo):
+        orig_char = m.group(0)
+        asc_char, nome = _TIPOGRAFIA_MAP[orig_char]
+        cp = ord(orig_char[0])
+
+        sostituzioni.append({
+            "posizione_originale": m.start(),
+            "codepoint": f"U+{cp:04X}",
+            "nome": nome,
+            "originale": orig_char,
+            "sostituto": asc_char,
+        })
+        risultato.append(testo[ultimo:m.start()])
+        risultato.append(asc_char)
+        ultimo = m.end()
+
+    risultato.append(testo[ultimo:])
+    return "".join(risultato), sostituzioni
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # CLI — main()
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -347,7 +563,7 @@ def _build_parser() -> argparse.ArgumentParser:
         epilog=(
             "Esempi:\n"
             "  python bonifica.py articolo.md --full-check\n"
-            "  python bonifica.py articolo.md --fix-backslash --fix-html --output clean.md\n"
+            "  python bonifica.py articolo.md --fix-backslash --fix-html --fix-toxic --fix-typography --output clean.md\n"
             "  python bonifica.py articolo.md --check-homoglyphs --report report.json\n"
         ),
     )
@@ -362,6 +578,10 @@ def _build_parser() -> argparse.ArgumentParser:
                         help="Rimuovi backslash-escape inutili (modulo 1)")
     parser.add_argument("--fix-html", action="store_true",
                         help="Decodifica entità HTML (modulo 4)")
+    parser.add_argument("--fix-toxic", action="store_true",
+                        help="Rimuovi caratteri Unicode tossici — zero-width, BOM, bidi override ecc. (modulo 6)")
+    parser.add_argument("--fix-typography", action="store_true",
+                        help="Normalizza tipografia Unicode ad ASCII — virgolette curve, em-dash, legature (modulo 7)")
     parser.add_argument("--check-homoglyphs", action="store_true",
                         help="Segnala caratteri omoglifi — solo report (modulo 3)")
     parser.add_argument("--check-pdf", action="store_true",
@@ -394,6 +614,8 @@ def main() -> None:
     if args.full_check:
         args.fix_backslash = True
         args.fix_html = True
+        args.fix_toxic = True
+        args.fix_typography = True
         args.check_homoglyphs = True
         args.check_pdf = True
 
@@ -466,6 +688,44 @@ def main() -> None:
             print(f"             … e altri {len(artefatti) - 5}")
         if artefatti and args.strict:
             ha_artefatti_critici = True
+
+    # ── Modulo 6: caratteri tossici ───────────────────────────────────────────
+    if args.fix_toxic:
+        testo, rimozioni_tossici = rimuovi_caratteri_tossici(testo)
+        n_critici = sum(1 for r in rimozioni_tossici if r["rischio"] == "critico")
+        report["moduli"]["tossici"] = {
+            "rimossi": len(rimozioni_tossici),
+            "critici": n_critici,
+            "stato": "OK" if len(rimozioni_tossici) == 0 else "MODIFICATO",
+            "dettagli": rimozioni_tossici,
+        }
+        print(f"[TOSSICI]    Rimossi: {len(rimozioni_tossici)} (di cui critici: {n_critici})")
+        for r in rimozioni_tossici[:8]:
+            print(
+                f"             pos {r['posizione_originale']}: {r['codepoint']} "
+                f"{r['nome']} [{r['rischio']}] → {r['azione']}"
+            )
+        if len(rimozioni_tossici) > 8:
+            print(f"             … e altri {len(rimozioni_tossici) - 8}")
+        if n_critici > 0 and args.strict:
+            ha_artefatti_critici = True
+
+    # ── Modulo 7: normalizzazione tipografica ─────────────────────────────────
+    if args.fix_typography:
+        testo, sostituzioni_tipo = normalizza_tipografia(testo)
+        report["moduli"]["tipografia"] = {
+            "sostituzioni": len(sostituzioni_tipo),
+            "stato": "OK" if len(sostituzioni_tipo) == 0 else "MODIFICATO",
+            "dettagli": sostituzioni_tipo,
+        }
+        print(f"[TIPOGRAFIA] Sostituzioni: {len(sostituzioni_tipo)}")
+        for s in sostituzioni_tipo[:8]:
+            print(
+                f"             pos {s['posizione_originale']}: {s['codepoint']} "
+                f"{s['nome']} '{s['originale']}' → '{s['sostituto']}'"
+            )
+        if len(sostituzioni_tipo) > 8:
+            print(f"             … e altre {len(sostituzioni_tipo) - 8}")
 
     # ── SHA-256 del testo finale ──────────────────────────────────────────────
     report["sha256_finale"] = calcola_sha256(testo)

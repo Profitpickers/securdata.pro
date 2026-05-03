@@ -2,8 +2,8 @@
   {
     "id": "11",
     "slug": "bonifica-markdown-ai-ready-pipeline-pre-agi",
-    "title": "🧹 Bonifica Markdown AI-Ready: la Pipeline pre-AGI per Dataset Puliti",
-    "excerpt": "I file Markdown 'sporchi' degradano la qualità dei tuoi dataset AI: backslash fantasma, entità HTML, omoglifi Unicode e artefatti PDF sono nemici invisibili dell'embedding quality. Scopri la pipeline di bonifica in 5 moduli — e scarica lo strumento gratuito.",
+    "title": "🧹 Guida Definitiva: Markdown Puro per Dataset AI Generativa",
+    "excerpt": "La qualità del dato è la variabile più critica in qualunque pipeline AI: un solo carattere invisibile fuori posto può degradare silenziosamente migliaia di campioni. Guida completa alla bonifica in 7 moduli — tabella Unicode tossici, normalizzazione tipografica, omoglifi, artefatti PDF e strumento gratuito.",
     "author": "Vito Iacobellis",
     "date": "2026-05-03",
     "tags": [
@@ -16,12 +16,16 @@
       "LLM",
       "RAG",
       "Sicurezza Dati",
-      "Python"
+      "Python",
+      "Unicode",
+      "Tipografia",
+      "Zero-Width Characters",
+      "Fingerprinting"
     ],
     "category": "AI Tools",
     "featured": true,
     "image": "",
-    "readTime": "7 min"
+    "readTime": "9 min"
   },
   {
     "id": "10",
