@@ -465,7 +465,7 @@ Non implementare OCR complesso se rallenta MVP.
 
 Il Markdown generato deve avere questa struttura:
 
-```markdown
+## 10. UX PRIORITIES
 # MASTER CREATIVE ORIGIN LEDGER
 
 ## HUMAN ENTITY
