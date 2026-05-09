@@ -917,6 +917,22 @@ Avoid:
 The MVP must remain lightweight, fast and evolvable.
 
 
+# FUTURE EVOLUTION READY
+
+This document describes:
+- future SaaS capabilities
+- future white-label architecture
+- future AI integrations
+- future enterprise security
+- future accessibility systems
+- future collaboration systems
+- future multilingual support
+
+These features MUST NOT be fully implemented in MVP v0.1.
+
+Only architecture preparedness is required.
+
+
 ## AI COST AWARENESS
 
 Future AI integrations must be designed with:
