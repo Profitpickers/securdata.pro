@@ -99,3 +99,15 @@ Useful fields:
 Future-ready does **not** mean overengineered:
 - keep MVP lightweight, modular, maintainable
 - add only schema/UI/state placeholders that preserve forward compatibility
+
+
+## AI Cost Awareness
+
+Future AI integrations should prioritize:
+- token efficiency
+- low-cost fallback models
+- optional AI processing
+- async execution where possible
+- manual override capability
+
+Avoid unnecessary expensive AI calls.
