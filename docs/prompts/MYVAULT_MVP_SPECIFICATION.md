@@ -96,5 +96,16 @@ Do not implement in v0.1:
 - full white-label and full multi-user enterprise system
 - complex automations
 
+## Markdown Canonical Structure
+
+Markdown exports are considered canonical creative memory assets.
+
+Exports must:
+- support Obsidian compatibility
+- maintain stable heading structure
+- support future AI parsing
+- support graph linking
+- support long-term archival
+
 ## MVP Version
 `MYVAULT_CREATIVE_OS_v0.1`
