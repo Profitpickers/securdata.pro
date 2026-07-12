@@ -517,11 +517,7 @@ async function sha256(str) {
   return Array.from(new Uint8Array(buf)).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
 }
 
-// ── GitHub lead sync – mirrors lead-popup.js configuration ──
-var GH_TOKEN = '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';
-var GH_OWNER = 'Profitpickers';
-var GH_REPO  = 'securdata.pro';
-var GH_FILE  = 'data/leads.csv';
+var DISABLED_MSG = 'Funzione temporaneamente disattivata durante la revisione di sicurezza.';
 
 function _toBase64Lead(str) {
   var bytes = new TextEncoder().encode(str);
@@ -536,25 +532,7 @@ function _fromBase64Lead(b64) {
   return new TextDecoder('utf-8').decode(bytes);
 }
 function saveLeadToGitHub(nome, email, tipo) {
-  if (!GH_TOKEN || GH_TOKEN === '__INSERISCI_TOKEN_QUI__') return;
-  var apiUrl = 'https://api.github.com/repos/' + GH_OWNER + '/' + GH_REPO + '/contents/' + GH_FILE;
-  var headers = { 'Authorization': 'Bearer ' + GH_TOKEN, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
-  fetch(apiUrl, { headers: headers })
-    .then(function(r){ return r.json(); })
-    .then(function(fileData){
-      var current = '';
-      try { current = _fromBase64Lead(fileData.content); } catch(_){ current = ''; }
-      var row = [new Date().toISOString(), nome, email, '', '', tipo || '', 'login-registration', '']
-        .map(function(v){ return '"' + String(v).replace(/"/g,'""') + '"'; }).join(',');
-      var newContent = current + row + '\n';
-      return fetch(apiUrl, { method: 'PUT', headers: headers, body: JSON.stringify({ message: 'lead: nuova registrazione', content: _toBase64Lead(newContent), sha: fileData.sha }) });
-    })
-    .then(function(putResp){
-      if (putResp && !putResp.ok) {
-        putResp.text().then(function(t){ console.warn('sdp: GitHub PUT error (' + putResp.status + '):', t); });
-      }
-    })
-    .catch(function(err){ console.warn('sdp: errore salvataggio lead GitHub (registrazione):', err.message || err); });
+  return;
 }
 
 // ── Storage keys ──
@@ -674,6 +652,9 @@ async function handleLogin(e) {
   var btn = document.getElementById('loginBtn');
   btn.disabled = true;
   btn.innerHTML = '<div class="spinner"></div>';
+  showMsg('loginError','loginErrorText', DISABLED_MSG);
+  resetBtn(btn,'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg> Accedi');
+  return;
 
   try {
     var identifier = document.getElementById('loginEmail').value.trim().toLowerCase();
@@ -721,6 +702,9 @@ async function handleRegister(e) {
   var btn = document.getElementById('registerBtn');
   btn.disabled = true;
   btn.innerHTML = '<div class="spinner"></div>';
+  showMsg('regError','regErrorText', DISABLED_MSG);
+  resetBtn(btn,'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg> Crea Account Gratuito');
+  return;
 
   try {
     var nome     = document.getElementById('regNome').value.trim();

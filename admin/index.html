@@ -409,7 +409,7 @@ textarea{resize:vertical;min-height:65px;}
       <li>Condividi credenziali al collaboratore via canale sicuro</li>
     </ol>
     <div style="margin-top:.9rem;padding:.8rem;background:rgba(99,179,237,.05);border:1px solid rgba(99,179,237,.15);border-radius:7px;font-size:.78rem;color:#63b3ed;">
-      <strong>Password default team:</strong> TeamSecur2026 &mdash; <span style="color:var(--dim);">modificarla subito!</span>
+      <strong>Accessi:</strong> aggiornare solo tramite canale sicuro backend.
     </div>
   </div>
 </div>
@@ -418,18 +418,17 @@ textarea{resize:vertical;min-height:65px;}
 <div class="page" id="page-settings">
   <h2>&#9881; Impostazioni</h2>
   <div class="card">
-    <div class="ct">GitHub &amp; Dati</div>
+    <div class="ct">Dati</div>
     <p style="font-size:.82rem;color:var(--dim);margin-bottom:.9rem;">
-      I lead vengono salvati in <code style="color:#63b3ed;">data/leads.csv</code> dal popup di acquisizione.<br>
-      Il token GitHub per la scrittura &egrave; in <code style="color:#63b3ed;">vito_qrcode_contact/lead-popup.js</code>.
+      Funzione temporaneamente disattivata durante la revisione di sicurezza.
     </p>
     <div class="fg">
-      <label>URL CSV Raw (lettura pubblica)</label>
+      <label>Stato sincronizzazione lead</label>
       <div style="display:flex;gap:7px;">
         <input type="text" readonly id="csvUrl"
-          value="https://raw.githubusercontent.com/Profitpickers/securdata.pro/main/data/leads.csv"
+          value="Disattivata durante revisione sicurezza"
           style="font-size:.76rem;font-family:monospace;color:#63b3ed;">
-        <button class="bs" onclick="copyCsv()">Copia</button>
+        <button class="bs" onclick="copyCsv()">Info</button>
       </div>
     </div>
   </div>
@@ -495,7 +494,8 @@ textarea{resize:vertical;min-height:65px;}
 
 <script>
 /* ═══════════════════════ CONFIGURAZIONE ══════════════════════════ */
-var RAW_CSV  = 'https://raw.githubusercontent.com/Profitpickers/securdata.pro/main/data/leads.csv';
+var DISABLED_MSG = 'Funzione temporaneamente disattivata durante la revisione di sicurezza.';
+var RAW_CSV  = '';
 var BLOG_URL = '../data/blog-posts.json';
 
 /* ═══════════════════════ STATE ══════════════════════════════════ */
@@ -615,25 +615,10 @@ function setSyncState(st, msg) {
 
 /* ═══════════════════════ LOAD LEADS ════════════════════════════ */
 function loadLeads() {
-  setSyncState('loading','Sincronizzazione&hellip;');
-  fetch(RAW_CSV + '?t=' + Date.now())
-    .then(function(r){
-      if(!r.ok) throw new Error('HTTP '+r.status);
-      return r.text();
-    })
-    .then(function(csv){
-      ghLeads = csvToLeads(csv);
-      var t = new Date().toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
-      setSyncState('ok', ghLeads.length + ' lead &middot; ' + t);
-      renderDashboard();
-      renderLeads();
-    })
-    .catch(function(err){
-      setSyncState('err','Errore: '+err.message);
-      toast('Errore caricamento lead: '+err.message,'err');
-      renderDashboard();
-      renderLeads();
-    });
+  ghLeads = [];
+  setSyncState('err', DISABLED_MSG);
+  renderDashboard();
+  renderLeads();
 }
 
 function syncLeads() {
@@ -794,6 +779,9 @@ function editLead(key, isGh) {
 }
 
 function saveLead() {
+  toast(DISABLED_MSG,'err');
+  return;
+
   var nome  = document.getElementById('l_nome').value.trim();
   var email = document.getElementById('l_email').value.trim();
   if (!nome || !email) { toast('Nome ed Email sono obbligatori','err'); return; }

@@ -496,6 +496,9 @@ document.getElementById('vmcm-menu-btn').addEventListener('click', function() {
 
 // Download / Lead capture
 function downloadGuida() {
+  showMsg('Funzione temporaneamente disattivata durante la revisione di sicurezza.', 'text-amber-400');
+  return;
+
   var nome  = document.getElementById('dl-nome').value.trim();
   var email = document.getElementById('dl-email').value.trim();
   var msgEl = document.getElementById('dl-msg');

@@ -382,159 +382,28 @@ hr.divider{border:none;border-top:1px solid rgba(99,179,237,0.08);margin:1.4rem 
 </div><!-- /login-wrapper -->
 
 <script>
-// ═══════════════════════════════════════════════════════════════
-// CONFIGURAZIONE CREDENZIALI DI ACCESSO
-// Per modificare le credenziali aggiornare questi valori:
-//
-// USERNAME: modificare VALID_USER (stringa in chiaro)
-// PASSWORD: calcolare SHA-256 della nuova password e aggiornare VALID_HASH
-//           Strumento online: https://emn178.github.io/online-tools/sha256.html
-//           Valore attuale corrisponde alla password: SecurData2026!
-//
-// CODICE 2FA: aggiungere TOTP_SECRET a Google Authenticator scansionando:
-//   otpauth://totp/SECURDATA.PRO:admin?secret=JBSWY3DPEHPK3PXP&issuer=SECURDATA.PRO
-//   oppure incollare manualmente il secret nell'app.
-// ═══════════════════════════════════════════════════════════════
-var VALID_USER    = 'admin';
-var VALID_HASH    = 'd75e5a7ab4d547daaa799247055caddd181fbb598700e65d7c1fe219453ef501';
-var TOTP_SECRET   = 'JBSWY3DPEHPK3PXP';
-var MAX_ATTEMPTS  = 3;
-var LOCKOUT_MS    = 5 * 60 * 1000; // 5 minuti
-var REDIRECT_MS   = 1200;          // ms prima del redirect dopo login
-var UINT32_MAX    = 0x100000000;   // 2^32 per gestione counter TOTP a 64-bit
-// ═══════════════════════════════════════════════════════════════
+var DISABLED_MSG = 'Funzione temporaneamente disattivata durante la revisione di sicurezza.';
 
-// SHA-256 via Web Crypto API
-async function sha256(str) {
-  var data = new TextEncoder().encode(str);
-  var buf  = await crypto.subtle.digest('SHA-256', data);
-  return Array.from(new Uint8Array(buf)).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
-}
-
-// Base32 decode (RFC 4648)
-function base32decode(b32) {
-  var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
-  var clean = b32.toUpperCase().replace(/=+$/,'').replace(/\s/g,'');
-  var bits  = '';
-  for (var i = 0; i < clean.length; i++) {
-    var v = chars.indexOf(clean[i]);
-    if (v >= 0) bits += v.toString(2).padStart(5,'0');
-  }
-  var bytes = new Uint8Array(Math.floor(bits.length / 8));
-  for (var j = 0; j < bytes.length; j++) bytes[j] = parseInt(bits.slice(j*8, j*8+8), 2);
-  return bytes;
-}
-
-// TOTP — RFC 6238 / HMAC-SHA1
-async function totp(secret, offset) {
-  offset = offset || 0;
-  var key    = await crypto.subtle.importKey('raw', base32decode(secret), {name:'HMAC',hash:'SHA-1'}, false, ['sign']);
-  var step   = 30;
-  var ctr    = Math.floor(Date.now() / 1000 / step) + offset;
-  var buf    = new ArrayBuffer(8);
-  var view   = new DataView(buf);
-  var hi     = Math.floor(ctr / UINT32_MAX);
-  if (hi > 0) view.setUint32(0, hi >>> 0, false);
-  view.setUint32(4, ctr >>> 0, false);
-  var sig    = new Uint8Array(await crypto.subtle.sign('HMAC', key, buf));
-  var off2   = sig[19] & 0xf;
-  var code   = (((sig[off2]&0x7f)<<24)|((sig[off2+1]&0xff)<<16)|((sig[off2+2]&0xff)<<8)|(sig[off2+3]&0xff)) % 1000000;
-  return code.toString().padStart(6,'0');
-}
-
-// Validate TOTP allowing ±1 time window
-async function validateTOTP(secret, userCode) {
-  for (var w = -1; w <= 1; w++) {
-    if (await totp(secret, w) === userCode) return true;
-  }
-  return false;
-}
-
-// Brute-force lock state stored in sessionStorage
-function getLock() {
-  try { return JSON.parse(sessionStorage.getItem('sd_lock')||'{}'); } catch(e) { return {}; }
-}
-function saveLock(s) { sessionStorage.setItem('sd_lock', JSON.stringify(s)); }
-
-// UI helpers
 function showError(msg) {
   document.getElementById('errorText').textContent = msg;
-  document.getElementById('errorMsg').style.display  = 'flex';
+  document.getElementById('errorMsg').style.display = 'flex';
   document.getElementById('successMsg').style.display = 'none';
 }
-function showSuccess() {
-  document.getElementById('errorMsg').style.display   = 'none';
-  document.getElementById('successMsg').style.display = 'flex';
-}
+
 function resetBtn() {
   var b = document.getElementById('submitBtn');
   b.disabled = false;
   b.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Accesso Sicuro';
 }
 
-// Main login handler
-async function handleLogin(e) {
+function handleLogin(e) {
   e.preventDefault();
-
-  var lock = getLock();
-  if (lock.until && lock.until > Date.now()) {
-    var secs = Math.ceil((lock.until - Date.now()) / 1000);
-    showError('Accesso bloccato. Riprova tra ' + secs + ' secondi.');
-    return;
-  }
-
-  var btn = document.getElementById('submitBtn');
-  btn.disabled = true;
-  btn.innerHTML = '<div class="spinner"></div>';
-  document.getElementById('errorMsg').style.display   = 'none';
-  document.getElementById('successMsg').style.display = 'none';
-
-  try {
-    var user = document.getElementById('username').value.trim();
-    var pass = document.getElementById('password').value;
-    var code = document.getElementById('totp').value.trim().replace(/\s/g,'');
-    var hash = await sha256(pass);
-    var ok2fa = await validateTOTP(TOTP_SECRET, code);
-
-    if (user === VALID_USER && hash === VALID_HASH && ok2fa) {
-      // Success — store auth token and go to admin
-      sessionStorage.setItem('sd_auth_token', 'authenticated');
-      sessionStorage.removeItem('sd_lock');
-      showSuccess();
-      setTimeout(function(){ window.location.replace('./admin.html'); }, REDIRECT_MS);
-    } else {
-      lock.attempts = (lock.attempts || 0) + 1;
-      var rem = MAX_ATTEMPTS - lock.attempts;
-      if (lock.attempts >= MAX_ATTEMPTS) {
-        lock.until = Date.now() + LOCKOUT_MS;
-        saveLock(lock);
-        showError('Troppi tentativi falliti. Accesso bloccato per 5 minuti.');
-      } else {
-        saveLock(lock);
-        showError('Credenziali non valide. Tentativi rimanenti: ' + rem + '.');
-      }
-      resetBtn();
-    }
-  } catch(err) {
-    showError('Errore di sistema. Aggiorna la pagina e riprova.');
-    resetBtn();
-  }
+  showError(DISABLED_MSG);
+  resetBtn();
+  return false;
 }
 
-// Allow only digits in TOTP field
-document.getElementById('totp').addEventListener('input', function(){
-  this.value = this.value.replace(/[^0-9]/g,'');
-});
-
-// Check lockout on load
-(function(){
-  var lock = getLock();
-  if (lock.until && lock.until > Date.now()) {
-    var secs = Math.ceil((lock.until - Date.now()) / 1000);
-    showError('Accesso bloccato. Riprova tra ' + secs + ' secondi.');
-    document.getElementById('submitBtn').disabled = true;
-  }
-})();
+showError(DISABLED_MSG);
 
 // Animated background particles
 (function(){

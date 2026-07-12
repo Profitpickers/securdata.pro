@@ -1,12 +1,9 @@
-/* SecurData.Pro — Blog Media Library (GitHub repo storage)
-   - upload (file picker + drag&drop)
-   - resize/compress via Canvas
-   - list/reuse/delete assets in assets/uploads/blog/
-   Requires a GitHub fine-grained PAT with Contents: Read/Write stored in localStorage key sdp_gh_token
-*/
+/* SecurData.Pro — Blog Media Library (temporarily disabled for security review) */
 
 (function (global) {
   'use strict';
+
+  var DISABLED_MSG = 'Funzione temporaneamente disattivata durante la revisione di sicurezza.';
 
   var OWNER = 'Profitpickers';
   var REPO  = 'securdata.pro';
@@ -63,23 +60,8 @@
   }
 
   function ghFetch(path, opts) {
-    var token = getToken();
-    if (!token) {
-      toast('Imposta prima il GitHub Token (Settings) per usare la libreria media.', 'err');
-      return Promise.reject(new Error('Missing token'));
-    }
-    opts = opts || {};
-    opts.headers = opts.headers || {};
-    opts.headers['Authorization'] = 'token ' + token;
-    opts.headers['Accept'] = 'application/vnd.github+json';
-    return fetch(apiBase() + path, opts).then(function (r) {
-      if (!r.ok) {
-        return r.text().then(function (t) {
-          throw new Error('GitHub API ' + r.status + ': ' + (t || r.statusText));
-        });
-      }
-      return r.json();
-    });
+    toast(DISABLED_MSG, 'err');
+    return Promise.reject(new Error(DISABLED_MSG));
   }
 
   function listImages() {

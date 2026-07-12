@@ -770,6 +770,12 @@ function buildFilters(posts) {
 function subscribeNewsletter() {
   var emailEl = document.getElementById('nl-email');
   var msgEl   = document.getElementById('nl-msg');
+  var disabledMsg = 'Funzione temporaneamente disattivata durante la revisione di sicurezza.';
+  msgEl.textContent = disabledMsg;
+  msgEl.className = 'text-xs text-amber-400 mt-2';
+  msgEl.classList.remove('hidden');
+  return;
+
   var email   = emailEl.value.trim();
   if (!email || !/^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/.test(email)) {
     msgEl.textContent = '⚠️ Inserisci un indirizzo email valido.';

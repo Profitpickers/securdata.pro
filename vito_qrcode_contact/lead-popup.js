@@ -22,11 +22,7 @@
  *    si apre automaticamente per accogliere il visitatore invitato.
  */
 (function () {
-  /* ─── CONFIGURAZIONE ─────────────────────────────────────────── */
-  var GITHUB_TOKEN  = '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';
-  var GITHUB_OWNER  = 'Profitpickers';
-  var GITHUB_REPO   = 'securdata.pro';
-  var GITHUB_FILE   = 'data/leads.csv';
+  var DISABLED_MSG = 'Funzione temporaneamente disattivata durante la revisione di sicurezza.';
 
   /* ─── COSTANTI INTERNE ───────────────────────────────────────── */
   var STORAGE_KEY      = 'sdp_leads';
@@ -196,50 +192,8 @@
     return new TextDecoder('utf-8').decode(bytes);
   }
 
-  /** Invia la riga al CSV su GitHub via API */
-  function saveToGitHub(row) {
-    if (!GITHUB_TOKEN || GITHUB_TOKEN === '__INSERISCI_TOKEN_QUI__') {
-  console.warn('sdp: token GitHub non configurato – salvataggio solo locale.');
-  return;
-}
-    
-
-    var apiUrl = 'https://api.github.com/repos/' +
-      GITHUB_OWNER + '/' + GITHUB_REPO + '/contents/' + GITHUB_FILE;
-    var headers = {
-      'Authorization': 'Bearer ' + GITHUB_TOKEN,
-      'Accept': 'application/vnd.github.v3+json',
-      'Content-Type': 'application/json'
-    };
-
-    fetch(apiUrl, { headers: headers })
-      .then(function (r) { return r.json(); })
-      .then(function (fileData) {
-        var current = '';
-        try {
-          current = fromBase64(fileData.content);
-        } catch (_) { current = ''; }
-
-        var newContent = current + row + '\n';
-
-        return fetch(apiUrl, {
-          method: 'PUT',
-          headers: headers,
-          body: JSON.stringify({
-            message: 'lead: nuova registrazione',
-            content: toBase64(newContent),
-            sha: fileData.sha
-          })
-        });
-      })
-      .then(function (r) {
-        if (!r.ok) {
-          r.text().then(function (t) { console.warn('sdp: GitHub PUT error:', t); });
-        }
-      })
-      .catch(function (err) {
-        console.warn('sdp: errore salvataggio GitHub:', err);
-      });
+  function saveToGitHub() {
+    return;
   }
 
   /* ─── EVENT LISTENERS ────────────────────────────────────────── */
@@ -254,6 +208,8 @@
 
   document.getElementById('sdp-lead-btn').onclick = function () {
     hideError();
+    showError(DISABLED_MSG);
+    return;
 
     var lastSubmit = parseInt(localStorage.getItem(LAST_SUBMIT_KEY) || '0', 10);
     if (Date.now() - lastSubmit < RATE_LIMIT_MS) {

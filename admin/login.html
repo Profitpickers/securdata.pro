@@ -188,177 +188,38 @@ hr{border:none;border-top:1px solid rgba(99,179,237,.08);margin:1.1rem 0}
 </div>
 
 <script>
-/* ═══════════════════════════════════════════════════════════════════
-   UTENTI CONFIGURATI
-   Per aggiungere un collaboratore:
-   1. Scegli username e password
-   2. Calcola SHA-256: https://emn178.github.io/online-tools/sha256.html
-   3. Aggiungi un oggetto USERS con { username, hash, role:'editor', require2fa:false }
-   ═══════════════════════════════════════════════════════════════════
-   CREDENZIALI DEFAULT:
-   - admin / SecurData2026!  + codice 2FA (secret: JBSWY3DPEHPK3PXP)
-   - team  / TeamSecur2026   (nessun 2FA)
-   CAMBIA LE PASSWORD PREDEFINITE!
-   ═══════════════════════════════════════════════════════════════════ */
-var USERS = [
-  {
-    username:   'admin',
-    hash:       'd75e5a7ab4d547daaa799247055caddd181fbb598700e65d7c1fe219453ef501',
-    role:       'admin',
-    require2fa: true,
-    totp_secret:'JBSWY3DPEHPK3PXP',
-    display:    'Vito Iacobellis — Amministratore'
-  },
-  {
-    username:   'team',
-    hash:       '5838ccd26e0f3029aa1df319c7de60a1232723c29d4015363af699077505dc02',
-    role:       'editor',
-    require2fa: false,
-    display:    'Team — Editor'
-    /* password: TeamSecur2026 — cambia subito! */
-  }
-];
-
-var MAX_ATTEMPTS = 5;
-var LOCKOUT_MS   = 5 * 60 * 1000;
-
-async function sha256(str) {
-  var data = new TextEncoder().encode(str);
-  var buf  = await crypto.subtle.digest('SHA-256', data);
-  return Array.from(new Uint8Array(buf)).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
-}
-
-function b32decode(s) {
-  var alpha = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
-  var clean = s.toUpperCase().replace(/[\s=]/g,'');
-  var bits  = '';
-  for (var i = 0; i < clean.length; i++) {
-    var v = alpha.indexOf(clean[i]);
-    if (v >= 0) bits += v.toString(2).padStart(5,'0');
-  }
-  var bytes = new Uint8Array(Math.floor(bits.length / 8));
-  for (var j = 0; j < bytes.length; j++) bytes[j] = parseInt(bits.slice(j*8,j*8+8),2);
-  return bytes;
-}
-
-async function getTOTP(secret, offset) {
-  offset = offset || 0;
-  var key  = await crypto.subtle.importKey('raw', b32decode(secret), {name:'HMAC',hash:'SHA-1'}, false, ['sign']);
-  var ctr  = Math.floor(Date.now()/1000/30) + offset;
-  var buf  = new ArrayBuffer(8);
-  var dv   = new DataView(buf);
-  var UINT32_MAX = 0x100000000; // 2^32, used to split 64-bit TOTP counter
-  var hi   = Math.floor(ctr / UINT32_MAX);
-  if (hi) dv.setUint32(0, hi >>> 0, false); // high 32 bits
-
-  dv.setUint32(4, ctr >>> 0, false);
-  var sig  = new Uint8Array(await crypto.subtle.sign('HMAC', key, buf));
-  var off2 = sig[19] & 0xf;
-  var code = (((sig[off2]&0x7f)<<24)|((sig[off2+1]&0xff)<<16)|((sig[off2+2]&0xff)<<8)|(sig[off2+3]&0xff)) % 1000000;
-  return code.toString().padStart(6,'0');
-}
-
-async function validateTOTP(secret, code) {
-  for (var w = -1; w <= 1; w++) {
-    if (await getTOTP(secret, w) === code) return true;
-  }
-  return false;
-}
-
-function getLock() { try { return JSON.parse(sessionStorage.getItem('_sdlock')||'{}'); } catch(e){ return {}; } }
-function putLock(s) { sessionStorage.setItem('_sdlock', JSON.stringify(s)); }
+var DISABLED_MSG = 'Funzione temporaneamente disattivata durante la revisione di sicurezza.';
 
 function showErr(msg) {
   var el = document.getElementById('errMsg');
-  el.textContent = msg; el.className = 'msg err';
+  el.textContent = msg;
+  el.className = 'msg err';
   document.getElementById('okMsg').style.display = 'none';
-}
-function clearErr() {
-  document.getElementById('errMsg').className = 'msg';
-  document.getElementById('errMsg').textContent = '';
-}
-function resetBtn() {
-  var b = document.getElementById('submitBtn');
-  b.disabled = false;
-  b.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Accedi al Pannello';
 }
 
 function setRole(r) {
   document.getElementById('role').value = r;
   document.getElementById('tab-admin').classList.toggle('active', r === 'admin');
   document.getElementById('tab-collab').classList.toggle('active', r === 'collab');
-  document.getElementById('totpGrp').style.display   = r === 'admin' ? '' : 'none';
+  document.getElementById('totpGrp').style.display = r === 'admin' ? '' : 'none';
   document.getElementById('collabNote').style.display = r === 'collab' ? '' : 'none';
 }
 
-async function handleLogin(e) {
-  e.preventDefault();
-  var lock = getLock();
-  if (lock.until && lock.until > Date.now()) {
-    var s = Math.ceil((lock.until - Date.now()) / 1000);
-    showErr('Accesso bloccato. Riprova tra ' + s + ' secondi.'); return;
-  }
-  var btn = document.getElementById('submitBtn');
-  btn.disabled = true;
-  btn.innerHTML = '<div class="spin"></div>';
-  clearErr();
-
-  try {
-    var user  = document.getElementById('username').value.trim();
-    var pass  = document.getElementById('password').value;
-    var code  = document.getElementById('totp').value.trim().replace(/\s/g,'');
-    var phash = await sha256(pass);
-
-    var matched = null;
-    for (var i = 0; i < USERS.length; i++) {
-      if (USERS[i].username === user && USERS[i].hash === phash) { matched = USERS[i]; break; }
-    }
-
-    var ok = false;
-    if (matched) {
-      ok = matched.require2fa ? await validateTOTP(matched.totp_secret, code) : true;
-    }
-
-    if (ok) {
-      sessionStorage.setItem('sd_auth_token',   'authenticated');
-      sessionStorage.setItem('sd_user_role',    matched.role);
-      sessionStorage.setItem('sd_user_display', matched.display);
-      sessionStorage.setItem('sd_username',     matched.username);
-      sessionStorage.removeItem('_sdlock');
-      document.getElementById('okMsg').style.display = 'flex';
-      setTimeout(function(){ window.location.replace('./index.html'); }, 1000);
-    } else {
-      lock.attempts = (lock.attempts || 0) + 1;
-      var rem = MAX_ATTEMPTS - lock.attempts;
-      if (lock.attempts >= MAX_ATTEMPTS) {
-        lock.until = Date.now() + LOCKOUT_MS;
-        putLock(lock);
-        showErr('Troppi tentativi. Bloccato per 5 minuti.');
-      } else {
-        putLock(lock);
-        showErr(!matched
-          ? 'Credenziali non valide. Tentativi rimasti: ' + rem
-          : 'Codice 2FA non valido. Tentativi rimasti: ' + rem);
-      }
-      resetBtn();
-    }
-  } catch(err) {
-    showErr('Errore di sistema. Aggiorna e riprova.'); resetBtn();
-  }
+function resetBtn() {
+  var b = document.getElementById('submitBtn');
+  b.disabled = false;
+  b.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Accedi al Pannello';
 }
 
-document.getElementById('totp').addEventListener('input', function(){
-  this.value = this.value.replace(/\D/g,'');
-});
+function handleLogin(e) {
+  e.preventDefault();
+  showErr(DISABLED_MSG);
+  resetBtn();
+  return false;
+}
 
-(function(){
-  var lock = getLock();
-  if (lock.until && lock.until > Date.now()) {
-    var s = Math.ceil((lock.until - Date.now()) / 1000);
-    showErr('Accesso bloccato. Riprova tra ' + s + ' secondi.');
-    document.getElementById('submitBtn').disabled = true;
-  }
-})();
+document.getElementById('submitBtn').disabled = false;
+showErr(DISABLED_MSG);
 </script>
 </body>
 </html>
