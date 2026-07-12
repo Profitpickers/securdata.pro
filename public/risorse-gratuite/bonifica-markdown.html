@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=(), usb=()">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'">
+  <meta name="robots" content="index, follow">
+  <meta name="description" content="Strumento locale per bonificare Markdown nel browser senza account, analytics o servizi esterni.">
+  <title>Bonifica Markdown AI-Ready | SECURDATA.PRO</title>
+  <link rel="icon" href="../assets/images/securdata-logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#contenuto">Vai al contenuto</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="../index.html"><img src="../assets/images/securdata-logo.svg" alt="" width="48" height="48"><span>SECURDATA.PRO <small>Bonifica Markdown</small></span></a>
+      <button class="nav-toggle" type="button" aria-label="Apri menu" aria-expanded="false" data-nav-toggle><span></span><span></span><span></span></button>
+      <nav class="nav-links" aria-label="Navigazione principale" data-nav>
+        <a href="../index.html">Home</a>
+        <a href="./">Risorse gratuite</a>
+        <a href="../privacy.html">Privacy</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="contenuto">
+    <section class="section">
+      <p class="eyebrow">Strumento gratuito locale</p>
+      <h1>Bonifica Markdown AI-Ready</h1>
+      <p class="lead">Pulizia e controlli di base su file Markdown, eseguiti nel browser, senza account e senza servizi esterni.</p>
+    </section>
+
+    <section class="section">
+      <h2>Privacy tecnica</h2>
+      <div class="privacy-card">
+        <dl>
+          <dt>Elaborazione</dt>
+          <dd>nel browser</dd>
+          <dt>Trasmissione dei contenuti</dt>
+          <dd>nessuna</dd>
+          <dt>Account richiesto</dt>
+          <dd>no</dd>
+          <dt>Analytics</dt>
+          <dd>no</dd>
+          <dt>Servizi esterni</dt>
+          <dd>nessuno</dd>
+          <dt>Memorizzazione</dt>
+          <dd>nessuna</dd>
+        </dl>
+      </div>
+      <p class="notice">Lo strumento Ã¨ fornito come supporto informativo e operativo. Non garantisce bonifica completa, assenza di ogni rischio residuo o conformitÃ  legale.</p>
+    </section>
+
+    <section class="section" aria-labelledby="strumento">
+      <h2 id="strumento">Area di lavoro</h2>
+      <div class="tool-panel">
+        <div class="tool-actions">
+          <label class="file-button" for="file-input">Carica file Markdown</label>
+          <input class="hidden" id="file-input" type="file" accept=".md,.markdown,.txt">
+          <button type="button" class="secondary" data-example-tool>Carica esempio</button>
+          <button type="button" class="secondary" data-clear-tool>Pulisci</button>
+        </div>
+
+        <div class="tool-controls" aria-label="Moduli">
+          <label class="toggle-row"><input id="mod-backslash" type="checkbox" checked> Backslash fantasma</label>
+          <label class="toggle-row"><input id="mod-html" type="checkbox" checked> EntitÃ  HTML</label>
+          <label class="toggle-row"><input id="mod-toxic" type="checkbox" checked> Caratteri speciali invisibili</label>
+          <label class="toggle-row"><input id="mod-typography" type="checkbox" checked> Tipografia in ASCII</label>
+          <label class="toggle-row"><input id="mod-homoglyphs" type="checkbox" checked> Omoglifi Unicode</label>
+          <label class="toggle-row"><input id="mod-pdf" type="checkbox" checked> Artefatti PDF</label>
+        </div>
+
+        <label for="input-text"><strong>Input Markdown</strong></label>
+        <textarea id="input-text" spellcheck="false" placeholder="Incolla qui il testo Markdown o carica un file locale."></textarea>
+
+        <div class="tool-actions">
+          <button type="button" data-run-tool>Esegui bonifica</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section hidden" id="results" aria-labelledby="risultati">
+      <h2 id="risultati">Risultati</h2>
+      <div class="result-panel">
+        <div class="metrics" id="metrics"></div>
+        <div id="details"></div>
+        <label for="output-text"><strong>Output bonificato</strong></label>
+        <textarea id="output-text" spellcheck="false" readonly></textarea>
+        <div class="tool-actions">
+          <button type="button" class="secondary" data-copy-output>Copia output</button>
+          <button type="button" class="secondary" data-download-clean>Scarica Markdown</button>
+          <button type="button" class="secondary" data-download-report>Scarica report JSON</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <span>SECURDATA.PRO Â· Progetto digitale indipendente Â· Ideato e gestito da Vito Iacobellis Â· info@securdata.pro</span>
+      <span><a href="../privacy.html">Privacy</a> Â· Â© 2026</span>
+    </div>
+  </footer>
+  <script src="../assets/js/main.js"></script>
+</body>
+</html>
